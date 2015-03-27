@@ -1,0 +1,24 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package cfa.vo.speclib;
+
+/**
+ *
+ * @author mdittmar
+ */
+public interface SamplingPrecision {
+    
+    public Quantity<Double> getSampleExtent();
+    public SamplingPrecisionRefVal getSamplingPrecisionRefVal();
+    
+    public void setSampleExtent( Double value );
+    
+    public void setSampleExtent( Quantity<Double> value );
+    public void setSamplingPrecisionRefVal( SamplingPrecisionRefVal value );
+    
+    public boolean isSetSampleExtent();
+    public boolean isSetSamplingPrecisionRefVal();
+    
+}
