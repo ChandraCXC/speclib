@@ -8,14 +8,18 @@ package cfa.vo.speclib;
  *
  * @author mdittmar
  */
-public interface RedshiftFrame extends CoordFrame {
+public interface RedshiftFrame extends Frame {
     
     public Quantity<String> getDopplerDefinition();
-
+    public Quantity<String> getReferencePosition();
+    
     public void setDopplerDefinition( String value );
-
+    public void setReferencePosition( String value );
+    
     public void setDopplerDefinition( Quantity<String> value );
-
+    public void setReferencePosition( Quantity<String> value );
+    
     public boolean isSetDopplerDefinition();
+    public boolean isSetReferencePosition();
     
 }

@@ -70,6 +70,10 @@ public class TestFactory {
           obj = factory.newInstance( ApFrac.class );
           assertNotNull( obj.getClass().getMethod("isApplied") );
 
+          if ( verbose ){ System.out.println(" Create Bandpass object");}
+          obj = factory.newInstance( Bandpass.class );
+          assertNotNull( obj.getClass().getMethod("getName") );
+
           if ( verbose ){ System.out.println(" Create Bounds object");}
           obj = factory.newInstance( Bounds.class );
           assertNotNull( obj.getClass().getMethod("getExtent") );
@@ -119,6 +123,10 @@ public class TestFactory {
           obj = factory.newInstance( DataModel.class );
           assertNotNull( obj.getClass().getMethod("getPrefix") );
 
+          if ( verbose ){ System.out.println(" Create DataSource object");}
+          obj = factory.newInstance( DataSource.class );
+          assertNotNull( obj.getClass().getMethod("getName") );
+
           if ( verbose ){ System.out.println(" Create Dataset object");}
           obj = factory.newInstance( Dataset.class );
           assertNotNull( obj.getClass().getMethod("getDataModel") );
@@ -126,6 +134,14 @@ public class TestFactory {
           if ( verbose ){ System.out.println(" Create Derived object"); }
           obj = factory.newInstance( Derived.class );
           assertNotNull( obj.getClass().getMethod("getSNR") );
+
+          if ( verbose ){ System.out.println(" Create Facility object");}
+          obj = factory.newInstance( Facility.class );
+          assertNotNull( obj.getClass().getMethod("getName") );
+
+          if ( verbose ){ System.out.println(" Create FluxDataAxis object");}
+          obj = factory.newInstance( FluxDataAxis.class );
+          assertNotNull( obj.getClass().getMethod("getResolution") );
 
           if ( verbose ){ System.out.println(" Create FluxFrame object");}
           obj = factory.newInstance( FluxFrame.class );
@@ -136,17 +152,25 @@ public class TestFactory {
           obj = factory.newInstance( GenericCorr.class );
           assertNotNull( obj.getClass().getMethod("getValue") );
           
+          if ( verbose ){ System.out.println(" Create Instrument object");}
+          obj = factory.newInstance( Instrument.class );
+          assertNotNull( obj.getClass().getMethod("getName") );
+
           if ( verbose ){ System.out.println(" Create Location object");}
           obj = factory.newInstance( Location.class );
           assertNotNull( obj.getClass().getMethod("getValue") );
           
-          if ( verbose ){ System.out.println(" Create Point object");}
-          obj = factory.newInstance( Point.class );
-          assertNotNull( obj.getClass().getMethod("getDataAxes") );
-          
+          if ( verbose ){ System.out.println(" Create ObsConfig object");}
+          obj = factory.newInstance( ObsConfig.class );
+          assertNotNull( obj.getClass().getMethod("getObservingElements") );
+
+          if ( verbose ){ System.out.println(" Create Proposal object");}
+          obj = factory.newInstance( Proposal.class );
+          assertNotNull( obj.getClass().getMethod("getIdentifier") );
+
           if ( verbose ){ System.out.println(" Create QualityCode object"); }
           obj = factory.newInstance( QualityCode.class );
-          assertNotNull( obj.getClass().getMethod("getDescription") );
+          assertNotNull( obj.getClass().getMethod("getDefinition") );
 
           if ( verbose ){ System.out.println(" Create Redshift object"); }
           obj = factory.newInstance( Redshift.class );
@@ -165,14 +189,26 @@ public class TestFactory {
           obj = factory.newInstance( Resolution.class );
           assertNotNull( obj.getClass().getMethod("getRefVal") );
 
+          if ( verbose ){ System.out.println(" Create SamplingPrecision object");}
+          obj = factory.newInstance( SamplingPrecision.class );
+          assertNotNull( obj.getClass().getMethod("getSampleExtent") );
+
+          if ( verbose ){ System.out.println(" Create SPPoint object");}
+          obj = factory.newInstance( SPPoint.class );
+          assertNotNull( obj.getClass().getMethod("getFluxAxis") );
+          
           if ( verbose ){ System.out.println(" Create SpaceFrame object");}
           obj = factory.newInstance( SpaceFrame.class );
           assertNotNull( obj.getClass().getMethod("getReferencePosition") );
           assertNotNull( obj.getClass().getMethod("getEquinox") );
 
-          if ( verbose ){ System.out.println(" Create Spectral object");}
-          obj = factory.newInstance( Spectral.class );
-          assertNotNull( obj.getClass().getMethod("getDataset") );
+          if ( verbose ){ System.out.println(" Create Spectral Data Axis object");}
+          obj = factory.newInstance( SpectralDataAxis.class );
+          assertNotNull( obj.getClass().getMethod("getAccuracy") );
+
+          if ( verbose ){ System.out.println(" Create Spectral Dataset object");}
+          obj = factory.newInstance( SpectralDataset.class );
+          assertNotNull( obj.getClass().getMethod("getFluxSI") );
           
           if ( verbose ){ System.out.println(" Create SpectralFrame object");}
           obj = factory.newInstance( SpectralFrame.class );

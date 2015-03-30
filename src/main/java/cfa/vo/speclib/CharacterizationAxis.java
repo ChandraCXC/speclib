@@ -16,7 +16,7 @@ public interface CharacterizationAxis {
     public String getName();
     public String getUCD();
     public String getUnit();
-    public Quantity<String> getCalibStatus();
+    public Quantity<String> getCalibrationStatus();
     public Accuracy getAccuracy();
     public CoordSys getCoordSys();
     public Coverage getCoverage();
@@ -27,8 +27,8 @@ public interface CharacterizationAxis {
     public void setName( String name );
     public void setUCD( String ucd );
     public void setUnit( String unit );
-    public void setCalibStatus( String value );
-    public void setCalibStatus( Quantity<String> value );
+    public void setCalibrationStatus( String value );
+    public void setCalibrationStatus( Quantity<String> value );
     public void setAccuracy( Accuracy value );
     public void setCoordSys( CoordSys value );
     public void setCoverage( Coverage value );

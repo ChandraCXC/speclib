@@ -11,27 +11,45 @@ package cfa.vo.speclib;
  * @author mdittmar
  */
 public interface Dataset {
+
+    public Quantity<String> getDataProductType();
+    public Quantity<String> getDataProductSubtype();
+    public Quantity<Integer> getCalibLevel();
     public DataModel getDataModel();
-    public Quantity<String> getType();
-    public Integer  getLength();
-    public Quantity<String> getSpectralSI();
-    public Quantity<String> getTimeSI();
-    public Quantity<String> getFluxSI();
-
+    public Curation getCuration();
+    public Characterization getCharacterization();
+    public CoordSys getCoordSys();
+    public DataID getDataID();
+    public Derived getDerived();
+    public ObsConfig getObsConfig();
+    public Proposal getProposal();
+    public Target getTarget();
+    
+    public void setDataProductType( Quantity<String> q );
+    public void setDataProductType( String value );
+    public void setDataProductSubtype( Quantity<String> q );
+    public void setDataProductSubtype( String value );
+    public void setCalibLevel( Quantity<Integer> q );
     public void setDataModel(DataModel value);
-    public void setType( String value );
-    public void setSpectralSI( String value );
-    public void setTimeSI( String value );
-    public void setFluxSI( String value );
-
-    public void setType( Quantity<String> q );
-    public void setSpectralSI( Quantity<String> q );
-    public void setTimeSI( Quantity<String> q );
-    public void setFluxSI( Quantity<String> q );
-
+    public void setCuration( Curation value );
+    public void setCharacterization( Characterization value );
+    public void setCoordSys( CoordSys value );
+    public void setDataID( DataID value );
+    public void setDerived( Derived value );
+    public void setObsConfig( ObsConfig value );
+    public void setProposal( Proposal value );
+    public void setTarget( Target value );
+    
+    public boolean isSetDataProductType();
+    public boolean isSetDataProductSubtype();
+    public boolean isSetCalibLevel();
     public boolean isSetDataModel();
-    public boolean isSetType();
-    public boolean isSetSpectralSI();
-    public boolean isSetTimeSI();
-    public boolean isSetFluxSI();
+    public boolean isSetCuration();
+    public boolean isSetCharacterization();
+    public boolean isSetCoordSys();
+    public boolean isSetDataID();
+    public boolean isSetDerived();
+    public boolean isSetObsConfig();
+    public boolean isSetProposal();
+    public boolean isSetTarget();
 }

@@ -10,15 +10,15 @@ package cfa.vo.speclib;
  */
 public interface QualityCode {
     
-    public Quantity<Integer> getValue();
-    public Quantity<String> getDescription();
+    public Quantity<Integer> getCodeNum();
+    public Quantity<String> getDefinition();
     
-    public void setValue( Integer value );
-    public void setDescription( String value );
+    public void setCodeNum( Integer value );
+    public void setDefinition( String value );
     
-    public void setValue( Quantity<Integer> value );
-    public void setDescription( Quantity<String> value );
+    public void setCodeNum( Quantity<Integer> value );
+    public void setDefinition( Quantity<String> value );
     
-    public boolean isSetValue();
-    public boolean isSetDescription();
+    public boolean isSetCodeNum();
+    public boolean isSetDefinition();
 }

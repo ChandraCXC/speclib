@@ -223,7 +223,7 @@ public class ModelTableTest {
     public void testGetUtypeNum() {
         if (verbose){ System.out.println("Test getUtypeNum"); }
         String utype = "Target.Name";
-        Integer expResult = 269;
+        Integer expResult = 282;
         Integer result = model.getUtypeNum(utype);
         assertEquals(expResult, result);
     }
@@ -234,7 +234,7 @@ public class ModelTableTest {
     @Test
     public void testGetUtype() {
         if (verbose){ System.out.println("Test getUtype"); }
-        Integer utypenum = 269;
+        Integer utypenum = 282;
         String expResult = "Target.Name";
         String result = model.getUtype(utypenum);
         assertTrue( ( result.indexOf(expResult) >= 0) );
@@ -329,7 +329,7 @@ public class ModelTableTest {
     @Test
     public void testGetDefault_String() {
         if (verbose){ System.out.println("Test getDefault String"); }
-        String utype = "Char.TimeAxis.CalibStatus";
+        String utype = "Char.TimeAxis.CalibrationStatus";
         String expResult = "CALIBRATED";
         String result = model.getDefault(utype);
     }
@@ -362,7 +362,7 @@ public class ModelTableTest {
         Boolean result = model.isMandatory(utype);
         assertEquals(expResult, result);
 
-        utype = "Char.TimeAxis.CalibStatus";
+        utype = "Char.TimeAxis.CalibrationStatus";
         expResult = false;
         result = model.isMandatory(utype);
         assertEquals(expResult, result);
@@ -374,7 +374,7 @@ public class ModelTableTest {
     @Test
     public void testIsValidUtype() {
         if (verbose){ System.out.println("Test isValidUtype"); }
-        String utype = "spec:Char.TimeAxis.CalibStatus";
+        String utype = "spec:Char.TimeAxis.CalibrationStatus";
         Boolean expResult = true;
         model.setIncludeModelPrefix(true);
         Boolean result = model.isValidUtype(utype);
@@ -397,15 +397,15 @@ public class ModelTableTest {
     @Test
     public void testGetUtypes() {
         if (verbose){ System.out.println("Test getUtypes"); }
-        String expResult = "Char.TimeAxis.CalibStatus";
-        int expSize = 276;
+        String expResult = "Char.TimeAxis.CalibrationStatus";
+        int expSize = 287;
         
         model.setIncludeModelPrefix( false );
         List result = model.getUtypes();
         assertEquals(expResult, result.get(97));
         assertEquals(expSize, result.size());
         
-        expResult = "spec:Char.TimeAxis.CalibStatus";
+        expResult = "spec:Char.TimeAxis.CalibrationStatus";
         model.setIncludeModelPrefix( true );
         result = model.getUtypes();
         assertEquals(expResult, result.get(97));

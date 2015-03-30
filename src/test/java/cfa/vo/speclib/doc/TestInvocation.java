@@ -10,6 +10,7 @@ import cfa.vo.speclib.DataID;
 import cfa.vo.speclib.DataModel;
 import cfa.vo.speclib.GenericCorr;
 import cfa.vo.speclib.Quantity;
+import cfa.vo.speclib.SpectralDataset;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -67,7 +68,7 @@ public class TestInvocation {
     @Test
     public void testBasicGet()
     {
-        Dataset ds;
+        SpectralDataset ds;
         DataID did;
         DataModel dm, dm2;
         Integer a;
@@ -78,7 +79,7 @@ public class TestInvocation {
             System.out.println("Test Basic Get:");
 
         // Create empty Dataset 
-        ds = (Dataset)factory.newInstance( Dataset.class );
+        ds = (SpectralDataset)factory.newInstance( SpectralDataset.class );
         assertNotNull(ds);
         
         // Create empty DataID 
@@ -160,9 +161,9 @@ public class TestInvocation {
 
         // Set "Primitive"
         if ( verbose ){ System.out.println("+ Assign 'Primitive'");}
-        assertFalse( ds.isSetType());
-        ds.setType("Spectrum");
-        assertTrue( ds.isSetType());
+        assertFalse( ds.isSetDataProductType());
+        ds.setDataProductType("Spectrum");
+        assertTrue( ds.isSetDataProductType());
         
         // Set Quantity
         if ( verbose ){ System.out.println("+ Assign Quantity");}
@@ -195,10 +196,10 @@ public class TestInvocation {
         // Re-Assign property with Quantity
         if ( verbose ){ System.out.println("+ Re-Assign with Quantity"); }
         q = new Quantity("type","Photometry","","");
-        assertTrue( ds.isSetType());
-        ds.setType( q );
-        assertTrue( ds.isSetType());
-        assertEquals( ds.getType().getValue(), "Photometry");
+        assertTrue( ds.isSetDataProductType());
+        ds.setDataProductType( q );
+        assertTrue( ds.isSetDataProductType());
+        assertEquals( ds.getDataProductType().getValue(), "Photometry");
 
         // Re-Assign property with Quantity
         if ( verbose ){ System.out.println("+ Re-Assign with 'Primitive'"); }

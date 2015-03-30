@@ -8,14 +8,18 @@ package cfa.vo.speclib;
  *
  * @author mdittmar
  */
-public interface SpaceFrame extends CoordFrame {
+public interface SpaceFrame extends Frame {
 
     public Quantity<Double> getEquinox();
+    public Quantity<String> getReferencePosition();
     
     public void setEquinox( Double value );
+    public void setReferencePosition( String value );
     
     public void setEquinox( Quantity<Double> value );
+    public void setReferencePosition( Quantity<String> value );
     
     public boolean isSetEquinox();
+    public boolean isSetReferencePosition();
     
 }
