@@ -21,8 +21,13 @@ import java.util.Set;
  * @author mdittmar
  */
 public class SpectralDocument {
+
+    // Storage map.
+    //   Key    = Model Path (mp)
+    //   Object = Interface or Property (Quantity)
     private HashMap<String, Object> doc;
     
+    // constructor
     public SpectralDocument(){
         this.doc = new HashMap<String, Object>();
     }

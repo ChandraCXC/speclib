@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Ignore;
 
 /**
  *
@@ -147,19 +146,44 @@ public class ModelTableTest {
      * Test of write method, of class ModelTable.
      */
     @Test
-    @Ignore
     public void testWrite() {
-        if (verbose){ System.out.println("write"); }
-        String filename;
+        if (verbose){ System.out.println("Test write"); }
+        URL infile;
+        String outfile;
+        Boolean caught;
+
+        // Load model spec.
         ModelTable instance = new ModelTable();
+        infile = ModelTable.class.getResource("/spectrum_2p0.txt");
+        caught = false;
+        try {
+            instance.read( infile );
+        } 
+        catch (IOException ex) { caught=true; }
+        assertFalse(caught);
 
-        filename = System.getProperty("java.io.tmpdir");
-        System.out.println("MCD TEMP: System property TMPDIR == XX"+filename+"XX");
+        // Null filename test.
+        caught = false;
+        try{
+            instance.write(null);
+        }
+        catch (FileNotFoundException ex){caught=true;}
+        catch (IOException ex){caught=false;} //not right exception
+        assertTrue(caught);
 
-        instance.write(filename);
+        // Generate output file name.
+        URL outroot = this.getClass().getResource("/test_data");
+        outfile = outroot.toString() + "/out/spectrum_2p0.txt";        
+
+        caught = false;
+        try{
+            instance.write( outfile );
+        }
+        catch (FileNotFoundException ex){caught=true;}
+        catch (IOException ex){caught=true;}
+        assertFalse(caught);
         
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        //TODO - add verification of infile vs outfile.
     }
 
     /**
@@ -412,5 +436,5 @@ public class ModelTableTest {
         assertEquals(expSize, result.size());
         
         
-    }
+    }    
 }

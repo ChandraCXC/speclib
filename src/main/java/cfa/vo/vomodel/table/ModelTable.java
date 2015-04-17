@@ -6,10 +6,14 @@ package cfa.vo.vomodel.table;
 import cfa.vo.vomodel.Model;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,6 +28,7 @@ import java.util.List;
  */
 public class ModelTable implements Model {
 
+    protected String title;  // model title
     protected String name;   // model name
     protected String prefix; // model prefix 
     protected URL    refURL; // reference URL
@@ -39,6 +44,7 @@ public class ModelTable implements Model {
      */
     public ModelTable()
     {
+        this.title = null;
         this.name = null;
         this.prefix = null;
         this.refURL = null;
@@ -85,7 +91,11 @@ public class ModelTable implements Model {
                continue;
 
            // process rows
-           if ( line.startsWith("Name=") )
+           if ( line.startsWith("Title=") )
+           {
+               this.title = line.substring(line.indexOf("=")+1);
+           }
+           else if ( line.startsWith("Name=") )
            {
                this.name = line.substring(line.indexOf("=")+1);
            }
@@ -102,18 +112,19 @@ public class ModelTable implements Model {
            {
                record = new Entry();
                parts = line.split("&");
-               if ( parts.length != 7 )
+               if ( parts.length != 8 )
                    throw new IOException("Invalid record found.");
 
-               record.type   = parts[0].trim();
-               record.utype  = parts[1].trim();
-               record.ucd    = parts[2].trim();
-               record.defval = parts[3].trim();
-               record.unit   = parts[4].trim();
-               record.descr  = parts[5].trim();
-               record.req    = parts[6].trim();
+               record.modelpath = parts[0].trim();
+               record.type   = parts[1].trim();
+               record.tag    = parts[2].trim();
+               record.ucd    = parts[3].trim();
+               record.defval = parts[4].trim();
+               record.unit   = parts[5].trim();
+               record.descr  = parts[6].trim();
+               record.mult   = parts[7].trim();
                
-               key = this.utype2key( record.utype );
+               key = this.utype2key( record.tag );
                this.map.put(key, count);
                this.data.add(record);
                count++;
@@ -126,9 +137,59 @@ public class ModelTable implements Model {
      * 
      * @param filename 
      */
-    public void write( String filename )
+    public void write( String filename ) throws IOException
     {
-        throw new UnsupportedOperationException("Not supported yet.");        
+        OutputStream os;
+        Entry item;
+
+        if ( filename == null )
+            throw new FileNotFoundException("Null URL input. ");
+
+        // Open output stream
+        URL outfile = new URL( filename );
+        os = new FileOutputStream( outfile.getFile() );
+        BufferedWriter buf = new BufferedWriter( new OutputStreamWriter( os ));
+
+        String fmt = "%1s %-100s & %-24s & %-70s & %-45s & %-25s & %-20s & %-40s & %-5s";
+        
+        // Write header lines
+        buf.write("# -----------------------------------");
+        buf.newLine();
+        buf.write("# VO Data Model Summary");
+        buf.newLine();
+        buf.write("# -----------------------------------");
+        buf.newLine();
+        buf.write("Title=" + this.title);
+        buf.newLine();
+        buf.write("Name=" + this.name);
+        buf.newLine();
+        buf.write("Prefix=" + this.prefix);
+        buf.newLine();
+        buf.write("URL=" + this.refURL);
+        buf.newLine();
+        buf.write("#");
+        buf.newLine();
+        buf.write("#");
+        buf.newLine();
+        buf.write( String.format( fmt, "#", "Model Path", "Type", "Tag", 
+                "UCD", "Default", "Unit", "Description", "REQ" ) );
+        buf.newLine();
+        buf.write("#");
+        for ( int ii=0; ii<350;ii++)
+            buf.write("-");
+        buf.newLine();
+
+        Iterator it = this.data.iterator();
+        while (it.hasNext())
+        {
+            item = (Entry)it.next();
+            buf.write( String.format( fmt, " ", item.modelpath, item.type, 
+                        item.tag, item.ucd, item.defval, item.unit, 
+                        item.descr, item.mult ) );
+            buf.newLine();
+        }
+        buf.flush();
+        buf.close();
     }
     
     public void setIncludeModelPrefix( boolean flag ) 
@@ -180,9 +241,9 @@ public class ModelTable implements Model {
         String result;
         
         if (this.includePrefix)
-            result = this.prefix + ":" + this.getField( "UTYPE", utypenum );
+            result = this.prefix + ":" + this.getField( "TAG", utypenum );
         else
-            result = this.getField( "UTYPE", utypenum );
+            result = this.getField( "TAG", utypenum );
  
         return( result );
     }
@@ -255,9 +316,9 @@ public class ModelTable implements Model {
         {
             item = (Entry)iter.next();
             if ( this.includePrefix )
-                tmpstr = this.prefix + ":" + item.utype ;
+                tmpstr = this.prefix + ":" + item.tag ;
             else
-                tmpstr = item.utype;
+                tmpstr = item.tag;
 
             result.add( tmpstr );
         }
@@ -304,8 +365,8 @@ public class ModelTable implements Model {
 
         if ( field.equals("TYPE"))
             result = data.get(record).type;
-        else if ( field.equals("UTYPE"))
-            result = data.get(record).utype;
+        else if ( field.equals("TAG"))
+            result = data.get(record).tag;
         else if ( field.equals("UNIT"))
             result = data.get(record).unit;
         else if ( field.equals("UCD"))
@@ -313,9 +374,9 @@ public class ModelTable implements Model {
         else if ( field.equals("DEFAULT"))
             result = data.get(record).defval;
         else if ( field.equals("REQ"))
-            result = data.get(record).req;
+            result = data.get(record).mult;
         else if ( field.equals("DESC"))
-            result = data.get(record).utype;
+            result = data.get(record).descr;
         else
             result = null;
             

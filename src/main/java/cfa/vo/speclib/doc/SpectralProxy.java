@@ -59,6 +59,16 @@ public class SpectralProxy implements InvocationHandler
         this.modelpath = mp;
     }
 
+    /**
+     * Method to invoke the various accessors associated with the 
+     * interfaces the proxy represents.
+     * 
+     * @param proxy
+     * @param method
+     * @param args
+     * @return
+     * @throws Throwable 
+     */
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable 
     {
         Object result;
@@ -113,6 +123,11 @@ public class SpectralProxy implements InvocationHandler
     {
         //System.out.println("Equals method: "+a.getClass().getSimpleName()+" and "+b.getClass().getSimpleName());
         return ( a.getClass() == b.getClass());
+    }
+
+    public SpectralDocument getDoc()
+    {
+       return ( this.data );
     }
 
     // ***********************************************************************
@@ -312,8 +327,8 @@ public class SpectralProxy implements InvocationHandler
         
         if ( type == Quantity.class )
         {
-            if ( etype != null)
-                System.out.println("MCD TEMP: New Q.. type == "+type.getSimpleName()+" etype == "+etype.getSimpleName());
+            //if ( etype != null)
+            //    System.out.println("MCD TEMP: New Q.. type == "+type.getSimpleName()+" etype == "+etype.getSimpleName());
             Quantity q = new Quantity();
             q.setModelpath( mp );
             q.setDType( etype );

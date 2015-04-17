@@ -20,6 +20,7 @@ public class ModelFactory {
     
     public ModelFactory()
     {
+        supported = new HashMap();
         supported.put("SPECTRUM-2.0","Table");
     }
     

@@ -138,5 +138,5 @@ public interface Model {
      * @return Utype strings associated with the model.
      */
     public List<String> getUtypes();
-    
+
 }
