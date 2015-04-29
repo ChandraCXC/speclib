@@ -7,8 +7,8 @@ package cfa.vo.speclib.doc;
 import cfa.vo.speclib.Quantity;
 import java.util.ArrayList;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -25,11 +25,11 @@ public class SpectralDocument {
     // Storage map.
     //   Key    = Model Path (mp)
     //   Object = Interface or Property (Quantity)
-    private HashMap<String, Object> doc;
+    private LinkedHashMap<String, Object> doc;
     
     // constructor
     public SpectralDocument(){
-        this.doc = new HashMap<String, Object>();
+        this.doc = new LinkedHashMap<String, Object>();
     }
     
     /**
@@ -69,9 +69,9 @@ public class SpectralDocument {
      * @param member
      *   Object being stored
      */
-    public void put(String mp, Object member){
+    public void put(String mp, Object member)
+    {
         //TODO: check input member and path not null.
-        
         this.doc.put(mp, member);
     }
 

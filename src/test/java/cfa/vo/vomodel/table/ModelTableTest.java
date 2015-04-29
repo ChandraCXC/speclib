@@ -4,6 +4,7 @@
  */
 package cfa.vo.vomodel.table;
 
+import cfa.vo.vomodel.Utype;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
@@ -95,7 +96,7 @@ public class ModelTableTest {
 
         if (verbose){ System.out.println("  + Access record.");}
         try {
-            tmpstr = instance.getUCD("some.utype.string");
+            tmpstr = instance.getUCD( 7 );
         }
         catch ( IllegalStateException ex )
         {
@@ -187,24 +188,14 @@ public class ModelTableTest {
     }
 
     /**
-     * Test of setIncludeModelPrefix method, of class ModelTable.
+     * Test of getTitle method, of class ModelTable.
      */
     @Test
-    public void testSetIncludeModelPrefix() {
-        if (verbose){ System.out.println("Test setIncludeModelPrefix"); }
-        String utype;
-        
-        if (verbose){ System.out.println("  + get utype with prefix"); }
-        model.setIncludeModelPrefix(true);
-        utype = model.getUtype( 1 );
-        assert( utype.equals("spec:Char.FluxAxis"));
-        
-        if (verbose){ System.out.println("  + change flag"); }
-        model.setIncludeModelPrefix(false);
-
-        if (verbose){ System.out.println("  + get utype without prefix"); }
-        utype = model.getUtype( 1 );
-        assert( utype.equals("Char.FluxAxis"));
+    public void testGetTitle() {
+        if (verbose){ System.out.println("Test getTitle"); }
+        String expResult = "Spectrum Version 2.0";
+        String result = model.getTitle();
+        assertEquals(expResult, result);
     }
 
     /**
@@ -241,17 +232,73 @@ public class ModelTableTest {
     }
 
     /**
-     * Test of getUtypeNum method, of class ModelTable.
+     * Test of getRecordIndex method, of class ModelTable.
      */
     @Test
-    public void testGetUtypeNum() {
-        if (verbose){ System.out.println("Test getUtypeNum"); }
-        String utype = "Target.Name";
+    public void testGetRecordIndex() {
+        if (verbose){ System.out.println("Test getRecordIndex"); }
+        Utype utype = new Utype("SpectralDataset_Target_Name","Target.Name","spec");
         Integer expResult = 282;
-        Integer result = model.getUtypeNum(utype);
+        Integer result = model.getRecordIndex(utype);
         assertEquals(expResult, result);
+        
+        utype = new Utype("SpectralDataset_Path_DNE","none","spec");
+        boolean caught=false;
+        try{ result = model.getRecordIndex(utype);}
+        catch ( IllegalArgumentException ex){ caught = true;}
+        assertTrue(caught);
     }
 
+        /**
+     * Test of getRecordIndexByPath method, of class ModelTable.
+     */
+    @Test
+    public void testGetRecordIndexByPath() {
+        if (verbose){ System.out.println("Test getRecordIndexByPath"); }
+        String mp = "SpectralDataset_Target_Name";
+        Integer expResult = 282;
+        Integer result = model.getRecordIndexByPath( mp );
+        assertEquals(expResult, result);
+       
+        mp = "SpectralDataset_Char";
+        expResult = 0;
+        result = model.getRecordIndexByPath( mp );
+        assertEquals(expResult, result);
+
+        mp = "SpectralDataset_Element_DNE";
+        expResult = -1;
+        result = model.getRecordIndexByPath( mp );
+        assertEquals(expResult, result );
+        
+        // null test (no match)
+        mp = null;
+        expResult = -1;
+        result = model.getRecordIndexByPath( mp );
+        assertEquals(expResult, result );
+        
+        // empty test (no match)
+        mp = "  ";
+        expResult = -1;
+        result = model.getRecordIndexByPath( mp );
+        assertEquals(expResult, result );
+    }
+
+    /**
+     * Test of getRecordIndexByTag method, of class ModelTable.
+     */
+    @Test
+    public void testGetRecordIndexByTag() {
+        if (verbose){ System.out.println("Test getRecordIndexByTag"); }
+        Utype utype = new Utype("SpectralDataset_Target_Name","Target.Name","spec");
+        Integer expResult = 282;
+        Integer result;
+        boolean caught = false;
+        
+        try{ result = model.getRecordIndexByTag(utype.getTag());}
+        catch ( UnsupportedOperationException ex){ caught = true;}
+        assertTrue(caught);
+    }
+    
     /**
      * Test of getUtype method, of class ModelTable.
      */
@@ -259,9 +306,10 @@ public class ModelTableTest {
     public void testGetUtype() {
         if (verbose){ System.out.println("Test getUtype"); }
         Integer utypenum = 282;
+        Utype utype = new Utype("SpectralDataset_Target_Name","Target.Name","spec");
         String expResult = "Target.Name";
-        String result = model.getUtype(utypenum);
-        assertTrue( ( result.indexOf(expResult) >= 0) );
+        Utype result = model.getUtype(utypenum);
+        assertTrue( ( result.getTag().indexOf(expResult) >= 0) );
     }
 
     /**
@@ -282,7 +330,7 @@ public class ModelTableTest {
     @Test
     public void testGetUnit_String() {
         if (verbose){ System.out.println("Test getUnit String"); }
-        String utype = "Char.TimeAxis.Coverage.Location.Value";
+        Utype utype = new Utype("SpectralDataset_Char_TimeAxis_Coverage_Location_Value","Char.TimeAxis.Coverage.Location.Value","spec");
         String expResult = "";
         String result = model.getUnit(utype);
         assertEquals(expResult, result);
@@ -306,7 +354,7 @@ public class ModelTableTest {
     @Test
     public void testGetUCD_String() {
         if (verbose){ System.out.println("Test getUCD String"); }
-        String utype = "Char.TimeAxis.Coverage.Location.Value";
+        Utype utype = new Utype("SpectralDataset_Char_TimeAxis_Coverage_Location_Value","Char.TimeAxis.Coverage.Location.Value","spec");
         String expResult = "time.epoch;obs";
         String result = model.getUCD(utype);
     }
@@ -329,7 +377,7 @@ public class ModelTableTest {
     @Test
     public void testGetType_String() {
         if (verbose){ System.out.println("Test getType String"); }
-        String utype = "Char.TimeAxis.Coverage.Location.Value";
+        Utype utype = new Utype("SpectralDataset_Char_TimeAxis_Coverage_Location_Value","Char.TimeAxis.Coverage.Location.Value","spec");
         String expResult = "Double";
         String result = model.getType(utype);
         assertEquals(expResult, result);
@@ -353,9 +401,34 @@ public class ModelTableTest {
     @Test
     public void testGetDefault_String() {
         if (verbose){ System.out.println("Test getDefault String"); }
-        String utype = "Char.TimeAxis.CalibrationStatus";
+        Utype utype = new Utype("SpectralDataset_Char_TimeAxis_CalibrationStatus","Char.TimeAxis.CalibrationStatus","spec");
         String expResult = "CALIBRATED";
         String result = model.getDefault(utype);
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getDescription method, of class ModelTable.
+     */
+    @Test
+    public void testGetDescription_Integer() {
+        if (verbose){ System.out.println("Test getDescription Int"); }
+        Integer utypenum = 97;
+        String expResult = "Type of coord calibration";
+        String result = model.getDescription(utypenum);
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of getDescription method, of class ModelTable.
+     */
+    @Test
+    public void testGetDescription_String() {
+        if (verbose){ System.out.println("Test getDescription String"); }
+        Utype utype = new Utype("SpectralDataset_Char_TimeAxis_CalibrationStatus","Char.TimeAxis.CalibrationStatus","spec");
+        String expResult = "Type of coord calibration";
+        String result = model.getDescription(utype);
+        assertEquals(expResult, result);
     }
 
     /**
@@ -381,12 +454,12 @@ public class ModelTableTest {
     @Test
     public void testIsMandatory_String() {
         if (verbose){ System.out.println("Test isMandatory String"); }
-        String utype = "Char.TimeAxis.Coverage.Location.Value";
+        Utype utype = new Utype("SpectralDataset_Char_TimeAxis_Coverage_Location_Value","Char.TimeAxis.Coverage.Location.Value","spec");
         Boolean expResult = true;
         Boolean result = model.isMandatory(utype);
         assertEquals(expResult, result);
 
-        utype = "Char.TimeAxis.CalibrationStatus";
+        utype = new Utype("SpectralDataset_Char_TimeAxis_CalibrationStatus","Char.TimeAxis.CalibrationStatus","spec");
         expResult = false;
         result = model.isMandatory(utype);
         assertEquals(expResult, result);
@@ -398,18 +471,12 @@ public class ModelTableTest {
     @Test
     public void testIsValidUtype() {
         if (verbose){ System.out.println("Test isValidUtype"); }
-        String utype = "spec:Char.TimeAxis.CalibrationStatus";
+        Utype utype = new Utype("SpectralDataset_Char_TimeAxis_CalibrationStatus","Char.TimeAxis.CalibrationStatus","spec");
         Boolean expResult = true;
-        model.setIncludeModelPrefix(true);
         Boolean result = model.isValidUtype(utype);
         assertEquals(expResult, result);
 
-        model.setIncludeModelPrefix(false);
-        expResult = true;
-        result = model.isValidUtype(utype);
-        assertEquals(expResult, result);
-
-        utype = "One.Two.Three";
+        utype = new Utype("One_Two_Three","utype label","spec");
         expResult = false;
         result = model.isValidUtype(utype);
         assertEquals(expResult, result);
@@ -421,20 +488,11 @@ public class ModelTableTest {
     @Test
     public void testGetUtypes() {
         if (verbose){ System.out.println("Test getUtypes"); }
-        String expResult = "Char.TimeAxis.CalibrationStatus";
+        Utype expResult = new Utype("SpectralDataset_Char_TimeAxis_CalibrationStatus","Char.TimeAxis.CalibrationStatus","spec");
         int expSize = 287;
         
-        model.setIncludeModelPrefix( false );
         List result = model.getUtypes();
         assertEquals(expResult, result.get(97));
         assertEquals(expSize, result.size());
-        
-        expResult = "spec:Char.TimeAxis.CalibrationStatus";
-        model.setIncludeModelPrefix( true );
-        result = model.getUtypes();
-        assertEquals(expResult, result.get(97));
-        assertEquals(expSize, result.size());
-        
-        
     }    
 }

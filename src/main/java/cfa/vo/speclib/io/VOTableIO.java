@@ -19,8 +19,9 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.transform.OutputKeys;
@@ -32,12 +33,13 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import uk.ac.starlink.votable.DataFormat;
+import uk.ac.starlink.votable.FieldElement;
+import uk.ac.starlink.votable.FieldRefElement;
 import uk.ac.starlink.votable.GroupElement;
 import uk.ac.starlink.votable.ParamElement;
 import uk.ac.starlink.votable.TableElement;
 import uk.ac.starlink.votable.VODocument;
 import uk.ac.starlink.votable.VOElement;
-//import uk.ac.starlink.votable.VOStarTable;
 import uk.ac.starlink.votable.VOTableVersion;
 import uk.ac.starlink.votable.VOTableWriter;
 
@@ -50,17 +52,26 @@ import uk.ac.starlink.votable.VOTableWriter;
 public class VOTableIO implements IFileIO {
 
     /* VOElement DOM node TagNames */
-    private final static String DOM_TAG_DOCUMENT = "VOTABLE";
-    private final static String DOM_TAG_RESOURCE = "RESOURCE";
-    private final static String DOM_TAG_TABLE    = "TABLE";
-    private final static String DOM_TAG_GROUP    = "GROUP";
-    private final static String DOM_TAG_PARAM    = "PARAM";
+    private final static String DOM_TAG_DOCUMENT  = "VOTABLE";
+    private final static String DOM_TAG_RESOURCE  = "RESOURCE";
+    private final static String DOM_TAG_TABLE     = "TABLE";
+    private final static String DOM_TAG_GROUP     = "GROUP";
+    private final static String DOM_TAG_FIELD     = "FIELD";    
+    private final static String DOM_TAG_FIELDREF  = "FIELDref";
+    private final static String DOM_TAG_PARAM     = "PARAM";
+    private final static String DOM_TAG_DATA      = "DATA";
+    private final static String DOM_TAG_TABLEDATA = "TABLEDATA";
+    private final static String DOM_TAG_ROW       = "TR";
+    private final static String DOM_TAG_COL       = "TD";
+    
     /* VOElement attribute TagNames */
     private final static String ATT_TAG_ARRSIZE  = "arraysize";
     private final static String ATT_TAG_DESC     = "description";
     private final static String ATT_TAG_DTYPE    = "datatype";
     private final static String ATT_TAG_ID       = "id";
     private final static String ATT_TAG_NAME     = "name";
+    private final static String ATT_TAG_REF      = "ref";
+    private final static String ATT_TAG_TYPE     = "type";
     private final static String ATT_TAG_UCD      = "ucd";
     private final static String ATT_TAG_UNIT     = "unit";
     private final static String ATT_TAG_UTYPE    = "utype";
@@ -73,6 +84,7 @@ public class VOTableIO implements IFileIO {
     
     // Model Specification for dataset being read or written.
     private Model model = null;
+    private LinkedHashMap< String, Column > tabledata = null;
     
     /** Read Spectral Dataset from specified URL
      *  @param file 
@@ -158,19 +170,10 @@ public class VOTableIO implements IFileIO {
         } catch (TransformerException ex) {
             Logger.getLogger(VOTableIO.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        //VOStarTable tab;
-        //NodeList nodes = vot.getElementsByTagName(DOM_TAG_TABLE);
-        //for ( int ii = 0; ii < nodes.getLength(); ii++ )
-        //{
-        //  tab = new VOStarTable( (TableElement)nodes.item(ii) );            
-        //  writer.writeInlineStarTable(tab, buf);
-        //}
-        // Flush doc to Writer
-        //buf.write( ds.toString() );
+
         buf.flush();
     }
-
+    
     /**
      * Convert SpectralDocument to STIL VODocument object.
      *
@@ -178,19 +181,19 @@ public class VOTableIO implements IFileIO {
      * Elements (Group, Param, Table, etc..) so we use these to build the
      * DOM and return its Document interface.
      * 
-     * @param spdoc
-     *    {@link cfa.vo.speclib.SpectralDocument }
+     * @param ds
+     *    {@link cfa.vo.speclib.SpectralDataset }
      * @return 
      *    {@link org.w3c.dom.Document }
      */
-      private Document convertToVOT( SpectralDataset ds )
+      private Document convertToVOT( SpectralDataset ds ) throws IOException
       {
         VODocument vodoc = new VODocument(); // VODocument implements w3c Document interface..
         VOElement  root;
         VOElement  res;
 
         // Extract underlying SpectralDocument from input dataset
-        SpectralDocument spdoc = null; //= ds.toDocument();
+        SpectralDocument spdoc = null;
         if ( Proxy.isProxyClass( ds.getClass() ))
         {
            SpectralProxy h = (SpectralProxy)Proxy.getInvocationHandler( ds );
@@ -198,7 +201,7 @@ public class VOTableIO implements IFileIO {
         }
         else
         {
-           // Some sort of Error
+           // TODO - Some sort of Error
            System.out.println("Input object is not a Proxy! ");
         }
         
@@ -230,10 +233,146 @@ public class VOTableIO implements IFileIO {
     }
     
     /**
+     * Creates FIELD and FIELDref element based on provided Quantity.
+     * The FIELDref is added to the parent element.
+     * The FIELD element is returned to the caller for handling.
+     * (in general, the FIELDs are written in a separate section of the table)
+     * 
+     * The FIELD id and FIELDRef reference attributes will be linked, if 
+     * the provided Quantity does not already have an ID specified, one will
+     * be generated.
+     * 
+     * @param parent
+     *    Parent element to receive the FIELDref.
+     * @param q
+     *    Quantity which will define the FIELD.
+     * @return 
+     *    FieldElement based on Quantity.
+     */
+    private FieldElement addFieldRefElement( VOElement parent, Quantity q )
+    {
+        // get index of this element in the model.
+        Integer ndx = model.getRecordIndexByPath( q.getModelpath() );
+        if ( ndx == -1 )
+          System.out.println("MCD TEMP: Unmodeled Field - "+q.getModelpath());
+     
+        // Add FIELD and FIELDref elements if not already done.
+
+        // get owner document for creating new elements.
+        Document document = parent.getOwnerDocument();
+
+        // Create FIELD and FIELDref Elements.
+        FieldElement field = (FieldElement) document.createElement(DOM_TAG_FIELD);
+        FieldRefElement ref = (FieldRefElement)document.createElement(DOM_TAG_FIELDREF);
+
+        // Set Element attributes.
+        // Field:    ID, UCD, UTYPE, NAME, DESCRIPTION, UNIT, DATATYPE, ARRAYSIZE, 
+        // FieldRef: ID, UCD, UTYPE, NAME, DESCRIPTION 
+
+        //  ID
+        if ( q.isSetID() )
+        {
+          field.setAttribute( ATT_TAG_ID, q.getID() );
+          ref.setAttribute( ATT_TAG_REF, q.getID() );
+        }
+        else
+        { // generate random id string.
+          String uuid = UUID.randomUUID().toString();
+          field.setAttribute( ATT_TAG_ID, uuid );
+          ref.setAttribute( ATT_TAG_REF, uuid);
+        }
+        
+        //  Description
+        if ( q.isSetDescription() )
+          ref.setAttribute( ATT_TAG_DESC, q.getDescription() );
+        
+        //  Name
+        if ( q.isSetName() )
+          ref.setAttribute( ATT_TAG_NAME, q.getName() );
+
+        //  UType - fill from model spec if not provided.
+        if ( q.isSetUtype() )
+          ref.setAttribute( ATT_TAG_UTYPE, q.getUtype() );
+        else if ( ndx >= 0 )
+          ref.setAttribute( ATT_TAG_UTYPE, this.model.getUtype(ndx).getTag() );
+        
+        //  UCD - fill from model spec if not provided
+        if ( q.isSetUCD() )
+          ref.setAttribute( ATT_TAG_UCD, q.getUCD() );
+        else if ( ndx >= 0 && (! this.model.getUCD(ndx).isEmpty()) )
+          ref.setAttribute( ATT_TAG_UCD, this.model.getUCD(ndx) );
+
+        //  Unit
+        if ( q.isSetUnit() )
+          field.setAttribute( ATT_TAG_UNIT, q.getUnit() );
+
+        if ( q.isSetValue())
+        {
+          //  DataType
+          String dtype = q.getValue().getClass().getSimpleName();
+          if ( dtype.equalsIgnoreCase( "double" ))
+          {
+            field.setAttribute( ATT_TAG_DTYPE, "double" );
+          }
+          else if ( dtype.equalsIgnoreCase( "string" ))
+          {
+            field.setAttribute( ATT_TAG_DTYPE, "char" );
+
+            //  ArraySize
+            field.setAttribute( ATT_TAG_ARRSIZE, "*" );
+          }
+          else
+          {
+            throw new UnsupportedOperationException("Datatype not yet supported. ("+dtype+")");
+          }
+        }
+        
+        // Add new FieldRef to parent.
+        parent.appendChild(ref);
+        
+        // Return FIELD element
+        return( field );
+    }
+
+    /**
+     * Create a Group Element and add it to the parent element.
+     * 
+     * @param parent
+     *    Parent element to receive the Group.
+     * @param node
+     *    Document node containing a collection of related objects
+     * 
+     * @throws IOException 
+     */
+    private void addGroupElement( VOElement parent, SpectralDocument node ) throws IOException
+    {
+        // get owner document for creating new elements.
+        Document document = parent.getOwnerDocument();
+        
+        // Create Group Element for node.
+        GroupElement group = (GroupElement) document.createElement(DOM_TAG_GROUP);
+ 
+        // In VOTable this element may have 
+        //  + ID
+        //  + NAME
+        //  + DESCRIPTION
+        // which we do not currently support.
+        // These would be attributes of the SpectralDocument class.
+        
+        // Add this group to the parent node.
+        parent.appendChild( group );
+        
+        // Add group content.
+        this.addNodeContent( group, node, -1 );
+    }
+ 
+    /**
      * Convert Quantity to ParamElement and add to provided parent element
      * 
      * @param parent
+     *    Parent element to receive the Param.
      * @param q
+     *    Quantity from which to populate the Param.
      * @return 
      */
     private void addParamElement( VOElement parent, Quantity q )
@@ -245,8 +384,13 @@ public class VOTableIO implements IFileIO {
         ParamElement param = (ParamElement) document.createElement(DOM_TAG_PARAM);        
 
         // get index of this element in the model.
-        // TODO: implement
+        Integer ndx = model.getRecordIndexByPath( q.getModelpath() );
+        if ( ndx == -1 )
+            System.out.println("MCD TEMP: Unmodeled Element - "+q.getModelpath());
 
+        // Temporary string for use below
+        String tmpstr;
+        
         //  ID
         //  TODO: Random ID generator? only set for ParamRef usage?
         if ( q.isSetID() )
@@ -263,15 +407,15 @@ public class VOTableIO implements IFileIO {
         //  UType - fill from model spec if not provided.
         if ( q.isSetUtype() )
           param.setAttribute( ATT_TAG_UTYPE, q.getUtype() );
-        //else
-        //  param.setAttribute( ATT_TAG_UTYPE, this.model.getUtype(ndx) );          
- 
+        else if ( ndx >= 0 )
+          param.setAttribute( ATT_TAG_UTYPE, this.model.getUtype(ndx).getTag() );
+        
         //  UCD - fill from model spec if not provided
         if ( q.isSetUCD() )
           param.setAttribute( ATT_TAG_UCD, q.getUCD() );
-        //else
-        //  param.setAttribute( ATT_TAG_UTYPE, this.model.getUCD(ndx) );          
- 
+        else if ( ndx >= 0 && (! this.model.getUCD(ndx).isEmpty()) )
+          param.setAttribute( ATT_TAG_UCD, this.model.getUCD(ndx) );
+
         //  Unit
         if ( q.isSetUnit() )
           param.setAttribute( ATT_TAG_UNIT, q.getUnit() );
@@ -304,36 +448,21 @@ public class VOTableIO implements IFileIO {
             // TODO - proper representation of NULL value (VOTable spec sections 5.5 and 6
             throw new UnsupportedOperationException("Null value representation not yet supported.");
         }
-            
         
         // Add new parameter to parent.
         parent.appendChild(param);
-
     }
-
-    private void addGroupElement( VOElement parent, SpectralDocument node )
-    {
-        // get owner document for creating new elements.
-        Document document = parent.getOwnerDocument();
-        
-        // Create Group Element for node.
-        GroupElement group = (GroupElement) document.createElement(DOM_TAG_GROUP);
- 
-        // In VOTable this element may have 
-        //  + ID
-        //  + NAME
-        //  + DESCRIPTION
-        // which we do not currently support.
-        // These would be attributes of the SpectralDocument class.
-        
-        // Add this group to the parent node.
-        parent.appendChild( group );
-        
-        // Add group content.
-        this.addNodeContent( group, node );       
-    }
- 
-    private void addTableElement( VOElement parent, SpectralDocument node )
+    
+    /**
+     * 
+     * @param parent
+     *    Parent element to receive the Group.
+     * @param node
+     *    Document node containing a top level Objects to be serialized as a table.
+     * 
+     * @throws IOException 
+     */
+    private void addTableElement( VOElement parent, SpectralDocument node ) throws IOException
     {
         // get owner document for creating new elements.
         Document document = parent.getOwnerDocument();
@@ -350,60 +479,259 @@ public class VOTableIO implements IFileIO {
         parent.appendChild(table);
         
         // Add table content
-        this.addNodeContent( table, node );
+        this.addNodeContent( table, node, -1 );
+        
+        // Add table data to document.
+        this.addTableData( table );
+    }
+
+    /**
+     * Add Content of Document node to parent element.
+     * Converts each node object to DOM element, and adds to parent.
+     * 
+     * @param parent
+     *   Parent element to receive node content.
+     * @param node
+     *   Node to transfer.
+     * @param row
+     *   Row number.. if adding FIELD records, -1 otherwise.
+     * 
+     * @throws IOException 
+     */
+    private void addNodeContent( VOElement parent, SpectralDocument node, int row ) throws IOException
+    {
+        // Iterate through node objects, add each to parent document.
+        //   Lists which are not FIELDs get iterated, so that addObjectContent
+        //   can assume that any List it receives produces FIELDs.
+        for (String mp : node.getKeys()) 
+        {
+            Object obj = node.get( mp );
+            // TODO - remove hack.. 
+            if ( obj.getClass().equals( ArrayList.class ) && !mp.endsWith("Dataset_Data"))
+            {
+                for (Object item : (ArrayList)obj )
+                  this.addObjectContent( parent, obj, row );
+            }
+            else
+              this.addObjectContent( parent, obj, row );
+        }
+    }
+
+    /**
+     * Generate DOM element for object and add to parent document.
+     * 
+     * @param parent
+     *   Parent element to receive node content.
+     * @param obj 
+     *   Object to be converted.
+     *   - Quantity => ParamElement or ColumnValue
+     *   - Proxy    => GroupElement
+     *   - List     => FieldElement
+     * @param row 
+     *   Row number.. if adding FIELD records, -1 otherwise.
+     * 
+     */
+    private void addObjectContent( VOElement parent, Object obj, int row ) throws IOException
+    {
+        if ( obj.getClass().equals( Quantity.class ))
+        {
+          // Quantity Object => ParamElement or FieldValue
+          Quantity q = (Quantity)obj;
+          String mp = q.getModelpath().replaceFirst("SPPoint", "SpectralDataset_Data"); // TODO - remove hack!
+          if ( mp.contains("Dataset_Data_"))
+          {
+              q.setModelpath(mp); // TODO - remove.. part of hack.
+              this.addColumnValue( q, row );
+          }
+          else
+            this.addParamElement( parent, (Quantity)obj );
+        }
+        else if ( obj.getClass().equals( ArrayList.class ) )
+        {
+            // Lists are mapped to FIELDS.  The list may contain Quantities
+            //  defining a single field, or a complex object defining many
+            //  fields (ie: SPPoint).
+            this.addColumns( parent, (ArrayList)obj );
+        }
+        else if ( Proxy.isProxyClass( obj.getClass() ))
+        {
+          // Proxy Object => GroupElement
+          // If row >= 0, we are flushing FIELD objects, and should not create
+          // the Group on each iteration.
+          SpectralProxy h = (SpectralProxy)Proxy.getInvocationHandler( obj );
+          SpectralDocument newnode = h.getDoc();
+          if ( row < 0 )
+              this.addGroupElement( parent, newnode );
+          else
+              this.addNodeContent( parent, newnode, row );
+              
+        }
+        else
+        {
+            System.out.println("MCD TEMP: Missed Object.");
+            // TODO Error
+        }
     }
     
-    private void addNodeContent( VOElement parent, SpectralDocument node )
+    /**
+     * Convert List object to FIELD/FIELDref elements, add FIELDref to 
+     * the parent element.  Creates Column object to store FIELD element
+     * and associated data, which will populate the DATA section.
+     * 
+     * Input list may contain either:
+     *   - Quantity, to define a single column
+     *   - Object, to define multiple columns
+     * 
+     * @param parent
+     *   Parent element to receive node content.
+     * @param fieldobject
+     *   List of objects from which to define FIELDS.
+     * 
+     * @throws IOException 
+     */
+     private void addColumns( VOElement parent, ArrayList fieldobject ) throws IOException
     {
-        // Get node key list.
-        Set keys = node.getKeys();
+        // List length determines #rows in fields.
+        int nrows = fieldobject.size();
+
+        // Allocate tabledata hash
+        if ( tabledata == null )
+            tabledata = new LinkedHashMap<String, Column>();
         
-        // Add all attributes/params for this node to Document
-        Iterator it = keys.iterator();
-        while (it.hasNext())
+        // Add Group and FieldRef tree from first Data instance to doc.
+        // Create and add column definition to tabledata.
+        Object obj = fieldobject.get(0);
+        this.addColumns( parent, obj, nrows);
+        
+        // Add Column Content
+        for (int ii=0; ii < nrows; ii++ )
         {
-            String mp = (String)it.next();
-            Object obj = node.get( mp );
-            if ( obj.getClass().equals( Quantity.class ))
-            {
-              this.addParamElement( parent, (Quantity)obj );
-            }
+            this.addObjectContent(parent, fieldobject.get(ii), ii );
         }
-        
-        // Add all sub-groups for this node to Document
-        it = keys.iterator();
-        while (it.hasNext())
+
+    }
+    
+    /**
+     * Convert object to FIELD/FIELDref elements, add FIELDref to 
+     * the parent element.  Creates Column object to store FIELD element
+     * and associated data, which will populate the DATA section.
+     * 
+     * Input object may contain either:
+     *   - Quantity, to define a single column
+     *   - Proxy, to define multiple columns
+     * 
+     * @param parent
+     *   Parent element to receive node content.
+     * @param obj
+     *   Object from which to define FIELDS.
+     * @param nrows
+     *   Number of rows the FIELD contains.
+     * 
+     * @throws IOException 
+     */
+    private void addColumns( VOElement parent, Object obj, int nrows ) throws IOException
+    {
+        if ( obj.getClass().equals( Quantity.class ))
         {
-            String mp = (String)it.next();
-            Object obj = node.get( mp );
-            if ( Proxy.isProxyClass( obj.getClass() ))
-            {
-               SpectralProxy h = (SpectralProxy)Proxy.getInvocationHandler( obj );
-               SpectralDocument newnode = h.getDoc();
-               this.addGroupElement( parent, newnode );
-            }
+            Quantity q = (Quantity)obj;
+            String mp = q.getModelpath().replaceFirst("SPPoint", "SpectralDataset_Data"); // TODO - remove hack!
+            q.setModelpath(mp);
+  
+            // Add FieldRef to document, FIELD to tabledata
+            FieldElement field = addFieldRefElement(parent, q );
+            Column col = new Column();
+            col.info = field;
+            col.data = new String[nrows];
+            tabledata.put( mp, col );
+        }
+        else if ( Proxy.isProxyClass( obj.getClass() ))
+        {
+            SpectralProxy h = (SpectralProxy)Proxy.getInvocationHandler( obj );
+            SpectralDocument newnode = h.getDoc();
+
+            // Add Group to parent (do not use addGroup()
+            Document document = parent.getOwnerDocument();
+            GroupElement group = (GroupElement) document.createElement(DOM_TAG_GROUP);
+            parent.appendChild( group );
+
+            // Add Column for object (recursive)
+            for (String mp : newnode.getKeys())
+                addColumns( group, newnode.get(mp), nrows );
+        }
+        else
+        {
+            // TODO Error
         }
     }
+    /**
+     * Assign value to row of column 
+     *   - Obtains Column from tabledata by modelpath
+     *   - assigns value to data attribute for the indicated row.
+     * 
+     * @param q
+     * @param row
+     * @throws IOException 
+     */
+    private void addColumnValue( Quantity q, int row ) throws IOException
+    {
+        String mp = q.getModelpath();
+        Column col = this.tabledata.get(mp);
+        if ( col != null )
+        {
+            col.data[ row ] = q.getValue().toString();
+        }
+        else
+            throw new IOException("Attempt to assign values to undefined column: "+mp);
 
-//Example from STIL code.
-//<?xml version='1.0'?>
-//<VOTABLE version="1.3"
-// xmlns="http://www.ivoa.net/xml/VOTable/v1.3">
-//<!--
-// !  VOTable written by STIL version 3.0-10 (uk.ac.starlink.votable.VOTableWriter)
-// !  at 2015-04-13T21:09:18
-// !-->
-//<RESOURCE>
-//<TABLE name="Spectrum">
-//<PARAM arraysize="4" datatype="char" name="prefix" utype="spec:Dataset.DataModel.Prefix" value="spec"/>
-//<PARAM arraysize="12" datatype="char" name="model" utype="spec:Dataset.DataModel.Name" value="Spectrum-2.0"/>
-//<PARAM datatype="double" name="snr" utype="spec:Derived.snr" value="1.33"/>
-//<DATA>
-//<TABLEDATA>
-//</TABLEDATA>
-//</DATA>
-//</TABLE>
-//</RESOURCE>
-//</VOTABLE>
+    }    
+    
+    /**
+     * Add FIELD elements to parent element.
+     * Add DATA and TABLEDATA elements to the parent element.
+     * Populate TABLEDATA with inline serialization of table data.
+     * 
+     * @param parent
+     * @throws IOException 
+     */
+    private void addTableData( VOElement parent ) throws IOException
+    {
+        // get owner document for creating new elements.
+        Document document = parent.getOwnerDocument();
+        int nrows = -1;
+        
+        // Add FIELD element for each Column
+        for ( Column col : this.tabledata.values() )
+        {
+            if ( nrows == -1 )
+                nrows = col.data.length;
+            else if ( col.data.length != nrows )
+                throw new IOException("Columns do not have uniform length.");
 
+            parent.appendChild( col.info );
+        }
+
+        // Create TABLEDATA Element
+        VOElement data = (VOElement) document.createElement(DOM_TAG_DATA);
+        parent.appendChild( data );
+        VOElement table = (VOElement) document.createElement(DOM_TAG_TABLEDATA);
+        parent.appendChild( table );
+        
+        // Build and add Element for each row of data.
+        VOElement tr;
+        VOElement td;
+        for (int ii = 0; ii < nrows; ii++ )
+        {
+          tr = (VOElement) document.createElement(DOM_TAG_ROW);
+          table.appendChild( tr );
+
+          // Build String of the row entry.
+          for ( Column col : this.tabledata.values() )
+          {
+              td = (VOElement)document.createElement(DOM_TAG_COL);
+              td.setTextContent(col.data[ii]);
+              tr.appendChild( td );
+          }
+        }
+    }
+    
 }

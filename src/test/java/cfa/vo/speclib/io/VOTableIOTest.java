@@ -5,6 +5,7 @@
 package cfa.vo.speclib.io;
 
 import cfa.vo.speclib.Quantity;
+import cfa.vo.speclib.SPPoint;
 import cfa.vo.speclib.SpectralDataset;
 import cfa.vo.speclib.doc.SpectralFactory;
 import java.io.FileNotFoundException;
@@ -15,6 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -178,6 +180,36 @@ public class VOTableIOTest {
         
         // Derived metadata
         ds.getDerived().setSNR(Double.valueOf("1.3"));
+ 
+        
+        // Data Points
+        Double[] flux = new Double[]{ 8.32826233e+14,
+                                      8.32190479e+14,
+                                      8.31555695e+14,
+                                      8.30921878e+14,
+                                      8.30289027e+14
+                                     };
+        Double[] freq = new Double[]{ 3.72981229e-30,
+                                      2.58023996e-30,
+                                      3.49485448e-30,
+                                      3.53532448e-30,
+                                      3.53108340e-30
+                                     };
+        
+        List<SPPoint> data = ds.getData();
+        for ( int ii=0; ii<3; ii++)
+        {
+            //TODO - Should not have to go back to the factory to generate 
+            //       new instances of List entries.. 
+            SPPoint point = (SPPoint)factory.newInstance( SPPoint.class );
+            point.getFluxAxis().setValue( flux[ii] );
+            point.getFluxAxis().getAccuracy().setStatError( 3.0e+10 );
+            point.getSpectralAxis().setValue( freq[ii] );
+            point.getSpectralAxis().getAccuracy().setStatError( 1.0e-35 );
+            point.getBackgroundModel().setValue( Double.NaN );   
+            
+            data.add(point);
+        }
         
         return ds;
     }

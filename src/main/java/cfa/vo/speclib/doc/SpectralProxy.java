@@ -5,6 +5,7 @@
 package cfa.vo.speclib.doc;
 
 import cfa.vo.speclib.Quantity;
+import cfa.vo.speclib.SPPoint;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -359,13 +360,17 @@ public class SpectralProxy implements InvocationHandler
         }
         else
         {
-            throw new UnsupportedOperationException( "List<"+type.getSimpleName()+"> type not yet supported.");
+           // Can this be done so that it is defined as a specific type,
+           // in a generic fashion (ie ArrayList<SPPoint>) without specifically
+           // using/importing the SPPoint class.. ie: get it from the type arg.
+           result = new ArrayList<Object>();
         }
         return result;
     }
 
     /**
-     * Primarily for use during assignment (set), this method resets the 
+     * Primarily for u
+     * se during assignment (set), this method resets the 
      * base model path for the interface, as well as for all of its
      * elements.  
      * 

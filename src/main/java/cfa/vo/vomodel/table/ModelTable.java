@@ -4,6 +4,7 @@
  */
 package cfa.vo.vomodel.table;
 import cfa.vo.vomodel.Model;
+import cfa.vo.vomodel.Utype;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,7 +18,6 @@ import java.io.OutputStreamWriter;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,12 +33,9 @@ public class ModelTable implements Model {
     protected String prefix; // model prefix 
     protected URL    refURL; // reference URL
 
-    protected HashMap<String, Integer> map;  // map Utype to record number.
-                                             //   key = lowercase utype with no prefix
+    protected ArrayList<Utype> map;          // Utype list for model records.
     protected ArrayList<Entry> data;         // set of model records.
     
-    protected Boolean includePrefix = true;  // control flag for prefix handling.
-            
     /**
      * Constructor to generate empty ModelTable.
      */
@@ -66,7 +63,7 @@ public class ModelTable implements Model {
         String line;    // line from table
         String[] parts; // line data
         Entry record;   // local object to hold record
-        String key;     // key for map.
+        Utype key;      // key for map.
         
         int count = 0;
 
@@ -79,7 +76,7 @@ public class ModelTable implements Model {
             throw new FileNotFoundException("File not found: "+filepath);
 
         // create storage for index map and model records
-        this.map = new HashMap<String,Integer>();
+        this.map  = new ArrayList<Utype>();
         this.data = new ArrayList<Entry>();
         
         // read table rows
@@ -124,8 +121,9 @@ public class ModelTable implements Model {
                record.descr  = parts[6].trim();
                record.mult   = parts[7].trim();
                
-               key = this.utype2key( record.tag );
-               this.map.put(key, count);
+               key = new Utype( record.modelpath, record.tag, this.prefix );
+               //this.map.put(key, count);
+               this.map.add(key);
                this.data.add(record);
                count++;
            }
@@ -192,9 +190,11 @@ public class ModelTable implements Model {
         buf.close();
     }
     
-    public void setIncludeModelPrefix( boolean flag ) 
-    {
-        this.includePrefix = flag;
+    public String getTitle() {
+        if ( this.title == null )
+            throw new IllegalStateException("No Model loaded.");
+        
+        return( this.title );
     }
 
     public String getModelName() {
@@ -218,7 +218,7 @@ public class ModelTable implements Model {
         return( this.refURL );
     }
 
-    public Integer getUtypeNum(String utype) 
+    public Integer getRecordIndex(Utype utype) 
     {
         String key;
         Integer result;
@@ -226,25 +226,50 @@ public class ModelTable implements Model {
         if ( this.map == null )
             throw new IllegalStateException("No Model loaded.");
 
-        // convert utype string to key format
-        key = this.utype2key( utype );
-
-        if ( this.map.containsKey(key))
-            result = this.map.get(key);
+        if ( this.map.contains( utype ) )
+            result = this.map.indexOf(utype);
         else
             throw new IllegalArgumentException("Utype invalid or not recognized.");
 
         return(result);
     }
 
-    public String getUtype(Integer utypenum) {
-        String result;
+    public Integer getRecordIndexByPath(String modelpath) 
+    {
+        String key;
+        Integer result = -1; // init to 'not found'
+
+        if ( this.map == null )
+            throw new IllegalStateException("No Model loaded.");
+
+        // null or empty string never matches.
+        if ( modelpath == null || modelpath.trim().isEmpty() )
+            return(result);
         
-        if (this.includePrefix)
-            result = this.prefix + ":" + this.getField( "TAG", utypenum );
-        else
-            result = this.getField( "TAG", utypenum );
- 
+        for (Utype item : this.map )
+        {
+            if ( item.matchModelPath(modelpath))
+            {
+                result = this.map.indexOf(item);
+                break;
+            }
+        }
+        return(result);
+    }
+
+    public Integer getRecordIndexByTag(String label) 
+    {
+        throw new UnsupportedOperationException("Method not yet implemented.");
+    }
+    
+    public Utype getUtype(Integer utypenum) {
+        Utype result;
+
+        if ( this.map == null )
+            throw new IllegalStateException("No Model loaded.");
+
+        result = this.map.get(utypenum);
+        
         return( result );
     }
 
@@ -252,7 +277,7 @@ public class ModelTable implements Model {
         return( this.getField( "UNIT", utypenum ) );
     }
 
-    public String getUnit(String utype) {
+    public String getUnit(Utype utype) {
         return( this.getField( "UNIT", utype ) );
     }
 
@@ -260,7 +285,7 @@ public class ModelTable implements Model {
         return( this.getField( "UCD", utypenum ));
     }
 
-    public String getUCD(String utype) {
+    public String getUCD(Utype utype) {
         return( this.getField( "UCD", utype ));
     }
 
@@ -268,7 +293,7 @@ public class ModelTable implements Model {
         return( this.getField( "TYPE", utypenum ));
     }
 
-    public String getType(String utype) {
+    public String getType(Utype utype) {
         return( this.getField( "TYPE", utype ));
     }
 
@@ -276,23 +301,31 @@ public class ModelTable implements Model {
         return( this.getField( "DEFAULT", utypenum ));
     }
 
-    public String getDefault(String utype) {
+    public String getDefault(Utype utype) {
         return( this.getField( "DEFAULT", utype ));
+    }
+
+    public String getDescription(Integer utypenum) {
+        return( this.getField( "DESC", utypenum ));
+    }
+
+    public String getDescription(Utype utype) {
+        return( this.getField( "DESC", utype ));
     }
 
     public Boolean isMandatory(Integer utypenum) {
         return(this.getField("REQ", utypenum ).equalsIgnoreCase("MAN") );
     }
 
-    public Boolean isMandatory(String utype) {
+    public Boolean isMandatory(Utype utype) {
         return(this.getField("REQ", utype ).equalsIgnoreCase("MAN") );
     }
 
-    public Boolean isValidUtype(String utype) {
+    public Boolean isValidUtype(Utype utype) {
         Boolean result;
         Integer n;
         try{
-            n = this.getUtypeNum(utype);
+            n = this.getRecordIndex(utype);
             result = true;
         }
         catch (IllegalArgumentException ex){
@@ -301,59 +334,27 @@ public class ModelTable implements Model {
         return (result);
     }
 
-    public List<String> getUtypes() {
+    public List<Utype> getUtypes() {
         String tmpstr;
-        List<String> result;
+        List<Utype> result;
         Iterator iter;
-        Entry item;
 
         if ( this.data == null )
             throw new IllegalStateException("No Model loaded.");
 
-        result = new ArrayList<String>(data.size());
-        iter = this.data.iterator();
-        while (iter.hasNext())
-        {
-            item = (Entry)iter.next();
-            if ( this.includePrefix )
-                tmpstr = this.prefix + ":" + item.tag ;
-            else
-                tmpstr = item.tag;
+        result = (List<Utype>)this.map.clone();
 
-            result.add( tmpstr );
-        }
-        
         return( result );
     }
 
-    private String utype2key( String utype )
-    {
-        String result;
-        String tmpstr = null;
-
-        if ( utype == null )
-            throw new IllegalArgumentException("Invalid (null) Utype entered.");
-
-        if ( this.prefix != null )
-            tmpstr = this.prefix.toLowerCase()+":";
-
-        // Strip the model prefix.
-        if ( tmpstr != null )
-            result = utype.toLowerCase().replaceFirst( tmpstr ,"" );
-        else
-            result = utype.toLowerCase();
-
-        return(result);
-    }
-    
-    private String getField( String field, String utype )
+    private String getField( String field, Utype utype )
     {
         String result;
         Integer index;
         if ( this.map == null )
             throw new IllegalStateException("No Model loaded.");
                     
-        index = getUtypeNum( utype );
+        index = getRecordIndex( utype );
         result = this.getField( field, index );
         return(result);
     }
