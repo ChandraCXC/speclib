@@ -91,7 +91,7 @@ public class SpectralProxy implements InvocationHandler
         }
         else if ( method.getName().startsWith("isSet") )
         {
-            result = this.check( method.getName().replaceAll("isSet", "") );
+            result = this.check( method.getName().replaceFirst("isSet", "") );
         }
         else if ( method.getName().startsWith("is"))
         {
@@ -137,7 +137,7 @@ public class SpectralProxy implements InvocationHandler
     private Object getProperty( Object proxy, Method method, Object[] args )
     {
         Object result;
-        String property  = method.getName().replaceAll("get","");
+        String property  = method.getName().replaceFirst("get","");
         String newpath = defineModelPath( property );
         Integer index = null;
 
@@ -210,7 +210,7 @@ public class SpectralProxy implements InvocationHandler
         }
 
         // get model path for property
-        String property  = method.getName().replaceAll("set","");
+        String property  = method.getName().replaceFirst("set","");
         String newpath = defineModelPath( property );
 
         // Setup for updating model path of input objects
@@ -256,8 +256,7 @@ public class SpectralProxy implements InvocationHandler
                     
                     tmp.setValue(element);
                 } catch (NoSuchMethodException ex) {
-                    // TODO: This shouldn't happen.. maybe should be ERROR instead
-                    tmp = new Quantity( element );
+                    throw new UnsupportedOperationException("Cannot find set"+property+"() method in proxy.");
                 }
                 item = tmp;
             }
@@ -292,7 +291,7 @@ public class SpectralProxy implements InvocationHandler
     private Object isProperty( Object proxy, Method method, Object[] args )
     {
         Object result;
-        String property  = method.getName().replaceAll("is","");
+        String property  = method.getName().replaceFirst("is","");
         String newpath = defineModelPath( property );
 
         // return existing property value (boolean)... or false        
@@ -325,7 +324,7 @@ public class SpectralProxy implements InvocationHandler
     private Object newProperty( String mp, Class type, Class etype )
     {
         Object result;
-        
+
         if ( type == Quantity.class )
         {
             //if ( etype != null)

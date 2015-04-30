@@ -321,6 +321,10 @@ public class VOTableIO implements IFileIO {
             //  ArraySize
             field.setAttribute( ATT_TAG_ARRSIZE, "*" );
           }
+          else if ( dtype.equalsIgnoreCase( "integer" ))
+          {
+            field.setAttribute( ATT_TAG_DTYPE, "int" );
+          }
           else
           {
             throw new UnsupportedOperationException("Datatype not yet supported. ("+dtype+")");
@@ -396,9 +400,19 @@ public class VOTableIO implements IFileIO {
         if ( q.isSetID() )
           param.setAttribute( ATT_TAG_ID, q.getID() );
 
-        //  Description
+        //  Description - serialized as subelement of param.
+        tmpstr = null;
         if ( q.isSetDescription() )
-          param.setAttribute( ATT_TAG_DESC, q.getDescription() );
+            tmpstr = q.getDescription();
+        else if ( ndx >= 0 && (! this.model.getDescription(ndx).isEmpty()) )
+            tmpstr = this.model.getDescription(ndx);
+        if ( tmpstr != null )
+        {
+          //param.setAttribute( ATT_TAG_DESC, q.getDescription() );
+          VOElement desc = (VOElement)document.createElement(ATT_TAG_DESC.toUpperCase());
+          desc.setTextContent( tmpstr );
+          param.appendChild( desc );
+        }
         
         //  Name
         if ( q.isSetName() )
@@ -422,18 +436,35 @@ public class VOTableIO implements IFileIO {
 
         if ( q.isSetValue())
         {
+          tmpstr = null;
+          
           //  DataType
           String dtype = q.getValue().getClass().getSimpleName();
           if ( dtype.equalsIgnoreCase( "double" ))
           {
             param.setAttribute( ATT_TAG_DTYPE, "double" );
+            tmpstr = q.getValue().toString();
           }
-          else if ( dtype.equalsIgnoreCase( "string" ))
+          else if ( dtype.equalsIgnoreCase( "string" ) || 
+                    dtype.equalsIgnoreCase( "url" ) ||
+                    dtype.equalsIgnoreCase( "uri" )
+                  )
           {
             param.setAttribute( ATT_TAG_DTYPE, "char" );
-
-            //  ArraySize
             param.setAttribute( ATT_TAG_ARRSIZE, "*" );
+            tmpstr = q.getValue().toString();
+          }
+          else if ( dtype.equalsIgnoreCase( "integer" ))
+          {
+            param.setAttribute( ATT_TAG_DTYPE, "int" );
+            tmpstr = q.getValue().toString();
+          }
+          else if ( dtype.equalsIgnoreCase( "double[]" ))
+          {
+            param.setAttribute( ATT_TAG_DTYPE, "double" );
+            Double[] darr = (Double[])q.getValue();
+            param.setAttribute( ATT_TAG_ARRSIZE, Integer.toString( darr.length ) );
+            tmpstr = java.util.Arrays.toString( darr ).replaceAll("\\[(.*)\\]","$1").replaceAll(",","");
           }
           else
           {
@@ -441,7 +472,7 @@ public class VOTableIO implements IFileIO {
           }
           
           //  Value (as String)
-          param.setAttribute( ATT_TAG_VALUE, q.getValue().toString() );
+          param.setAttribute( ATT_TAG_VALUE, tmpstr );
         }
         else
         {
@@ -482,7 +513,7 @@ public class VOTableIO implements IFileIO {
         this.addNodeContent( table, node, -1 );
         
         // Add table data to document.
-        this.addTableData( table );
+        this.addTableDataElement( table );
     }
 
     /**
@@ -510,7 +541,7 @@ public class VOTableIO implements IFileIO {
             if ( obj.getClass().equals( ArrayList.class ) && !mp.endsWith("Dataset_Data"))
             {
                 for (Object item : (ArrayList)obj )
-                  this.addObjectContent( parent, obj, row );
+                  this.addObjectContent( parent, item, row );
             }
             else
               this.addObjectContent( parent, obj, row );
@@ -537,6 +568,8 @@ public class VOTableIO implements IFileIO {
         {
           // Quantity Object => ParamElement or FieldValue
           Quantity q = (Quantity)obj;
+          if ( q.getModelpath() == null )
+            System.out.println("MCD TEMP: Quantity with NULL modelpath."+q.toString());
           String mp = q.getModelpath().replaceFirst("SPPoint", "SpectralDataset_Data"); // TODO - remove hack!
           if ( mp.contains("Dataset_Data_"))
           {
@@ -693,7 +726,7 @@ public class VOTableIO implements IFileIO {
      * @param parent
      * @throws IOException 
      */
-    private void addTableData( VOElement parent ) throws IOException
+    private void addTableDataElement( VOElement parent ) throws IOException
     {
         // get owner document for creating new elements.
         Document document = parent.getOwnerDocument();
