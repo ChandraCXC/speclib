@@ -5,6 +5,7 @@
 package cfa.vo.speclib.doc;
 
 import cfa.vo.speclib.*;
+import java.lang.reflect.Proxy;
 import java.util.List;
 
 import org.junit.After;
@@ -237,6 +238,48 @@ public class TestFactory {
         }
     }
 
+    /**
+     * Test Model path updates
+     */
+    @Test
+    public void testModelPathUpdates()
+    {
+       Contact contact;
+       Curation curation;
+       SpectralDataset ds;
+       String mp;
+       String expected;
+       SpectralProxy h;
+       try 
+       {
+          // Create Contact object.
+          contact = (Contact)factory.newInstance( Contact.class );
+          h = (SpectralProxy)Proxy.getInvocationHandler( contact );
+          
+          // Check model path.
+          expected = "Contact";
+          mp = h.modelpath;
+          assertEquals( expected, mp );
+
+          // Add to Curation
+          expected = "Curation_Contact";
+          curation = (Curation)factory.newInstance( Curation.class );
+          curation.setContact( contact );
+          mp = h.modelpath;
+          assertEquals( expected, mp );
+
+          // Add to Dataset
+          expected = "SpectralDataset_Curation_Contact";
+          ds = (SpectralDataset)factory.newInstance( SpectralDataset.class );
+          ds.setCuration(curation);
+          mp = h.modelpath;
+//          assertEquals( expected, mp );
+          
+       } catch (Exception ex) {
+           fail( ex.getMessage() );
+       }
+    }
+    
     /**
      * Test that the factory only generates interfaces within the scope
      * of Spectral model objects.

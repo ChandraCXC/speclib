@@ -5,7 +5,6 @@
 package cfa.vo.speclib.doc;
 
 import cfa.vo.speclib.Quantity;
-import cfa.vo.speclib.SPPoint;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -13,7 +12,6 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Dynamic proxy class to implement the various interfaces of the Spectral
@@ -198,6 +196,7 @@ public class SpectralProxy implements InvocationHandler
         Integer index;
         Object item;
         
+        // handle setP( index, item ) vs setP(item)
         if ( args.length == 2 )
         {
             index = (Integer)args[0];
@@ -256,7 +255,14 @@ public class SpectralProxy implements InvocationHandler
                     
                     tmp.setValue(element);
                 } catch (NoSuchMethodException ex) {
-                    throw new UnsupportedOperationException("Cannot find set"+property+"() method in proxy.");
+                    // Boolean attributes do not have 'get' method..
+                    // Check for is<P>() method.
+                    try{
+                      Method m = proxy.getClass().getMethod("is"+property, (Class<?>[])null);
+                      tmp = new Quantity(element);
+                    } catch (NoSuchMethodException exx) {
+                      throw new UnsupportedOperationException("Cannot find get"+property+"() method in proxy.");
+                    }
                 }
                 item = tmp;
             }
@@ -381,18 +387,16 @@ public class SpectralProxy implements InvocationHandler
         // Establish new path to this node.
         String last = this.modelpath.substring(this.modelpath.lastIndexOf("_")+1); 
         this.modelpath = base + "_" + last;
-        
+
         if ( this.data != null )
         {
-            Set keys = this.data.getKeys();
-            Iterator iter =  keys.iterator();
             String mp;
             Object item;
-
-            while (iter.hasNext())
+            Object[] keys = this.data.getKeys().toArray();
+            for ( int ii = 0; ii < keys.length; ii++ )
             {
-                // replace the item in Document with new key reference.
-                mp = (String)iter.next();
+                mp = (String)keys[ii];
+                
                 item = this.data.get(mp);
                 this.data.remove(mp);
                 last = mp.substring(mp.lastIndexOf("_")+1);
@@ -412,7 +416,6 @@ public class SpectralProxy implements InvocationHandler
                     ((Quantity)item).setModelpath( mp );
                 }
             }
-            
         }
     }
     

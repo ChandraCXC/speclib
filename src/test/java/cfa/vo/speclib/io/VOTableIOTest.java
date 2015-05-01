@@ -4,7 +4,9 @@
  */
 package cfa.vo.speclib.io;
 
+import cfa.vo.speclib.ApFrac;
 import cfa.vo.speclib.Bandpass;
+import cfa.vo.speclib.Correction;
 import cfa.vo.speclib.DataSource;
 import cfa.vo.speclib.Facility;
 import cfa.vo.speclib.Instrument;
@@ -260,7 +262,7 @@ public class VOTableIOTest {
           ds.getDerived().getRedshift().setStatError(Double.valueOf("0.002"));
           ds.getDerived().getRedshift().setConfidence(Double.valueOf("0.999"));
           ds.getDerived().getVarAmpl().setValue(Double.valueOf("0.0001"));
- 
+
         }
         catch (MalformedURLException ex) {
             Logger.getLogger(VOTableIOTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -316,6 +318,13 @@ public class VOTableIOTest {
             point.getFluxAxis().getAccuracy().setStatError( c21 );
             point.getFluxAxis().getAccuracy().setSysError( c22 );
             point.getFluxAxis().getAccuracy().setQualityStatus( c23 );
+            List<Correction> corrs = new ArrayList<Correction>();
+            ApFrac corr = (ApFrac)factory.newInstance( ApFrac.class );
+            corr.setName("ApFrac");
+            corr.setValue(0.75);
+            corr.setApplied( Boolean.TRUE );
+            corrs.add(corr);
+            point.getFluxAxis().setCorrections(corrs);
 
             point.getBackgroundModel().setValue( c30 );   
             point.getBackgroundModel().getAccuracy().setQualityStatus( c31 );

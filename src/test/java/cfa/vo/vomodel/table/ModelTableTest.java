@@ -238,7 +238,7 @@ public class ModelTableTest {
     public void testGetRecordIndex() {
         if (verbose){ System.out.println("Test getRecordIndex"); }
         Utype utype = new Utype("SpectralDataset_Target_Name","Target.Name","spec");
-        Integer expResult = 282;
+        Integer expResult = 283;
         Integer result = model.getRecordIndex(utype);
         assertEquals(expResult, result);
         
@@ -256,7 +256,7 @@ public class ModelTableTest {
     public void testGetRecordIndexByPath() {
         if (verbose){ System.out.println("Test getRecordIndexByPath"); }
         String mp = "SpectralDataset_Target_Name";
-        Integer expResult = 282;
+        Integer expResult = 283;
         Integer result = model.getRecordIndexByPath( mp );
         assertEquals(expResult, result);
        
@@ -290,7 +290,7 @@ public class ModelTableTest {
     public void testGetRecordIndexByTag() {
         if (verbose){ System.out.println("Test getRecordIndexByTag"); }
         Utype utype = new Utype("SpectralDataset_Target_Name","Target.Name","spec");
-        Integer expResult = 282;
+        Integer expResult = 283;
         Integer result;
         boolean caught = false;
         
@@ -305,7 +305,7 @@ public class ModelTableTest {
     @Test
     public void testGetUtype() {
         if (verbose){ System.out.println("Test getUtype"); }
-        Integer utypenum = 282;
+        Integer utypenum = 283;
         Utype utype = new Utype("SpectralDataset_Target_Name","Target.Name","spec");
         String expResult = "Target.Name";
         Utype result = model.getUtype(utypenum);
@@ -489,7 +489,7 @@ public class ModelTableTest {
     public void testGetUtypes() {
         if (verbose){ System.out.println("Test getUtypes"); }
         Utype expResult = new Utype("SpectralDataset_Char_TimeAxis_CalibrationStatus","Char.TimeAxis.CalibrationStatus","spec");
-        int expSize = 287;
+        int expSize = 288;
         
         List result = model.getUtypes();
         assertEquals(expResult, result.get(97));

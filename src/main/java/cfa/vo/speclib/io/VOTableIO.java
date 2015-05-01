@@ -325,6 +325,10 @@ public class VOTableIO implements IFileIO {
           {
             field.setAttribute( ATT_TAG_DTYPE, "int" );
           }
+          else if ( dtype.equalsIgnoreCase( "boolean" ))
+          {
+            field.setAttribute( ATT_TAG_DTYPE, "boolean" );
+          }
           else
           {
             throw new UnsupportedOperationException("Datatype not yet supported. ("+dtype+")");
@@ -669,7 +673,7 @@ public class VOTableIO implements IFileIO {
             Quantity q = (Quantity)obj;
             String mp = q.getModelpath().replaceFirst("SPPoint", "SpectralDataset_Data"); // TODO - remove hack!
             q.setModelpath(mp);
-  
+
             // Add FieldRef to document, FIELD to tabledata
             FieldElement field = addFieldRefElement(parent, q );
             Column col = new Column();
@@ -691,9 +695,15 @@ public class VOTableIO implements IFileIO {
             for (String mp : newnode.getKeys())
                 addColumns( group, newnode.get(mp), nrows );
         }
+        else if ( obj.getClass().equals( ArrayList.class ) )
+        {
+            // List of objects, each of which is a Column.
+            for (Object item : (ArrayList)obj )
+                this.addColumns( parent, item, nrows );
+        }
         else
         {
-            // TODO Error
+           throw new UnsupportedOperationException("Can not add columns from "+obj.getClass().getSimpleName());
         }
     }
     /**
