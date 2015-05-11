@@ -10,7 +10,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -20,20 +19,24 @@ import java.util.List;
  * 
  * @author mdittmar
  */
-public class SpectralProxy implements InvocationHandler
+public class ModelProxy implements InvocationHandler
 {
+    // Interface type that this proxy emulates.
+    protected String type;
+    
     // Model path identifier for the interface (proxy instance).
     protected String modelpath;
 
-    protected SpectralDocument data;
+    // Node content.
+    protected ModelDocument data;
     
     /**
      * Constructor, invokes new proxy instance and SpectralDocument segment
      * to hold content.
      */
-    public SpectralProxy()
+    public ModelProxy()
     {
-        this.data = new SpectralDocument();
+        this.data = new ModelDocument();
     }
 
     /**
@@ -43,18 +46,19 @@ public class SpectralProxy implements InvocationHandler
      * @param data 
      *    {@link SpectralDocument} segment to hold content for the proxy. 
      */
-    public SpectralProxy( SpectralDocument data )
+    public ModelProxy( ModelDocument data )
     {
         this.data = data;
     }
 
-    public SpectralProxy( SpectralDocument data, String mp )
+    public ModelProxy( ModelDocument data, String type, String mp )
     {
         if ( data == null )
-            this.data = new SpectralDocument();
+            this.data = new ModelDocument();
         else
             this.data = data;
-        
+
+        this.type = type;
         this.modelpath = mp;
     }
 
@@ -124,11 +128,101 @@ public class SpectralProxy implements InvocationHandler
         return ( a.getClass() == b.getClass());
     }
 
-    public SpectralDocument getDoc()
+    public ModelDocument getDoc()
     {
        return ( this.data );
     }
 
+    // ***********************************************************************
+    // Protected Methods: Visible to other members of this package.
+
+    
+    /** 
+     * Assign value to model path attribute of this proxy.
+     * If base ends with '[]', this indicates that the proxy is an element
+     * of a List, in which case, we append the the proxy 'type' to the 
+     * model path to distinguish various flavors of the List content.
+     * 
+     * @param base 
+     */
+    protected void setModelPath( String base )
+    {
+       if ( base.endsWith("[]") )
+           base = base.concat(".").concat(this.type);
+
+       this.modelpath = base;
+    }
+    
+    /**
+     * Primarily for use during assignment (set), this method (re)sets 
+     * the model path in the provided object, then recursively re-bases
+     * any children of the object.
+     * 
+     * @param obj
+     *    Object to be updated.
+     * @param base 
+     *    New base model path to this node.
+     */
+    protected void updateModelPath( Object obj, String base )
+    {
+       if ( obj.getClass() == Quantity.class )
+       {
+         // set new model path 
+         ((Quantity)obj).setModelpath( base );
+
+         // No content to rebaseline.
+       }
+       else if ( obj.getClass() == MPArrayList.class )
+       {
+          // set new model path 
+          ((MPArrayList)obj).setModelpath( base );
+          
+          // Rebase array elements
+          ((MPArrayList)obj).rebaseContent();
+          
+       }
+       else if ( Proxy.isProxyClass( obj.getClass() ) )
+       {
+          ModelProxy h = (ModelProxy)Proxy.getInvocationHandler( obj );
+
+          // set new model path 
+          h.setModelPath(base);
+
+          // reset base model path for base and its children.
+          h.rebaseContent();
+        }
+        else
+          throw new UnsupportedOperationException("Proxy.updateModelPath().. Unrecognized type "+obj.getClass().getSimpleName());
+    }
+
+    /**
+     * Re-baseline the content of the proxy to the current model path.
+     */
+    protected void rebaseContent()
+    {
+        if ( this.data != null )
+        {
+           Object[] keys = this.data.getKeys().toArray();
+           for ( int ii = 0; ii < keys.length; ii++ )
+           {
+               String key = (String)keys[ii];
+               Object obj = this.data.get( key );
+               
+               // Remove current entry for this object in data
+               this.data.remove( key );
+               
+               String last = key.substring(key.lastIndexOf("_")+1);
+               String newkey = this.modelpath + "_" + last;
+               
+               // Replace entry with new key.
+               this.data.put( newkey, obj );
+               
+               // Update the model path of the child object.
+               this.updateModelPath( obj, newkey );
+           }
+        }
+    }
+    
     // ***********************************************************************
     // Private Methods:
     
@@ -166,12 +260,15 @@ public class SpectralProxy implements InvocationHandler
             
             if ( index != null )
             {
-                // create enclosing List<rtype>
+                // create enclosing List<rtype>, assign model path
                 result = newListProperty( rtype );
+                ((MPArrayList)result).setModelpath(newpath);
             }
             else if ( rtype == List.class )
             {
+                // create List, assign model path
                 result = newListProperty( etype );
+                ((MPArrayList)result).setModelpath(newpath);
             }
             else
             {
@@ -179,7 +276,7 @@ public class SpectralProxy implements InvocationHandler
             }
             // add new property to document.
             this.data.put(newpath, result);
-        }        
+        }
         // check for indexed getter
         if ( index != null )
         {
@@ -210,90 +307,77 @@ public class SpectralProxy implements InvocationHandler
 
         // get model path for property
         String property  = method.getName().replaceFirst("set","");
-        String newpath = defineModelPath( property );
+        String mp = defineModelPath( property ); // path for this object/List
 
-        // Setup for updating model path of input objects
-        List inarr;
-        Iterator iter;
-        if ( ( item.getClass() == ArrayList.class ) || (item.getClass() == List.class))
+        // Handle input.. if list, make sure it is an Proxy, Quantity, or MPArrayList
+        if ( Proxy.isProxyClass( item.getClass() ) || 
+           ( item.getClass() == Quantity.class )   || 
+           ( item.getClass() == MPArrayList.class )   )
         {
-            inarr = (List)item;
+           // nothing to do here.
+        }
+        else if ( ( item.getClass() == ArrayList.class ) || (item.getClass() == List.class))
+        {
+            // Convert input list to MPArrayList, for adding to property
+            MPArrayList mparr = new MPArrayList( (List)item );
+            item = mparr;
         }
         else
         {
-            inarr = new ArrayList<Object>();
-            inarr.add(item);
-        }   
-
-        iter = inarr.iterator();
-        while ( iter.hasNext())
-        {
-            Object element = iter.next();
-            if ( Proxy.isProxyClass( element.getClass() ) )
-            {
-                // reset base model path for base and its children.
-                SpectralProxy h = (SpectralProxy)Proxy.getInvocationHandler( element );
-                h.updateModelPath( this.modelpath );
-            }
-            else if ( element.getClass() == Quantity.class )
-            {
-                //TODO: Type check generic Quantity type against expected.
-                // assign new model path 
-                ((Quantity)element).setModelpath( newpath );
-            }
-            else
-            {
-                // Assign value from Primitive
-                // Values should be type safe via prototypes
-                Quantity tmp;
-                try {
-                    Method m = proxy.getClass().getMethod("get"+property, (Class<?>[])null);
-                    if ( index == null )
-                        tmp = (Quantity)this.getProperty( proxy, m, (Object[])null );
-                    else
-                        tmp = (Quantity)this.getProperty( proxy, m, new Object[]{index} );
+           // Assign value from Primitive
+           // Values should be type safe via prototypes
+           Quantity q;
+           try {
+              Method m = proxy.getClass().getMethod("get"+property, (Class<?>[])null);
+              if ( index == null )
+                q = (Quantity)this.getProperty( proxy, m, (Object[])null );
+              else
+                q = (Quantity)this.getProperty( proxy, m, new Object[]{index} );
                     
-                    tmp.setValue(element);
-                } catch (NoSuchMethodException ex) {
-                    // Boolean attributes do not have 'get' method..
-                    // Check for is<P>() method.
-                    try{
-                      Method m = proxy.getClass().getMethod("is"+property, (Class<?>[])null);
-                      tmp = new Quantity(element);
-                    } catch (NoSuchMethodException exx) {
-                      throw new UnsupportedOperationException("Cannot find get"+property+"() method in proxy.");
-                    }
-                }
-                item = tmp;
-            }
+              q.setValue( item );
+           } catch (NoSuchMethodException ex) {
+              // Boolean attributes do not have 'get' method..
+              // Check for is<P>() method.
+              try{
+                 Method m = proxy.getClass().getMethod("is"+property, (Class<?>[])null);
+                 q = new Quantity( item );
+              } catch (NoSuchMethodException exx) {
+                 throw new UnsupportedOperationException("Cannot find get"+property+"() method in proxy.");
+              }
+           }
+           item = q;
         }
+
+        // Update model path of object/list
+        this.updateModelPath( item, mp );
+        
         // Add property to document
         if ( index == null )
         {
-            this.data.put(newpath, item);
+          this.data.put( mp, item);
         }
         else
         {
-            // Replace Indexed Property Element
-            // Make sure property exists in document
-            List l;
-            if ( this.data.contains(newpath))
-                l = (List)this.data.get(newpath);
-            else
-            {
-                try {
-                    Method m = proxy.getClass().getMethod("get"+property, (Class<?>[])null);
-                    l = (List)this.getProperty( proxy, m, args );
-                } catch (NoSuchMethodException ex) {
-                    // TODO: This shouldn't happen.. maybe should be ERROR instead
-                    l = new ArrayList<Object>();
-                }
-            }                                   
-            // NOTE: May throw IndexOutOfBoundsException
-            l.set( index, item );
+           // Replace Indexed Property Element
+           // Make sure property exists in document
+           List l;
+           if ( this.data.contains(mp))
+             l = (List)this.data.get(mp);
+           else
+           {
+              try {
+                Method m = proxy.getClass().getMethod("get"+property, (Class<?>[])null);
+                l = (List)this.getProperty( proxy, m, args );
+              } catch (NoSuchMethodException ex) {
+                // TODO: This shouldn't happen.. maybe should be ERROR instead
+                l = new MPArrayList<Object>();
+              }
+           }                                   
+           // NOTE: May throw IndexOutOfBoundsException
+           l.set( index, item );
         }
-
     }
+
     private Object isProperty( Object proxy, Method method, Object[] args )
     {
         Object result;
@@ -346,7 +430,7 @@ public class SpectralProxy implements InvocationHandler
             // create the requested interface and add to document.
             result = Proxy.newProxyInstance( data.getClass().getClassLoader(),
                                              new Class[]{ type },
-                                             new SpectralProxy( null, mp ));
+                                             new ModelProxy( null, type.getSimpleName(), mp ));
         }
         else
         {
@@ -361,64 +445,18 @@ public class SpectralProxy implements InvocationHandler
         
         if ( type == Quantity.class )
         {
-            result = new ArrayList<Quantity>();
+            result = new MPArrayList<Quantity>();
         }
         else
         {
            // Can this be done so that it is defined as a specific type,
            // in a generic fashion (ie ArrayList<SPPoint>) without specifically
            // using/importing the SPPoint class.. ie: get it from the type arg.
-           result = new ArrayList<Object>();
+           result = new MPArrayList<Object>();
         }
         return result;
     }
 
-    /**
-     * Primarily for u
-     * se during assignment (set), this method resets the 
-     * base model path for the interface, as well as for all of its
-     * elements.  
-     * 
-     * @param base 
-     *    New base model path to this node.
-     */
-    private void updateModelPath( String base )
-    {
-        // Establish new path to this node.
-        String last = this.modelpath.substring(this.modelpath.lastIndexOf("_")+1); 
-        this.modelpath = base + "_" + last;
-
-        if ( this.data != null )
-        {
-            String mp;
-            Object item;
-            Object[] keys = this.data.getKeys().toArray();
-            for ( int ii = 0; ii < keys.length; ii++ )
-            {
-                mp = (String)keys[ii];
-                
-                item = this.data.get(mp);
-                this.data.remove(mp);
-                last = mp.substring(mp.lastIndexOf("_")+1);
-                mp = this.modelpath + "_" + last;
-                this.data.put(mp, item);
-
-                // if the element is itself a proxy, update recursively
-                if ( Proxy.isProxyClass( item.getClass() ) )
-                {
-                    // reset base model path for base and its children.
-                    SpectralProxy h = (SpectralProxy)Proxy.getInvocationHandler( item );
-                    h.updateModelPath( mp );
-                }
-                else if ( item.getClass() == Quantity.class )
-                {
-                    // assign new model path 
-                    ((Quantity)item).setModelpath( mp );
-                }
-            }
-        }
-    }
-    
     /**
      * Generates the model path for the requested property.
      * The Model Path is a String containing "_" delimited set of 'nodes'

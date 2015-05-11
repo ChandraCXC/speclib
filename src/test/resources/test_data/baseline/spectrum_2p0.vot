@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.3" version="1.3">
+  <RESOURCE>
+    <TABLE name="Spectrum">
+      <PARAM arraysize="*" datatype="char" utype="spec:Dataset.SpectralSI" value="L">
+        <DESCRIPTION>SI factor and dimensions</DESCRIPTION>
+      </PARAM>
+      <PARAM arraysize="*" datatype="char" utype="spec:Dataset.TimeSI" value="T">
+        <DESCRIPTION>SI factor and dimensions</DESCRIPTION>
+      </PARAM>
+      <PARAM arraysize="*" datatype="char" utype="spec:Dataset.FluxSI" value="1.E-23 MT-2">
+        <DESCRIPTION>SI factor and dimensions</DESCRIPTION>
+      </PARAM>
+      <PARAM arraysize="*" datatype="char" utype="spec:Dataset.Type" value="Spectrum">
+        <DESCRIPTION>Dataset or segment type</DESCRIPTION>
+      </PARAM>
+      <PARAM arraysize="*" datatype="char" ucd="meta.id" utype="spec:Dataset.DataProductSubType" value="L2 Spectrum">
+        <DESCRIPTION>Data product subtype</DESCRIPTION>
+      </PARAM>
+      <GROUP>
+        <PARAM arraysize="*" datatype="char" utype="spec:Dataset.DataModel.Name" value="Spectrum-2.0">
+          <DESCRIPTION>Data model name and version</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" utype="spec:Dataset.DataModel.Prefix" value="spec">
+          <DESCRIPTION>Data model prefix tag</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" ucd="meta.ref.url" utype="spec:Dataset.DataModel.URL" value="http://www.ivoa.net/sample/spectral">
+          <DESCRIPTION>Reference URL for model</DESCRIPTION>
+        </PARAM>
+      </GROUP>
+      <GROUP>
+        <PARAM arraysize="*" datatype="char" ucd="meta.title;meta.dataset" utype="spec:DataID.Title" value="Sample Spectrum Instance">
+          <DESCRIPTION>Dataset Title</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" ucd="meta.curation" utype="spec:DataID.Creator" value="UNKNOWN">
+          <DESCRIPTION>VO Creator ID</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" ucd="meta.id;meta.dataset" utype="spec:DataID.DatasetID" value="ivo://ADS/Sa.CXO#obs/12345">
+          <DESCRIPTION>IVOA Dataset ID</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" utype="spec:DataID.ObservationID" value="12345">
+          <DESCRIPTION>Data provider internal observation ID</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" ucd="time.epoch;meta.dataset" utype="spec:DataID.Date" value="2001-12-08T03:11:11">
+          <DESCRIPTION>Data processing/creation date</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" ucd="meta.version;meta.dataset" utype="spec:DataID.Version" value="001">
+          <DESCRIPTION>Version of dataset</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" utype="spec:DataID.CreationType" value="Archival">
+          <DESCRIPTION>Dataset creation type</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" name="Collection1" utype="spec:DataID.Collection" value="Chandra">
+          <DESCRIPTION>Collection name(s)</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" name="Collection2" utype="spec:DataID.Collection" value="X-Ray">
+          <DESCRIPTION>Collection name(s)</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" name="Collection3" utype="spec:DataID.Collection" value="Third Cambridge Catalogue of Radio Sources">
+          <DESCRIPTION>Collection name(s)</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" ucd="meta.ref.url" utype="spec:DataID.Logo" value="http://www.cfa.harvard.edu/common/images/left/cfa-logo.gif">
+          <DESCRIPTION>URL for creator logo</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" name="Contributor1" utype="spec:DataID.Contributor" value="This research has made use of software provided by the Chandra X-ray Center (CXC) in the application packages CIAO, ChIPS, and Sherpa.">
+          <DESCRIPTION>Contributor(s)</DESCRIPTION>
+        </PARAM>
+      </GROUP>
+      <GROUP>
+        <PARAM arraysize="*" datatype="char" ucd="meta.curation" utype="spec:Curation.Publisher" value="Chandra X-ray Center">
+          <DESCRIPTION>Publisher</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" ucd="meta.ref.url;meta.curation" utype="spec:Curation.PublisherID" value="ivo://cfa.harvard.edu">
+          <DESCRIPTION>URI for VO Publisher</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" ucd="meta.ref.url;meta.curation" utype="spec:Curation.PublisherDID" value="ivo://cfa.harvard.edu/UNKNOWN">
+          <DESCRIPTION>Publisher specified dataset ID</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" utype="spec:Curation.ReleaseDate" value="2007-03-11T10:33:14">
+          <DESCRIPTION>Date curated dataset last modified</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" ucd="meta.version;meta.curation" utype="spec:Curation.Version" value="002">
+          <DESCRIPTION>Version info</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" ucd="meta.code" utype="spec:Curation.Rights" value="public">
+          <DESCRIPTION>Proprietary restrictions level</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" ucd="meta.bib.bibcode" utype="spec:Curation.Reference" value="UNKNOWN">
+          <DESCRIPTION>URL or Bibcode for documentation</DESCRIPTION>
+        </PARAM>
+        <GROUP>
+          <PARAM arraysize="*" datatype="char" ucd="meta.bib.author;meta.curation" utype="spec:Curation.Contact.Name" value="CXC Help Desk">
+            <DESCRIPTION>Contact name</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.ref.url;meta.email" utype="spec:Curation.Contact.Email" value="cxchelp@head.cfa.harvard.edu">
+            <DESCRIPTION>Contact email</DESCRIPTION>
+          </PARAM>
+        </GROUP>
+      </GROUP>
+      <GROUP>
+        <PARAM arraysize="*" datatype="char" ucd="meta.id;src" utype="spec:Target.Name" value="3c273">
+          <DESCRIPTION>Target name</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" ucd="meta.note;src" utype="spec:Target.Description" value="Optically Bright Quasar in Virgo">
+          <DESCRIPTION>Target descriptive text</DESCRIPTION>
+        </PARAM>
+        <PARAM datatype="double" ucd="src.redshift" utype="spec:Target.Redshift" value="0.15833">
+          <DESCRIPTION>Target redshift</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" ucd="src.class" utype="spec:Target.Class" value="Quasar">
+          <DESCRIPTION>Target or object class</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="*" datatype="char" ucd="src.spType" utype="spec:Target.SpectralClass" value="UNKNOWN">
+          <DESCRIPTION>Object spectral class</DESCRIPTION>
+        </PARAM>
+        <PARAM arraysize="2" datatype="double" ucd="pos.eq;src" utype="spec:Target.Pos" value="187.2767 2.0519">
+          <DESCRIPTION>Target RA and Dec</DESCRIPTION>
+        </PARAM>
+        <PARAM datatype="double" ucd="src.var.amplitude" utype="spec:Target.VarAmpl" value="NaN">
+          <DESCRIPTION>Target variability amplitude, typical</DESCRIPTION>
+        </PARAM>
+      </GROUP>
+      <GROUP>
+        <GROUP>
+          <PARAM arraysize="*" datatype="char" ucd="meta.id;instr.tel" utype="spec:ObsConfig.Facility.Name" value="CHANDRA">
+            <DESCRIPTION>Facility name</DESCRIPTION>
+          </PARAM>
+        </GROUP>
+        <GROUP>
+          <PARAM arraysize="*" datatype="char" ucd="meta.id;instr" utype="spec:ObsConfig.Instrument.Name" value="HRC">
+            <DESCRIPTION>Instrument ID</DESCRIPTION>
+          </PARAM>
+        </GROUP>
+        <GROUP>
+          <PARAM arraysize="*" datatype="char" ucd="instr.bandpass" utype="spec:ObsConfig.Bandpass.Name" value="X-ray">
+            <DESCRIPTION>Band</DESCRIPTION>
+          </PARAM>
+        </GROUP>
+        <GROUP>
+          <PARAM arraysize="*" datatype="char" utype="spec:ObsConfig.DataSource.Name" value="pointed">
+            <DESCRIPTION>Original data type</DESCRIPTION>
+          </PARAM>
+        </GROUP>
+      </GROUP>
+      <GROUP>
+        <PARAM arraysize="*" datatype="char" ucd="meta.id;proposal" utype="spec:Proposal.Identifier" value="2001c2-p55422">
+          <DESCRIPTION>Proposal ID</DESCRIPTION>
+        </PARAM>
+      </GROUP>
+      <GROUP>
+        <PARAM datatype="double" ucd="stat.snr" utype="spec:Derived.SNR" value="1.3">
+          <DESCRIPTION>Signal-to-noise for spectrum</DESCRIPTION>
+        </PARAM>
+        <GROUP>
+          <PARAM datatype="double" ucd="src.redshift" utype="spec:Derived.Redshift.Value" value="0.159">
+            <DESCRIPTION>Measured redshift for spectrum</DESCRIPTION>
+          </PARAM>
+          <PARAM datatype="double" ucd="stat.error;src.redshift" utype="spec:Derived.Redshift.StatError" value="0.002">
+            <DESCRIPTION>Error on measured redshift</DESCRIPTION>
+          </PARAM>
+          <PARAM datatype="double" utype="spec:Derived.Redshift.Confidence" value="0.999">
+            <DESCRIPTION>Confidence value on redshift</DESCRIPTION>
+          </PARAM>
+        </GROUP>
+        <PARAM datatype="double" ucd="src.var.amplitude;arith.ratio" utype="spec:Derived.VarAmpl" value="1.0E-4">
+          <DESCRIPTION>Variability amplitude as fraction of mean</DESCRIPTION>
+        </PARAM>
+      </GROUP>
+      <GROUP>
+        <GROUP>
+          <FIELDref name="freq" ref="184dd6f9-b9cf-4ae0-b2e2-aef684e00d1e" ucd="em.freq" utype="spec:Data.SpectralAxis.Value"/>
+          <GROUP>
+            <FIELDref name="freq_binsiz" ref="6b7bec5e-e363-40f7-823c-07943c087836" ucd="em.freq;spect.binSize" utype="spec:Data.SpectralAxis.Accuracy.BinSize"/>
+            <FIELDref name="freq_err" ref="c75a4176-fe50-44cd-b1df-707bc9930983" ucd="stat.error;em.freq" utype="spec:Data.SpectralAxis.Accuracy.StatError"/>
+            <FIELDref name="freq_syserr" ref="72e05e89-a2da-40a8-8533-fc8d822627c1" ucd="stat.error.sys;em.freq" utype="spec:Data.SpectralAxis.Accuracy.SysError"/>
+          </GROUP>
+          <GROUP>
+            <FIELDref name="freq_res" ref="53f0aa9d-c619-4b07-acbb-f6d6d8c186d8" ucd="spect.resolution;em.freq" utype="spec:Data.SpectralAxis.Resolution.refVal"/>
+          </GROUP>
+        </GROUP>
+        <GROUP>
+          <FIELDref name="flux" ref="3e55add4-60b2-41c2-81bb-7e1eec76de19" ucd="phot.flux.density;em.freq" utype="spec:Data.FluxAxis.Value"/>
+          <GROUP>
+            <FIELDref name="flux_err" ref="24278de9-8536-4812-9f1f-85c27e113134" ucd="stat.error;phot.flux.density;em.freq" utype="spec:Data.FluxAxis.Accuracy.StatError"/>
+            <FIELDref name="flux_syserr" ref="d5dce35b-4b1a-43bc-b073-6a52f8baa1b5" ucd="stat.error.sys;phot.flux.density;em.freq" utype="spec:Data.FluxAxis.Accuracy.SysError"/>
+            <FIELDref name="flux_qual" ref="e6b6631c-0a3e-458b-b012-02a0a1b073f6" ucd="meta.code.qual;phot.flux.density;em.freq" utype="spec:Data.FluxAxis.Accuracy.QualityStatus"/>
+          </GROUP>
+          <GROUP>
+            <FIELDref ref="4bae693f-adbc-4044-843d-7b48af60463c" utype="spec:Data.FluxAxis.Corrections.ApFrac.Name"/>
+            <FIELDref ref="8b4e64bb-046d-4722-be85-c8ba64e85743" ucd="arith.ratio" utype="spec:Data.FluxAxis.Corrections.ApFrac.Value"/>
+            <FIELDref ref="2b8bbdda-ee20-4eab-b5f1-853684465b3a" ucd="meta.code" utype="spec:Data.FluxAxis.Corrections.ApFrac.Applied"/>
+          </GROUP>
+        </GROUP>
+        <GROUP>
+          <FIELDref name="bkg" ref="77288528-103b-4971-bf8d-b81d3bf489c1" ucd="phot.flux.density;em.freq" utype="spec:Data.BackgroundModel.Value"/>
+          <GROUP>
+            <FIELDref name="bkg_qual" ref="a4bef28b-5f5f-496b-918d-93e513361272" ucd="meta.code.qual;phot.flux.density;em.freq" utype="spec:Data.BackgroundModel.Accuracy.QualityStatus"/>
+          </GROUP>
+        </GROUP>
+      </GROUP>
+      <FIELD datatype="double" id="184dd6f9-b9cf-4ae0-b2e2-aef684e00d1e" unit="Hz"/>
+      <FIELD datatype="double" id="6b7bec5e-e363-40f7-823c-07943c087836" unit="Hz"/>
+      <FIELD datatype="double" id="c75a4176-fe50-44cd-b1df-707bc9930983" unit="Hz"/>
+      <FIELD datatype="double" id="72e05e89-a2da-40a8-8533-fc8d822627c1" unit="Hz"/>
+      <FIELD datatype="double" id="53f0aa9d-c619-4b07-acbb-f6d6d8c186d8" unit="Hz"/>
+      <FIELD datatype="double" id="3e55add4-60b2-41c2-81bb-7e1eec76de19" unit="W.m**(-2).Hz**(-1)"/>
+      <FIELD datatype="double" id="24278de9-8536-4812-9f1f-85c27e113134" unit="W.m**(-2).Hz**(-1)"/>
+      <FIELD datatype="double" id="d5dce35b-4b1a-43bc-b073-6a52f8baa1b5" unit="W.m**(-2).Hz**(-1)"/>
+      <FIELD datatype="int" id="e6b6631c-0a3e-458b-b012-02a0a1b073f6"/>
+      <FIELD arraysize="*" datatype="char" id="4bae693f-adbc-4044-843d-7b48af60463c"/>
+      <FIELD datatype="double" id="8b4e64bb-046d-4722-be85-c8ba64e85743"/>
+      <FIELD datatype="boolean" id="2b8bbdda-ee20-4eab-b5f1-853684465b3a"/>
+      <FIELD datatype="double" id="77288528-103b-4971-bf8d-b81d3bf489c1" unit="W.m**(-2).Hz**(-1)"/>
+      <FIELD datatype="int" id="a4bef28b-5f5f-496b-918d-93e513361272"/>
+      <DATA/>
+      <TABLEDATA>
+        <TR>
+          <TD>8.31555695E14</TD>
+          <TD>6.3575E11</TD>
+          <TD>3.0E10</TD>
+          <TD>-1000.0</TD>
+          <TD>10.0</TD>
+          <TD>3.49485448E-30</TD>
+          <TD>1.0E-35</TD>
+          <TD>-1.0E-40</TD>
+          <TD>0</TD>
+          <TD>ApFrac</TD>
+          <TD>0.75</TD>
+          <TD>true</TD>
+          <TD>NaN</TD>
+          <TD>1</TD>
+        </TR>
+        <TR>
+          <TD>8.31555695E14</TD>
+          <TD>6.3575E11</TD>
+          <TD>3.0E10</TD>
+          <TD>-1000.0</TD>
+          <TD>10.0</TD>
+          <TD>3.49485448E-30</TD>
+          <TD>1.0E-35</TD>
+          <TD>-1.0E-40</TD>
+          <TD>0</TD>
+          <TD>ApFrac</TD>
+          <TD>0.75</TD>
+          <TD>true</TD>
+          <TD>NaN</TD>
+          <TD>1</TD>
+        </TR>
+        <TR>
+          <TD>8.31555695E14</TD>
+          <TD>6.3575E11</TD>
+          <TD>3.0E10</TD>
+          <TD>-1000.0</TD>
+          <TD>10.0</TD>
+          <TD>3.49485448E-30</TD>
+          <TD>1.0E-35</TD>
+          <TD>-1.0E-40</TD>
+          <TD>0</TD>
+          <TD>ApFrac</TD>
+          <TD>0.75</TD>
+          <TD>true</TD>
+          <TD>NaN</TD>
+          <TD>1</TD>
+        </TR>
+      </TABLEDATA>
+    </TABLE>
+  </RESOURCE>
+</VOTABLE>

@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
  */
 public class TestFactory {
 
-   static SpectralFactory factory;
+   static ModelObjectFactory factory;
    static boolean verbose;
 
     public TestFactory() {
@@ -37,7 +37,7 @@ public class TestFactory {
             System.out.println("Create New Factory.");
 
         // create a Spectral object factory
-        factory = new SpectralFactory();
+        factory = new ModelObjectFactory();
     }
     
     @AfterClass
@@ -249,17 +249,20 @@ public class TestFactory {
        SpectralDataset ds;
        String mp;
        String expected;
-       SpectralProxy h;
+       ModelProxy h;
        try 
        {
           // Create Contact object.
           contact = (Contact)factory.newInstance( Contact.class );
-          h = (SpectralProxy)Proxy.getInvocationHandler( contact );
+          contact.setName("CXC Help Desk");
+          contact.setEmail("cxchelp@cfa.harvard.edu");
+          h = (ModelProxy)Proxy.getInvocationHandler( contact );
           
           // Check model path.
           expected = "Contact";
           mp = h.modelpath;
           assertEquals( expected, mp );
+          assertEquals( expected, h.type );
 
           // Add to Curation
           expected = "Curation_Contact";
@@ -267,17 +270,59 @@ public class TestFactory {
           curation.setContact( contact );
           mp = h.modelpath;
           assertEquals( expected, mp );
+          assertEquals( "Contact", h.type );
 
           // Add to Dataset
           expected = "SpectralDataset_Curation_Contact";
           ds = (SpectralDataset)factory.newInstance( SpectralDataset.class );
           ds.setCuration(curation);
           mp = h.modelpath;
-//          assertEquals( expected, mp );
+          assertEquals( expected, mp );
+          assertEquals( "Contact", h.type );
           
        } catch (Exception ex) {
            fail( ex.getMessage() );
        }
+    }
+
+    /**
+     * Test Object building with List elements
+     */
+    @Test
+    public void testBuildList()
+    {
+        ModelObjectFactory factory = new ModelObjectFactory();
+        String expected;
+
+        ObsConfig oc;
+        MPArrayList<ObservingElement> elarr = new MPArrayList<ObservingElement>();
+        // ++++++++++++++++++++++++++++++++++++++++++++++
+        // add Proxy to MPArrayList.
+        Facility   f = (Facility)factory.newInstance( Facility.class );
+        Instrument i = (Instrument)factory.newInstance( Instrument.class );
+        Bandpass   b = (Bandpass)factory.newInstance( Bandpass.class );
+        elarr.add(f);
+        elarr.add(i);
+        elarr.add(b);
+
+        assertEquals( 3, elarr.size() );
+        expected = "UNKNOWN[].Facility_Name";
+        assertEquals( expected, elarr.get(0).getName().getModelpath() );
+        expected = "UNKNOWN[].Instrument_Name";
+        assertEquals( expected, elarr.get(1).getName().getModelpath() );
+        expected = "UNKNOWN[].Bandpass_Name";
+        assertEquals( expected, elarr.get(2).getName().getModelpath() );
+
+        // add List to Proxy
+        oc = (ObsConfig)factory.newInstance( ObsConfig.class );
+        oc.setObservingElements(elarr);
+        expected = "ObsConfig_ObservingElements[].Facility_Name";
+        assertEquals( expected, elarr.get(0).getName().getModelpath() );
+        expected = "ObsConfig_ObservingElements[].Instrument_Name";
+        assertEquals( expected, elarr.get(1).getName().getModelpath() );
+        expected = "ObsConfig_ObservingElements[].Bandpass_Name";
+        assertEquals( expected, elarr.get(2).getName().getModelpath() );
+        
     }
     
     /**
@@ -319,5 +364,136 @@ public class TestFactory {
         if ( verbose )
             System.out.println("!A.equals(C)");
 
+    }
+    @Test
+    public void testNewInstanceByName()
+    {
+       System.out.println("testNewInstanceByName");
+
+       String className = null;
+       Object result = null;
+
+        // Null input
+        boolean caught = false;
+        try{
+          result = factory.newInstanceByName( className );
+        }
+        catch (IllegalArgumentException ex ){
+            caught = true;
+        }
+        assertTrue( caught );
+        assertNull( result );
+       
+        // Regular Class
+        className = "Accuracy";
+        result = factory.newInstanceByName( className );
+        assertNotNull( result );
+
+        // No matching Class
+        result = null;
+        className = "Bob";
+        caught = false;
+        try{
+          result = factory.newInstanceByName( className );
+        }
+        catch (IllegalArgumentException ex ){
+            caught = true;
+        }
+        assertTrue( caught );
+        assertNull( result );       
+    }
+    
+    @Test
+    public void testNewInstanceByModelPath()
+    {
+        //System.out.println("testNewInstanceByModelPath");
+        
+        String mp = null;
+        SpectralDataset ds = (SpectralDataset)factory.newInstance( SpectralDataset.class );
+        Object result = null;
+        ModelProxy h;
+
+        // NULL Argument
+        boolean caught = false;
+        try{
+          result = factory.newInstanceByModelPath( null, mp );
+        }
+        catch (IllegalArgumentException ex ){
+            caught = true;
+        }
+        assertTrue( caught );
+        assertNull( result );
+        
+        // NULL Argument
+        caught = false;
+        try{
+          result = factory.newInstanceByModelPath( ds, null );
+        }
+        catch (IllegalArgumentException ex ){
+            caught = true;
+        }
+        assertTrue( caught );
+        assertNull( result );
+        
+        //   - From top level dataset -> leaf
+        mp = "Curation_Rights";
+        result = factory.newInstanceByModelPath( ds, mp );
+        assertTrue( result.getClass() == Quantity.class );
+        assertEquals("SpectralDataset_Curation_Rights", ((Quantity)result).getModelpath());
+        
+
+        //   - From top level dataset -> Proxy
+        mp = "Curation_Contact";
+        result = factory.newInstanceByModelPath( ds, mp );
+        h = (ModelProxy)Proxy.getInvocationHandler( result );
+        assertEquals( h.type, Contact.class.getSimpleName() );
+        assertEquals("SpectralDataset_Curation_Contact_Email", ((Contact)result).getEmail().getModelpath());
+
+        //   - From top level dataset -> List
+        mp = "Curation_References";
+        result = factory.newInstanceByModelPath( ds, mp );
+        assertTrue( result.getClass() == MPArrayList.class );
+        MPArrayList refs = (MPArrayList)result;
+        assertEquals(0, refs.size());
+
+        //   - From top level dataset -> Through List to leaf
+        mp = "Curation_References[]";
+        result = factory.newInstanceByModelPath( ds, mp );
+        assertTrue( result.getClass() == Quantity.class );
+        assertEquals("SpectralDataset_Curation_References[]", ((Quantity)result).getModelpath());
+        assertEquals(1, refs.size());
+
+        // Again.. should make another element on list
+        result = factory.newInstanceByModelPath( ds, mp );
+        assertTrue( result.getClass() == Quantity.class );
+        assertEquals(2, refs.size());
+
+        //   - From top level dataset -> Through List of Proxies to leaf
+        mp = "Data[].SPPoint_FluxAxis_Corrections[].ApFrac_Name";
+        result = factory.newInstanceByModelPath( ds, mp );
+        assertTrue( result.getClass() == Quantity.class );
+        assertEquals("SpectralDataset_Data[].SPPoint_FluxAxis_Corrections[].ApFrac_Name", ((Quantity)result).getModelpath());
+        
+        //   - From internal proxy    -> Leaf
+        CharacterizationAxis axis = (CharacterizationAxis)factory.newInstance(CharacterizationAxis.class);
+        mp = "Coverage_Bounds_Extent";
+        result = factory.newInstanceByModelPath( axis, mp );
+        assertTrue( result.getClass() == Quantity.class );
+        assertEquals("CharacterizationAxis_Coverage_Bounds_Extent", ((Quantity)result).getModelpath());
+        
+
+        //   - Invalid model path
+        result = null;
+        caught = false;
+        mp = "Coverage_Blah_Extent";
+        try{
+          result = factory.newInstanceByModelPath( axis, mp );
+        }
+        catch( IllegalArgumentException ex ){
+            caught = true;
+        }
+        assertTrue(caught);
+        assertNull(result);
+        
     }
 }

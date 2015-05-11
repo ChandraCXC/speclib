@@ -20,7 +20,7 @@ import java.util.Set;
  *
  * @author mdittmar
  */
-public class SpectralDocument {
+public class ModelDocument {
 
     // Storage map.
     //   Key    = Model Path (mp)
@@ -28,7 +28,7 @@ public class SpectralDocument {
     private LinkedHashMap<String, Object> doc;
     
     // constructor
-    public SpectralDocument(){
+    public ModelDocument(){
         this.doc = new LinkedHashMap<String, Object>();
     }
     

@@ -16,12 +16,14 @@ import static org.junit.Assert.*;
  * @author mdittmar
  */
 public class UtypeTest {
+    static boolean verbose;
     
     public UtypeTest() {
     }
     
     @BeforeClass
     public static void setUpClass() {
+        verbose = false;
     }
     
     @AfterClass
@@ -41,7 +43,7 @@ public class UtypeTest {
      */
     @Test
     public void testConstructors() {
-        System.out.println("Constructor");
+        if (verbose){System.out.println("Test Constructors");}
         Utype instance = null;
         boolean caught;
         
@@ -115,7 +117,8 @@ public class UtypeTest {
      */
     @Test
     public void testGetModelPath() {
-        System.out.println("getModelPath");
+        if (verbose){System.out.println("Test getModelPath");}
+
         Utype instance = new Utype( "CoordSys_TimeFrame_TimeScale", "CoordSys.TimeFrame.TimeScale", "stc" );
         String expResult = "CoordSys_TimeFrame_TimeScale";
         String result = instance.getModelPath();
@@ -127,7 +130,8 @@ public class UtypeTest {
      */
     @Test
     public void testGetTag() {
-        System.out.println("getTag");
+        if (verbose){System.out.println("Test getTag");}
+
         Utype instance = new Utype( "CoordSys_TimeFrame_TimeScale", "CoordSys.TimeFrame.TimeScale", "stc" );
         String expResult = "stc:CoordSys.TimeFrame.TimeScale";
         String result = instance.getTag();
@@ -139,7 +143,8 @@ public class UtypeTest {
      */
     @Test
     public void testGetTagNoPrefix() {
-        System.out.println("getTagNoPrefix");
+        if (verbose){System.out.println("Test getTagNoPrefix");}
+
         Utype instance = new Utype( "CoordSys_TimeFrame_TimeScale", "CoordSys.TimeFrame.TimeScale", "stc" );
         String expResult = "CoordSys.TimeFrame.TimeScale";
         String result = instance.getTagNoPrefix();
@@ -151,7 +156,8 @@ public class UtypeTest {
      */
     @Test
     public void testMatchModelPath() {
-        System.out.println("matchModelPath");
+        if (verbose){System.out.println("Test matchModelPath");}
+
         String modelpath;
         Utype instance = new Utype( "CoordSys_TimeFrame_TimeScale", "CoordSys.TimeFrame.TimeScale", "stc" );
 
@@ -192,7 +198,8 @@ public class UtypeTest {
      */
     @Test
     public void testMatchTag() {
-        System.out.println("matchTag");
+        if (verbose){System.out.println("Test matchTag");}
+
         String label;
         Utype instance = new Utype( "CoordSys_TimeFrame_TimeScale", "CoordSys.TimeFrame.TimeScale", "stc" );
 
@@ -251,7 +258,8 @@ public class UtypeTest {
      */
     @Test
     public void testEquals() {
-        System.out.println("equals");
+        if (verbose){System.out.println("Test Equals");}
+
         Utype a = new Utype( "CoordSys_TimeFrame_TimeScale", "CoordSys.TimeFrame.TimeScale", "stc" );
         Utype b = new Utype( "CoordSys_TimeFrame_TimeScale", "CoOrDSyS.TiMeFrAmE.TiMEScAle", "StC" );
         Utype c = new Utype( "CoordSys_TimeFrame_TimeScale", "CoordSys.TimeFrame.TimeScale", "spec" );

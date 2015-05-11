@@ -16,12 +16,14 @@ import static org.junit.Assert.*;
  * @author mdittmar
  */
 public class FileFormatTest {
+    static boolean verbose;
      
     public FileFormatTest() {
     }
     
     @BeforeClass
     public static void setUpClass() {
+        verbose = false;
     }
     
     @AfterClass
@@ -41,7 +43,7 @@ public class FileFormatTest {
      */
     @Test
     public void testValues() {
-        System.out.println("values");
+        if (verbose){ System.out.println("Test values");}
         FileFormat[] result = FileFormat.values();
         
         assertEquals(FileFormat.VOT, result[0]);
@@ -53,7 +55,7 @@ public class FileFormatTest {
      */
     @Test
     public void testValueOf() {
-        System.out.println("valueOf");
+        if (verbose){ System.out.println("Test valueOf");}
         String name = "";
         FileFormat result;
         FileFormat expResult;
@@ -82,7 +84,7 @@ public class FileFormatTest {
      */
     @Test
     public void testToString() {
-        System.out.println("toString");
+        if (verbose){ System.out.println("Test toString");}
         String expResult;
         String result;
         FileFormat instance;
@@ -104,7 +106,7 @@ public class FileFormatTest {
      */
     @Test
     public void testExten() {
-        System.out.println("exten");
+        if (verbose){ System.out.println("exten");}
         FileFormat instance = FileFormat.VOT;
         String expResult = "vot";
         String result = instance.exten();

@@ -6,8 +6,9 @@ package cfa.vo.speclib.io;
 
 import cfa.vo.speclib.Quantity;
 import cfa.vo.speclib.SpectralDataset;
-import cfa.vo.speclib.doc.SpectralDocument;
-import cfa.vo.speclib.doc.SpectralProxy;
+import cfa.vo.speclib.doc.MPArrayList;
+import cfa.vo.speclib.doc.ModelDocument;
+import cfa.vo.speclib.doc.ModelProxy;
 import cfa.vo.vomodel.Model;
 import cfa.vo.vomodel.ModelFactory;
 import java.io.BufferedWriter;
@@ -19,7 +20,6 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -32,7 +32,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
-import uk.ac.starlink.votable.DataFormat;
 import uk.ac.starlink.votable.FieldElement;
 import uk.ac.starlink.votable.FieldRefElement;
 import uk.ac.starlink.votable.GroupElement;
@@ -40,8 +39,6 @@ import uk.ac.starlink.votable.ParamElement;
 import uk.ac.starlink.votable.TableElement;
 import uk.ac.starlink.votable.VODocument;
 import uk.ac.starlink.votable.VOElement;
-import uk.ac.starlink.votable.VOTableVersion;
-import uk.ac.starlink.votable.VOTableWriter;
 
 /**
  * This class implements the IFileIO interface, providing methods to 
@@ -148,20 +145,19 @@ public class VOTableIO implements IFileIO {
      */
     public void write(OutputStream os, SpectralDataset ds) throws IOException
     {   
-        //Open Writers
-        BufferedWriter buf = new BufferedWriter( new OutputStreamWriter( os ));
-        VOTableWriter writer = new VOTableWriter( DataFormat.TABLEDATA, true, VOTableVersion.V13);
-        
         // Convert SpectralDataset to W3C DOM Document using STIL package.
         Document vot = convertToVOT( ds );
+        DOMSource source = new DOMSource( vot );
+
+        // Setup output stream
+        BufferedWriter buf = new BufferedWriter( new OutputStreamWriter( os ));
+        StreamResult strm = new StreamResult(buf);
 
         // Create DOM Transformer, flush Document to stream.
         try {
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount","2");
             transformer.setOutputProperty( OutputKeys.INDENT, "yes");
-            DOMSource source = new DOMSource( vot );
-            StreamResult strm = new StreamResult(buf);
             transformer.transform(source, strm);
             
         //TODO - change exception action?
@@ -193,10 +189,10 @@ public class VOTableIO implements IFileIO {
         VOElement  res;
 
         // Extract underlying SpectralDocument from input dataset
-        SpectralDocument spdoc = null;
+        ModelDocument spdoc = null;
         if ( Proxy.isProxyClass( ds.getClass() ))
         {
-           SpectralProxy h = (SpectralProxy)Proxy.getInvocationHandler( ds );
+           ModelProxy h = (ModelProxy)Proxy.getInvocationHandler( ds );
            spdoc = h.getDoc();
         }
         else
@@ -352,7 +348,7 @@ public class VOTableIO implements IFileIO {
      * 
      * @throws IOException 
      */
-    private void addGroupElement( VOElement parent, SpectralDocument node ) throws IOException
+    private void addGroupElement( VOElement parent, ModelDocument node ) throws IOException
     {
         // get owner document for creating new elements.
         Document document = parent.getOwnerDocument();
@@ -472,6 +468,7 @@ public class VOTableIO implements IFileIO {
           }
           else
           {
+              System.out.println("MCD TEMP: Bad element "+q.getModelpath());
               throw new UnsupportedOperationException("Datatype not yet supported. ("+dtype+")");
           }
           
@@ -497,7 +494,7 @@ public class VOTableIO implements IFileIO {
      * 
      * @throws IOException 
      */
-    private void addTableElement( VOElement parent, SpectralDocument node ) throws IOException
+    private void addTableElement( VOElement parent, ModelDocument node ) throws IOException
     {
         // get owner document for creating new elements.
         Document document = parent.getOwnerDocument();
@@ -533,7 +530,7 @@ public class VOTableIO implements IFileIO {
      * 
      * @throws IOException 
      */
-    private void addNodeContent( VOElement parent, SpectralDocument node, int row ) throws IOException
+    private void addNodeContent( VOElement parent, ModelDocument node, int row ) throws IOException
     {
         // Iterate through node objects, add each to parent document.
         //   Lists which are not FIELDs get iterated, so that addObjectContent
@@ -542,9 +539,9 @@ public class VOTableIO implements IFileIO {
         {
             Object obj = node.get( mp );
             // TODO - remove hack.. 
-            if ( obj.getClass().equals( ArrayList.class ) && !mp.endsWith("Dataset_Data"))
+            if ( obj.getClass().equals( MPArrayList.class ) && !mp.endsWith("Dataset_Data"))
             {
-                for (Object item : (ArrayList)obj )
+                for (Object item : (MPArrayList)obj )
                   this.addObjectContent( parent, item, row );
             }
             else
@@ -570,33 +567,30 @@ public class VOTableIO implements IFileIO {
     {
         if ( obj.getClass().equals( Quantity.class ))
         {
-          // Quantity Object => ParamElement or FieldValue
+          // Quantity Object => ParamElement or Column Value
           Quantity q = (Quantity)obj;
           if ( q.getModelpath() == null )
             System.out.println("MCD TEMP: Quantity with NULL modelpath."+q.toString());
-          String mp = q.getModelpath().replaceFirst("SPPoint", "SpectralDataset_Data"); // TODO - remove hack!
-          if ( mp.contains("Dataset_Data_"))
-          {
-              q.setModelpath(mp); // TODO - remove.. part of hack.
-              this.addColumnValue( q, row );
-          }
+          String mp = q.getModelpath();
+          if ( row >= 0 )
+              this.addColumnValue( q, row ); // Adding column data
           else
-            this.addParamElement( parent, (Quantity)obj );
+            this.addParamElement( parent, (Quantity)obj );  // Adding Param
         }
-        else if ( obj.getClass().equals( ArrayList.class ) )
+        else if ( obj.getClass().equals( MPArrayList.class ) )
         {
             // Lists are mapped to FIELDS.  The list may contain Quantities
             //  defining a single field, or a complex object defining many
             //  fields (ie: SPPoint).
-            this.addColumns( parent, (ArrayList)obj );
+            this.addColumns( parent, (MPArrayList)obj );
         }
         else if ( Proxy.isProxyClass( obj.getClass() ))
         {
           // Proxy Object => GroupElement
           // If row >= 0, we are flushing FIELD objects, and should not create
           // the Group on each iteration.
-          SpectralProxy h = (SpectralProxy)Proxy.getInvocationHandler( obj );
-          SpectralDocument newnode = h.getDoc();
+          ModelProxy h = (ModelProxy)Proxy.getInvocationHandler( obj );
+          ModelDocument newnode = h.getDoc();
           if ( row < 0 )
               this.addGroupElement( parent, newnode );
           else
@@ -606,6 +600,7 @@ public class VOTableIO implements IFileIO {
         else
         {
             System.out.println("MCD TEMP: Missed Object.");
+            throw new UnsupportedOperationException("Unsupported Type encountered - "+obj.getClass().getSimpleName());
             // TODO Error
         }
     }
@@ -626,7 +621,7 @@ public class VOTableIO implements IFileIO {
      * 
      * @throws IOException 
      */
-     private void addColumns( VOElement parent, ArrayList fieldobject ) throws IOException
+     private void addColumns( VOElement parent, MPArrayList fieldobject ) throws IOException
     {
         // List length determines #rows in fields.
         int nrows = fieldobject.size();
@@ -671,8 +666,7 @@ public class VOTableIO implements IFileIO {
         if ( obj.getClass().equals( Quantity.class ))
         {
             Quantity q = (Quantity)obj;
-            String mp = q.getModelpath().replaceFirst("SPPoint", "SpectralDataset_Data"); // TODO - remove hack!
-            q.setModelpath(mp);
+            String mp = q.getModelpath();
 
             // Add FieldRef to document, FIELD to tabledata
             FieldElement field = addFieldRefElement(parent, q );
@@ -683,8 +677,8 @@ public class VOTableIO implements IFileIO {
         }
         else if ( Proxy.isProxyClass( obj.getClass() ))
         {
-            SpectralProxy h = (SpectralProxy)Proxy.getInvocationHandler( obj );
-            SpectralDocument newnode = h.getDoc();
+            ModelProxy h = (ModelProxy)Proxy.getInvocationHandler( obj );
+            ModelDocument newnode = h.getDoc();
 
             // Add Group to parent (do not use addGroup()
             Document document = parent.getOwnerDocument();
@@ -695,10 +689,10 @@ public class VOTableIO implements IFileIO {
             for (String mp : newnode.getKeys())
                 addColumns( group, newnode.get(mp), nrows );
         }
-        else if ( obj.getClass().equals( ArrayList.class ) )
+        else if ( obj.getClass().equals( MPArrayList.class ) )
         {
             // List of objects, each of which is a Column.
-            for (Object item : (ArrayList)obj )
+            for (Object item : (MPArrayList)obj )
                 this.addColumns( parent, item, nrows );
         }
         else

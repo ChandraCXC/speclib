@@ -14,7 +14,7 @@ import cfa.vo.speclib.ObservingElement;
 import cfa.vo.speclib.Quantity;
 import cfa.vo.speclib.SPPoint;
 import cfa.vo.speclib.SpectralDataset;
-import cfa.vo.speclib.doc.SpectralFactory;
+import cfa.vo.speclib.doc.ModelObjectFactory;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,6 +25,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -42,11 +45,14 @@ import static org.junit.Assert.*;
  */
 public class VOTableIOTest {
     
+    static boolean verbose;
+
     public VOTableIOTest() {
     }
     
     @BeforeClass
     public static void setUpClass() {
+      verbose = false;
     }
     
     @AfterClass
@@ -66,7 +72,7 @@ public class VOTableIOTest {
      */
     @Test
     public void testRead_URL() {
-        System.out.println("read");
+        if (verbose){ System.out.println("Test read(URL)"); }
         URL file = null;
         VOTableIO instance = new VOTableIO();
         SpectralDataset expResult = null;
@@ -88,7 +94,7 @@ public class VOTableIOTest {
      */
     @Test
     public void testRead_InputStream() {
-        System.out.println("read");
+        if (verbose){ System.out.println("Test read(InputStream)");}
         InputStream is = null;
         VOTableIO instance = new VOTableIO();
         SpectralDataset expResult = null;
@@ -110,7 +116,7 @@ public class VOTableIOTest {
      */
     @Test
     public void testWrite_URL_SpectralDataset() {
-        System.out.println("write");
+        if (verbose){ System.out.println("Test write(URL)");}
 
         VOTableIO instance = new VOTableIO();
         URL outroot = this.getClass().getResource("/test_data");
@@ -129,13 +135,29 @@ public class VOTableIOTest {
 
         // Write as VOTable.
         try {
-            instance.write( outfile, doc);
+            instance.write( outfile, doc );
         } catch (IOException ex) {
             fail("Error writing to output file.");
         }
-        
+
         // TODO Validate results against baseline.
-        // See: http://stackoverflow.com/questions/466841/comparing-text-files-w-junit
+        tmpstr = outroot.getFile()+"/baseline/spectrum_2p0.vot";
+        String savfile = tmpstr.replaceFirst(".*:", "");
+        tmpstr = outfile.getFile();
+        String runfile = tmpstr.replaceFirst(".*:", "");
+        
+        try {
+            List<String> savdata = Files.readAllLines(Paths.get(savfile),Charset.defaultCharset());
+            for ( int ii = 0; ii < savdata.size(); ii++ )
+               savdata.set(ii, savdata.get(ii).replaceAll("........-....-....-....-............", "ID"));
+            List<String> outdata = Files.readAllLines(Paths.get(runfile),Charset.defaultCharset());
+            for ( int ii = 0; ii < outdata.size(); ii++ )
+               outdata.set(ii, outdata.get(ii).replaceAll("........-....-....-....-............", "ID"));
+
+            assertEquals("Spectrum files differ!", savdata, outdata );
+        } catch (IOException ex) {
+            Logger.getLogger(VOTableIOTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -143,7 +165,7 @@ public class VOTableIOTest {
      */
     @Test
     public void testWrite_OutputStream_SpectralDataset() {
-        System.out.println("write");
+        if (verbose){ System.out.println("Test write(OutputStream)");}
         OutputStream os = null;
         
         // Generate output file name.
@@ -168,15 +190,17 @@ public class VOTableIOTest {
             System.out.println("MCD TEMP: Write Error - " + ex.toString());
             fail("Error writing to output file.");            
         }
+        
+        
     }
     
     
     private SpectralDataset make_test_spectrum(){
-        SpectralFactory factory;
+        ModelObjectFactory factory;
         SpectralDataset ds;
         Quantity q;
 
-        factory = new SpectralFactory();
+        factory = new ModelObjectFactory();
         ds = (SpectralDataset)factory.newInstance( SpectralDataset.class );
  
         try 
@@ -303,7 +327,8 @@ public class VOTableIOTest {
         for ( int ii=0; ii<3; ii++)
         {
             //TODO - Should not have to go back to the factory to generate 
-            //       new instances of List entries.. 
+            //       new instances of List entries.. not sure how to tell
+            //       it which flavor of content is wanted (ie subclass of List type)
             SPPoint point = (SPPoint)factory.newInstance( SPPoint.class );
 
             c10.setValue(freq[ii]);

@@ -50,7 +50,7 @@ public class TestSpectralDocument {
         Quantity q = new Quantity("target", "NGC-1701", "", "meta.id;src"  );
         q.setModelpath("SPEC_TARGET_NAME");
                 
-        SpectralDocument doc = new SpectralDocument();
+        ModelDocument doc = new ModelDocument();
         if (verbose){
             System.out.println("New Document:");
             System.out.println( doc.toSimpleString() );

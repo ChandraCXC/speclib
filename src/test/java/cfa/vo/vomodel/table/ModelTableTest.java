@@ -30,7 +30,7 @@ public class ModelTableTest {
     
     @BeforeClass
     public static void setUpClass() {
-        verbose = true;
+        verbose = false;
         try{
             model = new ModelTable();
             model.read( ModelTable.class.getResource("/spectrum_2p0.txt") );

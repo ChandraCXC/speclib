@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
  */
 public class TestInvocation {
 
-    static SpectralFactory factory;
+    static ModelObjectFactory factory;
     static boolean verbose;
 
     public TestInvocation() {
@@ -48,7 +48,7 @@ public class TestInvocation {
             System.out.println("Create New Factory.");
 
         // create a Spectral object factory
-        factory = new SpectralFactory();
+        factory = new ModelObjectFactory();
     }
     
     @AfterClass

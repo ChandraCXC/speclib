@@ -59,7 +59,7 @@ public class ModelFactory {
         String resourceFile;
         URL resourceURL;
 
-        boolean fail=false;
+//        boolean fail=false;
         
         if ( modelName.equals("SPECTRUM-1.03") )
         {
