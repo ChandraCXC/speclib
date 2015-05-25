@@ -13,9 +13,9 @@ import java.util.List;
 public interface CharacterizationAxis {
     
     //TODO: Name,UCD,Unit properties..  as Quantity?
-    public String getName();
-    public String getUCD();
-    public String getUnit();
+    public Quantity<String> getName();
+    public Quantity<String> getUCD();
+    public Quantity<String> getUnit();
     public Quantity<String> getCalibrationStatus();
     public Accuracy getAccuracy();
     public CoordSys getCoordSys();
@@ -25,8 +25,11 @@ public interface CharacterizationAxis {
     public List<QualityCode> getQualityDefs();
     
     public void setName( String name );
+    public void setName( Quantity<String> value );
     public void setUCD( String ucd );
+    public void setUCD( Quantity<String> value );
     public void setUnit( String unit );
+    public void setUnit( Quantity<String> value );
     public void setCalibrationStatus( String value );
     public void setCalibrationStatus( Quantity<String> value );
     public void setAccuracy( Accuracy value );

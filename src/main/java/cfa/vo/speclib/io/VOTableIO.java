@@ -8,6 +8,7 @@ import cfa.vo.speclib.Quantity;
 import cfa.vo.speclib.SpectralDataset;
 import cfa.vo.speclib.doc.MPArrayList;
 import cfa.vo.speclib.doc.ModelDocument;
+import cfa.vo.speclib.doc.ModelObjectFactory;
 import cfa.vo.speclib.doc.ModelProxy;
 import cfa.vo.vomodel.Model;
 import cfa.vo.vomodel.ModelFactory;
@@ -32,6 +33,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 import uk.ac.starlink.votable.FieldElement;
 import uk.ac.starlink.votable.FieldRefElement;
 import uk.ac.starlink.votable.GroupElement;
@@ -39,6 +41,7 @@ import uk.ac.starlink.votable.ParamElement;
 import uk.ac.starlink.votable.TableElement;
 import uk.ac.starlink.votable.VODocument;
 import uk.ac.starlink.votable.VOElement;
+import uk.ac.starlink.votable.VOElementFactory;
 
 /**
  * This class implements the IFileIO interface, providing methods to 
@@ -90,9 +93,34 @@ public class VOTableIO implements IFileIO {
      *  @return doc
      *    {@link cfa.vo.speclib.SpectralDataset }
      */
-    //TODO:  Implement
     public SpectralDataset read(URL file) {
-        throw new UnsupportedOperationException("Not supported yet.");
+
+        SpectralDataset result;
+        VOElement top = null;
+
+        // Use STIL package factory to interpret file to VOTable elements.
+        try {
+            top = new VOElementFactory().makeVOElement( file );
+        } catch (SAXException ex) {
+            Logger.getLogger(VOTableIO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(VOTableIO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // Use VOTMapper to convert the VOElement hierarchy to ModelDocument
+        ModelDocument doc = new VOTMapper().convert( top );
+        
+        // Use ModelObjectFactory to provide Proxy interface
+        // NOTE: everything above is generic, though the mapper will use the
+        //       model defintion, it is auto-determined.  Here, we expect a 
+        //       specific type of Proxy to be returned.  The Factory is 
+        //       currently only setup for 1 model, so this will work, but 
+        //       this part of the thread is model specific.  We'll either 
+        //       need to determine the model type from the document to 
+        //       initialize the factory, or take a different approach.
+        result = (SpectralDataset)new ModelObjectFactory().build( doc );
+        
+        return result;
     }
 
     /** Read Spectral Dataset from provided input stream
@@ -599,9 +627,7 @@ public class VOTableIO implements IFileIO {
         }
         else
         {
-            System.out.println("MCD TEMP: Missed Object.");
             throw new UnsupportedOperationException("Unsupported Type encountered - "+obj.getClass().getSimpleName());
-            // TODO Error
         }
     }
     
@@ -751,7 +777,7 @@ public class VOTableIO implements IFileIO {
         VOElement data = (VOElement) document.createElement(DOM_TAG_DATA);
         parent.appendChild( data );
         VOElement table = (VOElement) document.createElement(DOM_TAG_TABLEDATA);
-        parent.appendChild( table );
+        data.appendChild( table );
         
         // Build and add Element for each row of data.
         VOElement tr;

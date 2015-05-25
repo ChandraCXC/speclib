@@ -14,7 +14,7 @@ public interface CoordSys {
     
     public Quantity<String> getID();
     public Frame getCoordFrame( int index );
-    public List<Frame> getCoordFrames();
+    public List<CoordFrame> getCoordFrames();
     public SpaceFrame getSpaceFrame();
     public SpectralFrame getSpectralFrame();
     public TimeFrame getTimeFrame();
@@ -23,7 +23,8 @@ public interface CoordSys {
     public List<FluxFrame> getFluxFrames();
     
     public void setID( String value );
-    public void setFrame( int index, Frame value );
+    public void setCoordFrame( int index, CoordFrame value );
+    public void setCoordFrames( List<CoordFrame> values );
     public void setSpaceFrame( SpaceFrame value );
     public void setSpectralFrame( SpectralFrame value );
     public void setTimeFrame( TimeFrame value );

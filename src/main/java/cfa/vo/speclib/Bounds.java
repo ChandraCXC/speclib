@@ -11,14 +11,22 @@ package cfa.vo.speclib;
 public interface Bounds {
     
     public Quantity<Double> getExtent();
-    public Interval getLimits();
+    public Quantity<Double> getStart();
+    public Quantity<Double> getStop();
+    //    public Interval getLimits();
     
     public void setExtent( Double value );
+    public void setStart( Double value );
+    public void setStop( Double value );
     
     public void setExtent( Quantity<Double> value );
-    public void setLimits( Interval value );
+    public void setStart( Quantity<Double> value );
+    public void setStop( Quantity<Double> value );
+//    public void setLimits( Interval value );
     
     public boolean isSetExtent();
-    public boolean isSetLimits();
+    public boolean isSetStart();
+    public boolean isSetStop();
+//    public boolean isSetLimits();
     
 }

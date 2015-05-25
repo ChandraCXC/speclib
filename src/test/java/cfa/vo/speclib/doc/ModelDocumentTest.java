@@ -17,11 +17,11 @@ import static org.junit.Assert.*;
  *
  * @author work
  */
-public class TestSpectralDocument {
+public class ModelDocumentTest {
   
     static boolean verbose;
     
-    public TestSpectralDocument() {
+    public ModelDocumentTest() {
     }
     
     @BeforeClass

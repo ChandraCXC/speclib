@@ -4,6 +4,8 @@
  */
 package cfa.vo.speclib;
 
+import java.util.List;
+
 /**
  * Provides information specifying what kind of dataset, what data models 
  * are used and other information to aid in data discovery and access.
@@ -18,7 +20,8 @@ public interface Dataset {
     public DataModel getDataModel();
     public Curation getCuration();
     public Characterization getCharacterization();
-    public CoordSys getCoordSys();
+    public List<CoordSys> getCoordSys();
+//    public CoordSys getCoordSys();
     public DataID getDataID();
     public Derived getDerived();
     public ObsConfig getObsConfig();
@@ -33,7 +36,8 @@ public interface Dataset {
     public void setDataModel(DataModel value);
     public void setCuration( Curation value );
     public void setCharacterization( Characterization value );
-    public void setCoordSys( CoordSys value );
+    public void setCoordSys( int index, CoordSys value );
+    public void setCollections( List<CoordSys> values );
     public void setDataID( DataID value );
     public void setDerived( Derived value );
     public void setObsConfig( ObsConfig value );

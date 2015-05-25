@@ -10,6 +10,7 @@ package cfa.vo.speclib;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import org.junit.Test;
@@ -28,6 +29,45 @@ public class TestQuantity
         verbose = false;
     }
 
+    @Test
+    public void testCopy()
+    {
+        Quantity a = new Quantity();
+        Quantity b = new Quantity();
+        Integer value = 1701;
+
+        a.setModelpath("SPEC_TARGET_NAME");
+        a.setID("001");
+        a.setName("target");
+        a.setDescription("Target name.");
+        a.setUnit("");
+        a.setUCD("meta.id;src");
+        a.setUtype("spec:Target.Name");
+        a.setValue( value );
+
+        // Copy content
+        b.fill(a);
+        
+        // Verify content is transferred.
+        assertEquals("001", b.getID());
+        assertEquals("SPEC_TARGET_NAME", b.getModelpath());
+        assertEquals("target", b.getName());
+        assertEquals("Target name.", b.getDescription());
+        assertEquals("", b.getUnit());
+        assertEquals("meta.id;src", b.getUCD());
+        assertEquals("spec:Target.Name", b.getUtype());
+        assertEquals( value, b.getValue());
+        
+        // Check we did value copy right.. should NOT be same object
+        value = 9999;
+        assertEquals( "1701", b.getValue().toString());
+        assertEquals( "1701", a.getValue().toString());
+        b.setValue(value);
+        assertEquals( "9999", b.getValue().toString());
+        assertEquals( "1701", a.getValue().toString());
+        
+    }
+    
     @Test
     public void testBasic1() throws Exception 
     {

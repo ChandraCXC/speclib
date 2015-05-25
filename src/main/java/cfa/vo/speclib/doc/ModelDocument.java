@@ -138,7 +138,7 @@ public class ModelDocument {
                 
                 List inarr;
                 Iterator recIter;
-                if ( item.getClass() == ArrayList.class )
+                if ( item.getClass() == MPArrayList.class )
                 {
                     inarr = (List)item;
                 }
@@ -160,6 +160,8 @@ public class ModelDocument {
                         result.append(indent).append( nodes[n-1] ).append(": " );
                         if ( elem.getClass() == Quantity.class )
                             result.append( ((Quantity)elem).toSimpleString() );
+                        else if ( elem.getClass() == ModelDocument.class )
+                            result.append(newLine).append(((ModelDocument)elem).toString() );
                         else
                             result.append(elem.getClass().getSimpleName());
                         result.append(newLine);

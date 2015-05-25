@@ -35,21 +35,31 @@ public class Quantity<T> {
     
     private T value;
     
-    public Quantity(){}
+    public Quantity()
+    {
+        this(null, null, null, null);
+    }
     
     public Quantity( T value )
     {
-        this.value = value;
-        this.dtype = value.getClass();
+        this(null, value, null, null );
     }
 
     public Quantity( String name, T value, String unit, String ucd )
     {
+        this.modelpath = null;
+        this.id = null;
+        
         this.name = name;
+        this.description = null;
         this.value = value;
         this.unit = unit;
         this.ucd = ucd;
-        this.dtype = value.getClass();
+         this.utype = null;
+        if ( value != null )
+          this.dtype = value.getClass();
+        else
+          this.dtype = null;
 }
 
     // Accessor Methods (Get)
@@ -238,11 +248,37 @@ public class Quantity<T> {
             this.dtype = inval.getClass();
         else
             if ( (this.dtype != null )&&(! inval.getClass().equals(this.dtype)))
-                throw new IllegalArgumentException("Value must be of type "+this.dtype.getSimpleName());
+                throw new IllegalArgumentException("Value must be of type "+this.dtype.getSimpleName()+" on "+this.modelpath);
 
         this.value = inval;
     }
    
+    /**
+     * Fill content of this Quanity object with the content of the provided
+     * source Quantity.  Facilitates copying a Quantity to an existing object.
+     * 
+     * @param src
+     *    Source Quantity whose content is to be copied.
+     */
+    public void fill( Quantity src )
+    {
+        if (src.isSetID())
+          this.id = src.getID();
+        if (src.isSetDescription())
+          this.description = src.getDescription();
+        if (src.isSetModelpath())
+          this.modelpath = src.getModelpath();
+        if (src.isSetName())
+          this.name = src.getName();
+        if (src.isSetUCD())
+          this.ucd = src.getUCD();
+        if (src.isSetUnit())
+          this.unit = src.getUnit();
+        if (src.isSetUtype())
+          this.utype = src.getUtype();
+        if (src.isSetValue())
+          this.setValue( (T)src.getValue() );
+    }
     
     public boolean isSetModelpath()
     {

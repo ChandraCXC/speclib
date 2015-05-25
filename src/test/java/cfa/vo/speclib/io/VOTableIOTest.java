@@ -6,14 +6,23 @@ package cfa.vo.speclib.io;
 
 import cfa.vo.speclib.ApFrac;
 import cfa.vo.speclib.Bandpass;
+import cfa.vo.speclib.CharacterizationAxis;
+import cfa.vo.speclib.CoordFrame;
+import cfa.vo.speclib.CoordSys;
 import cfa.vo.speclib.Correction;
 import cfa.vo.speclib.DataSource;
 import cfa.vo.speclib.Facility;
+import cfa.vo.speclib.FluxCharAxis;
+import cfa.vo.speclib.FluxFrame;
 import cfa.vo.speclib.Instrument;
 import cfa.vo.speclib.ObservingElement;
+import cfa.vo.speclib.QualityCode;
 import cfa.vo.speclib.Quantity;
 import cfa.vo.speclib.SPPoint;
+import cfa.vo.speclib.SpatialCharAxis;
+import cfa.vo.speclib.SpectralCharAxis;
 import cfa.vo.speclib.SpectralDataset;
+import cfa.vo.speclib.TimeCharAxis;
 import cfa.vo.speclib.doc.ModelObjectFactory;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -52,7 +61,7 @@ public class VOTableIOTest {
     
     @BeforeClass
     public static void setUpClass() {
-      verbose = false;
+      verbose = true;
     }
     
     @AfterClass
@@ -73,20 +82,40 @@ public class VOTableIOTest {
     @Test
     public void testRead_URL() {
         if (verbose){ System.out.println("Test read(URL)"); }
-        URL file = null;
+        URL file = this.getClass().getResource("/test_data/baseline/spectrum_2p0.vot");
         VOTableIO instance = new VOTableIO();
         SpectralDataset expResult = null;
         SpectralDataset result;
         boolean ok;
+        result = instance.read(file);
         
-        ok = false;
-        try 
-        {
-           result = instance.read(file);
-           assertEquals(expResult, result);
-        }
-        catch (UnsupportedOperationException ex) { ok = true; }
-        assertTrue( ok );
+        // Verify by checking selected values.
+        Quantity q;
+        
+        // URL element
+        q = result.getDataModel().getURL();
+        assertEquals("http://www.ivoa.net/sample/spectral",((URL)q.getValue()).toString());
+
+        // Double element
+        q = result.getTarget().getRedshift();
+        assertEquals((Double)0.15833, q.getValue());
+        
+        // String element
+        q = result.getCuration().getPublisher();
+        assertEquals("Chandra X-ray Center",q.getValue());
+        
+        // Element through array
+        q = result.getObsConfig().getObservingElements().get(0).getName();
+        assertEquals("CHANDRA", q.getValue());
+        
+        // Array Element
+        q = result.getDataID().getCollections().get(2);
+        assertEquals("Third Cambridge Catalogue of Radio Sources", q.getValue());
+        
+        // Data Element
+        q = result.getData().get(1).getSpectralAxis().getAccuracy().getStatError();
+        assertEquals( 3.0e10, q.getValue());
+
     }
 
     /**
@@ -140,24 +169,14 @@ public class VOTableIOTest {
             fail("Error writing to output file.");
         }
 
-        // TODO Validate results against baseline.
+        // Validate results against baseline.
         tmpstr = outroot.getFile()+"/baseline/spectrum_2p0.vot";
         String savfile = tmpstr.replaceFirst(".*:", "");
         tmpstr = outfile.getFile();
         String runfile = tmpstr.replaceFirst(".*:", "");
         
-        try {
-            List<String> savdata = Files.readAllLines(Paths.get(savfile),Charset.defaultCharset());
-            for ( int ii = 0; ii < savdata.size(); ii++ )
-               savdata.set(ii, savdata.get(ii).replaceAll("........-....-....-....-............", "ID"));
-            List<String> outdata = Files.readAllLines(Paths.get(runfile),Charset.defaultCharset());
-            for ( int ii = 0; ii < outdata.size(); ii++ )
-               outdata.set(ii, outdata.get(ii).replaceAll("........-....-....-....-............", "ID"));
-
-            assertEquals("Spectrum files differ!", savdata, outdata );
-        } catch (IOException ex) {
-            Logger.getLogger(VOTableIOTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.compare_files( savfile, runfile );
+        
     }
 
     /**
@@ -190,11 +209,103 @@ public class VOTableIOTest {
             System.out.println("MCD TEMP: Write Error - " + ex.toString());
             fail("Error writing to output file.");            
         }
-        
-        
     }
     
-    
+    /**
+     * Test read/write of VOTable is lossless.
+     */
+    @Test
+    public void testRoundRobin() {
+        if (verbose){ System.out.println("Test RoundRobin"); }
+        URL infile = this.getClass().getResource("/test_data/baseline/spectrum_2p0.vot");
+        URL outroot = this.getClass().getResource("/test_data");
+        URL outfile = null;
+
+        // Generate output file name.
+        try {
+            String tmpstr = outroot.toString() + "/out/spectrum_rr.vot";
+            outfile = new URL( tmpstr );
+        } catch (MalformedURLException ex) {
+            fail("Output file location not found.");
+        }
+        
+        // Read baseline file.
+        VOTableIO instance = new VOTableIO();
+        SpectralDataset result;
+        result = instance.read(infile);
+        
+        // Pull most troublesome element from the dataset
+        boolean ok = result.getData().get(0).getFluxAxis().getCorrections(0).isSetApplied();
+        assertTrue( ok );
+        
+        // Write as VOTable.
+        try {
+            instance.write( outfile, result );
+        } catch (IOException ex) {
+            fail("Error writing to output file.");
+        }
+        
+        // Compare against baseline.
+        String savfile = infile.getFile().replaceFirst(".*:", "");
+        String runfile = outfile.getFile().replaceFirst(".*:", "");
+        
+        this.compare_files( savfile, runfile );
+        
+    }
+
+    private void compare_files( String savfile, String runfile )
+    {
+        int ndiffs = 0;
+        try {
+            List<String> savdata = Files.readAllLines(Paths.get(savfile),Charset.defaultCharset());
+            List<String> outdata = Files.readAllLines(Paths.get(runfile),Charset.defaultCharset());
+
+//            assertEquals( "File sizes differ!", savdata.size(), outdata.size());
+            int nrows = savdata.size();
+            if ( savdata.size() != outdata.size())
+            {
+                System.out.println("File sizes differ "+savdata.size()+" vs "+outdata.size());
+                ndiffs++;
+                if ( outdata.size() > nrows )
+                    nrows = outdata.size();
+            }
+
+            String sline;
+            String oline;
+            for ( int ii = 0; ii < nrows; ii++ )
+            {
+               if ( ii >= savdata.size() )
+                   sline = "MISSING";
+               else
+               {
+                 sline = savdata.get(ii).replaceAll("........-....-....-....-............", "ID");
+                 savdata.set(ii, sline);
+               }
+               if ( ii >= outdata.size() )
+                   oline = "MISSING";
+               else
+               {
+                 oline = outdata.get(ii).replaceAll("........-....-....-....-............", "ID");
+                 outdata.set(ii, oline);
+               }
+
+               if ( ! sline.equals( oline ))
+               {
+                   System.out.println("Line "+ii+" differs:");
+                   System.out.println("    Expected: "+sline);
+                   System.out.println("    Resulted: "+oline);
+                   System.out.println("");
+                   ndiffs++;
+               }
+            }
+            assertEquals( "Files differ! ", 0 , ndiffs);
+
+        } catch (IOException ex) {
+            System.out.println("Test compare_files.. hit IO Exception = ");
+            Logger.getLogger(VOTableIOTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     private SpectralDataset make_test_spectrum(){
         ModelObjectFactory factory;
         SpectralDataset ds;
@@ -224,7 +335,7 @@ public class VOTableIOTest {
           ds.getDataID().setTitle("Sample Spectrum Instance");
           ds.getDataID().setCreator("UNKNOWN");
           ds.getDataID().setDatasetID(new URI("ivo://ADS/Sa.CXO#obs/12345"));
-          //ds.getDataID().setCreatorDID();
+          ds.getDataID().setCreatorDID(new URI("xxx-xxxx")); // RANDOM
           ds.getDataID().setObservationID("12345");
           ds.getDataID().setDate("2001-12-08T03:11:11");
           ds.getDataID().setVersion("001");
@@ -238,9 +349,9 @@ public class VOTableIOTest {
           items.add( new Quantity("Collection3","Third Cambridge Catalogue of Radio Sources",null,null));
           ds.getDataID().setCollections(items);
           ds.getDataID().setLogo( new URL("http://www.cfa.harvard.edu/common/images/left/cfa-logo.gif"));
+
           items = ds.getDataID().getContributors();
           items.add( new Quantity("Contributor1", "This research has made use of software provided by the Chandra X-ray Center (CXC) in the application packages CIAO, ChIPS, and Sherpa.",null,null));
-          items.get(0).setModelpath("SpectralDataset_DataID_Contributors");
 
           // Curation metadata
           ds.getCuration().setPublisher("Chandra X-ray Center");
@@ -286,7 +397,157 @@ public class VOTableIOTest {
           ds.getDerived().getRedshift().setStatError(Double.valueOf("0.002"));
           ds.getDerived().getRedshift().setConfidence(Double.valueOf("0.999"));
           ds.getDerived().getVarAmpl().setValue(Double.valueOf("0.0001"));
+          
+          // CoordSys metadata
+          List<CoordSys> systems = ds.getCoordSys();
+          CoordSys system = (CoordSys)factory.newInstance( CoordSys.class );
+          systems.add(system);
 
+          List<CoordFrame> cframes = system.getCoordFrames();
+          CoordFrame cframe = (CoordFrame)factory.newInstance( CoordFrame.class );
+          cframe.setID("CoordFrame_1");
+          cframe.setName("Sample");
+          cframe.setUCD("xxx.xxx");
+          cframe.setReferencePosition("UNKNOWN");
+          cframes.add(cframe);
+          
+          List<FluxFrame> fframes = system.getFluxFrames();
+          FluxFrame fluxframe = (FluxFrame)factory.newInstance( FluxFrame.class );
+          fluxframe.setID("FluxFrame_1");
+          fluxframe.setName("B");
+          fluxframe.setUCD("phot.mag");
+          fluxframe.setReferencePosition("UNKNOWN");
+          fluxframe.setRefID(new URI("ivo://some.resource.edu/B_Filter/phot_cal"));
+          fframes.add(fluxframe);
+          
+          system.getSpaceFrame().setID("SpaceFrame_ICRS");
+          system.getSpaceFrame().setName("ICRS");
+          system.getSpaceFrame().setUCD("pos.eq");
+          system.getSpaceFrame().setReferencePosition("UNKNOWN");
+          system.getSpaceFrame().setEquinox(2000.0);
+          
+          system.getSpectralFrame().setID("SpecFrame_HZ");
+          system.getSpectralFrame().setName("FREQ");
+          system.getSpectralFrame().setUCD("em.freq");
+          system.getSpectralFrame().setReferencePosition("TOPOCENTER");
+          system.getSpectralFrame().setRedshift(0.0);
+          
+          system.getTimeFrame().setID("TimeFrame_TT");
+          system.getTimeFrame().setName("TT");
+          system.getTimeFrame().setUCD("time");
+          system.getTimeFrame().setReferencePosition("TOPOCENTER");
+          system.getTimeFrame().setZero(0.0);
+          
+          system.getRedshiftFrame().setID("RSFrame_1");
+          system.getRedshiftFrame().setName("PRS");
+          system.getRedshiftFrame().setUCD("src.redshift.phot");
+          system.getRedshiftFrame().setReferencePosition("UNKNOWN");
+          system.getRedshiftFrame().setDopplerDefinition("optical");
+
+          // Characterisation metadata
+          List<CharacterizationAxis> axes = ds.getCharacterization().getCharacterizationAxes();
+          FluxCharAxis fluxchar = (FluxCharAxis)factory.newInstance( FluxCharAxis.class ); 
+          TimeCharAxis timechar = (TimeCharAxis)factory.newInstance( TimeCharAxis.class ); 
+          SpatialCharAxis spacechar = (SpatialCharAxis)factory.newInstance( SpatialCharAxis.class ); 
+          SpectralCharAxis specchar = (SpectralCharAxis)factory.newInstance( SpectralCharAxis.class ); 
+          axes.add(fluxchar);
+          axes.add(timechar);
+          axes.add(spacechar);
+          axes.add(specchar);
+          ds.getCharacterization().setCharacterizationAxes(axes);
+          
+          // Flux Characterization Axis
+          fluxchar.setName("flux");
+          fluxchar.setUCD("phot.flux.density;em.freq");
+          fluxchar.setUnit("W.m**(-2).Hz**(-1)");
+          fluxchar.setCalibrationStatus("CALIBRATED");
+          fluxchar.getAccuracy().setStatError(new Quantity("flux_err",1.0e-35,"W.m**(-2).Hz**(-1)","stat.error;phot.flux.density;em.freq"));
+          fluxchar.getAccuracy().setSysError(new Quantity("flux_syserr",-1.0e-40,"W.m**(-2).Hz**(-1)","stat.error.sys;phot.flux.density;em.freq"));
+          List<QualityCode> quals = fluxchar.getQualityDefs();
+          QualityCode qcode = (QualityCode)factory.newInstance( QualityCode.class );
+          qcode.setCodeNum(0);
+          qcode.setDefinition("Good");
+          quals.add(qcode);
+          qcode = (QualityCode)factory.newInstance( QualityCode.class );
+          qcode.setCodeNum(1);
+          qcode.setDefinition("Bad");
+          quals.add(qcode);
+          
+          // Time Characterization Axis
+          timechar.setName("time");
+          timechar.setUCD("time");
+          timechar.setUnit("d");
+          timechar.setCalibrationStatus("CALIBRATED");
+          timechar.getAccuracy().setBinSize(new Quantity("time_binsiz",2.89e-6,"d","time.interval"));
+          timechar.getAccuracy().setStatError(new Quantity("time_err",2.89e-6,"d","stat.error;time"));
+          timechar.getAccuracy().setSysError(new Quantity("time_syserr",1.16e-6,"d","stat.error.sys;time"));
+
+          pos = new Double[]{ 62514.3 };
+          timechar.getCoverage().getLocation().setValue( pos );
+          timechar.getCoverage().getBounds().setExtent(0.416);
+          timechar.getCoverage().getBounds().setStart( 62514.2792 );
+          timechar.getCoverage().getBounds().setStop( 62514.3208);
+          timechar.getCoverage().getSupport().setExtent(0.387);
+          timechar.getResolution().setRefVal(2.89e-6);
+          timechar.getSamplingPrecision().setSampleExtent(2.89e-6);
+          timechar.getSamplingPrecision().getSamplingPrecisionRefVal().setFillFactor(0.93);
+          quals = timechar.getQualityDefs();
+          qcode = (QualityCode)factory.newInstance( QualityCode.class );
+          qcode.setCodeNum(128);
+          qcode.setDefinition("Bad");
+          quals.add(qcode);
+          
+          
+          // Spatial Characterization Axis
+          spacechar.setName("sky");
+          spacechar.setUCD("pos.eq");
+          spacechar.setUnit("deg");
+          spacechar.setCalibrationStatus("CALIBRATED");
+          spacechar.getAccuracy().setStatError(new Quantity("sky_err",2.77e-4,"deg","stat.error;pos.eq"));
+          spacechar.getAccuracy().setSysError(new Quantity("sky_syserr",1.385e-5,"deg","stat.error.sys;pos.eq"));
+          pos = new Double[]{ 187.2767, 2.0519};
+          spacechar.getCoverage().getLocation().setValue(new Quantity(null, pos, "deg","pos.eq"));
+          spacechar.getCoverage().getBounds().setExtent(3.0);
+          spacechar.getCoverage().getSupport().setExtent(10.0);
+          spacechar.getCoverage().getSupport().setArea("circle 187.2767 2.0519 10.0");
+          spacechar.getResolution().setRefVal(new Quantity(null,1.0,"arcsec","pos.angResolution") );
+          spacechar.getSamplingPrecision().setSampleExtent(6.94e-6);
+          spacechar.getSamplingPrecision().getSamplingPrecisionRefVal().setFillFactor(new Quantity(null,1.0,null,"stat.filling;pos.eq"));
+          quals = spacechar.getQualityDefs();
+          qcode = (QualityCode)factory.newInstance( QualityCode.class );
+          qcode.setCodeNum(255);
+          qcode.setDefinition("Bad");
+          quals.add(qcode);
+
+          // Spectral Characterization Axis
+          specchar.setName("freq");
+          specchar.setUCD("em.freq");
+          specchar.setUnit("Hz");
+          specchar.setCalibrationStatus("CALIBRATED");
+          specchar.getAccuracy().setBinSize(new Quantity("freq_binsiz",6.3575e+11,"Hz","em.freq;spect.binSize"));
+          specchar.getAccuracy().setStatError(new Quantity("freq_err",3.0e+10,"Hz","stat.error;em.freq"));
+          specchar.getAccuracy().setSysError( new Quantity("freq_syserr",-1.0e+3,"Hz","stat.error.sys;em.freq"));
+
+          pos = new Double[]{ 8.3e-14 };
+          specchar.getCoverage().getLocation().setValue(new Quantity(null, pos, "Hz","em.freq;instr.bandpass"));
+          specchar.getCoverage().getBounds().setExtent(5e-14);
+          specchar.getCoverage().getBounds().setStart(new Quantity(null, 3.3e-14, "Hz","em.freq;stat.min"));
+          specchar.getCoverage().getBounds().setStop(new Quantity(null, 1.33e-13, "Hz","em.freq;stat.max"));
+//          specchar.getCoverage().getBounds().getLimits().setUnit("Hz");
+//          specchar.getCoverage().getBounds().getLimits().setStart(3.3e-14);
+//          specchar.getCoverage().getBounds().getLimits().setStop(1.33e-13);
+          specchar.getCoverage().getSupport().setExtent(10e-14);
+          specchar.getResolution().setRefVal(new Quantity(null,6.3575e+11,"Hz","spect.resolution;em.freq") );
+          specchar.getResolution().getResolPower().setRefVal(Double.NaN);
+          specchar.getSamplingPrecision().setSampleExtent(new Quantity(null,6.3575e+11,"Hz","em.freq;spect.binSize"));
+          specchar.getSamplingPrecision().getSamplingPrecisionRefVal().setFillFactor(new Quantity(null,1.0,null,"stat.filling;em.freq"));
+          quals = specchar.getQualityDefs();
+          qcode = (QualityCode)factory.newInstance( QualityCode.class );
+          qcode.setCodeNum(255);
+          qcode.setDefinition("Bad");
+          quals.add(qcode);
+
+          
         }
         catch (MalformedURLException ex) {
             Logger.getLogger(VOTableIOTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -308,53 +569,60 @@ public class VOTableIOTest {
                                       3.53532448e-30,
                                       3.53108340e-30
                                      };
-        
+        Double[] bkg  = new Double[]{ 3.72981229e-30/2.0,
+                                      2.58023996e-30/2.0,
+                                      3.49485448e-30/2.0,
+                                      3.53532448e-30/2.0,
+                                      3.53108340e-30/2.0
+                                     }; 
         List<SPPoint> data = ds.getData();
-        Quantity c10 = new Quantity("freq",freq[0],"Hz","em.freq");
-        Quantity c11 = new Quantity("freq_err",3.0e+10,"Hz","stat.error;em.freq");
-        Quantity c12 = new Quantity("freq_syserr",-1.0e+3,"Hz","stat.error.sys;em.freq");
-        Quantity c13 = new Quantity("freq_res",10.0,"Hz","spect.resolution;em.freq");
-        Quantity c14 = new Quantity("freq_binsiz",6.3575e+11,"Hz","em.freq;spect.binSize");
+        for ( int ii=0; ii<3; ii++) {
 
-        Quantity c20 = new Quantity("flux",flux[0],"W.m**(-2).Hz**(-1)","phot.flux.density;em.freq");
-        Quantity c21 = new Quantity("flux_err",1.0e-35,"W.m**(-2).Hz**(-1)","stat.error;phot.flux.density;em.freq");
-        Quantity c22 = new Quantity("flux_syserr",-1.0e-40,"W.m**(-2).Hz**(-1)","stat.error.sys;phot.flux.density;em.freq");
-        Quantity c23 = new Quantity("flux_qual",(Integer)0,null,"meta.code.qual;phot.flux.density;em.freq");
+          Quantity c10 = new Quantity("freq",freq[ii],"Hz","em.freq");
+          Quantity c11 = new Quantity("freq_err",3.0e+10,"Hz","stat.error;em.freq");
+          Quantity c12 = new Quantity("freq_syserr",-1.0e+3,"Hz","stat.error.sys;em.freq");
+          Quantity c13 = new Quantity("freq_res",10.0,"Hz","spect.resolution;em.freq");
+          Quantity c14 = new Quantity("freq_binsiz",6.3575e+11,"Hz","em.freq;spect.binSize");
 
-        Quantity c30 = new Quantity("bkg",Double.NaN,"W.m**(-2).Hz**(-1)","phot.flux.density;em.freq");
-        Quantity c31 = new Quantity("bkg_qual",(Integer)1,null,"meta.code.qual;phot.flux.density;em.freq");
+          Quantity c20 = new Quantity("flux",flux[ii],"W.m**(-2).Hz**(-1)","phot.flux.density;em.freq");
+          Quantity c21 = new Quantity("flux_err",1.0e-35,"W.m**(-2).Hz**(-1)","stat.error;phot.flux.density;em.freq");
+          Quantity c22 = new Quantity("flux_syserr",-1.0e-40,"W.m**(-2).Hz**(-1)","stat.error.sys;phot.flux.density;em.freq");
+          Quantity c23 = new Quantity("flux_qual",(Integer)0,null,"meta.code.qual;phot.flux.density;em.freq");
 
-        for ( int ii=0; ii<3; ii++)
-        {
-            //TODO - Should not have to go back to the factory to generate 
-            //       new instances of List entries.. not sure how to tell
-            //       it which flavor of content is wanted (ie subclass of List type)
-            SPPoint point = (SPPoint)factory.newInstance( SPPoint.class );
+          Quantity c30 = new Quantity("bkg",bkg[ii],"W.m**(-2).Hz**(-1)","phot.flux.density;em.freq");
+          Quantity c31 = new Quantity("bkg_errlo",1.5e-40,"W.m**(-2).Hz**(-1)","stat.error.sys;phot.flux.density;em.freq;stat.min");
+          Quantity c32 = new Quantity("bkg_errhi",2.5e-40,"W.m**(-2).Hz**(-1)","stat.error.sys;phot.flux.density;em.freq;stat.max");
+          Quantity c33 = new Quantity("bkg_qual",(Integer)1,null,"meta.code.qual;phot.flux.density;em.freq");
 
-            c10.setValue(freq[ii]);
-            point.getSpectralAxis().setValue( c10 );
-            point.getSpectralAxis().getAccuracy().setBinSize(c14);
-            point.getSpectralAxis().getAccuracy().setStatError( c11 );
-            point.getSpectralAxis().getAccuracy().setSysError( c12 );
-            point.getSpectralAxis().getResolution().setRefVal( c13 );
+          //TODO - Should not have to go back to the factory to generate 
+          //       new instances of List entries.. not sure how to tell
+          //       it which flavor of content is wanted (ie subclass of List type)
+          SPPoint point = (SPPoint)factory.newInstance( SPPoint.class );
 
-            c20.setValue(flux[ii]);
-            point.getFluxAxis().setValue( c20 );
-            point.getFluxAxis().getAccuracy().setStatError( c21 );
-            point.getFluxAxis().getAccuracy().setSysError( c22 );
-            point.getFluxAxis().getAccuracy().setQualityStatus( c23 );
-            List<Correction> corrs = new ArrayList<Correction>();
-            ApFrac corr = (ApFrac)factory.newInstance( ApFrac.class );
-            corr.setName("ApFrac");
-            corr.setValue(0.75);
-            corr.setApplied( Boolean.TRUE );
-            corrs.add(corr);
-            point.getFluxAxis().setCorrections(corrs);
+          point.getSpectralAxis().setValue( c10 );
+          point.getSpectralAxis().getAccuracy().setBinSize(c14);
+          point.getSpectralAxis().getAccuracy().setStatError( c11 );
+          point.getSpectralAxis().getAccuracy().setSysError( c12 );
+          point.getSpectralAxis().getResolution().setRefVal( c13 );
 
-            point.getBackgroundModel().setValue( c30 );   
-            point.getBackgroundModel().getAccuracy().setQualityStatus( c31 );
+          point.getFluxAxis().setValue( c20 );
+          point.getFluxAxis().getAccuracy().setStatError( c21 );
+          point.getFluxAxis().getAccuracy().setSysError( c22 );
+          point.getFluxAxis().getAccuracy().setQualityStatus( c23 );
+          List<Correction> corrs = new ArrayList<Correction>();
+          ApFrac corr = (ApFrac)factory.newInstance( ApFrac.class );
+          corr.setName("ApFrac");
+          corr.setValue(0.75);
+          corr.setApplied( Boolean.TRUE );
+          corrs.add(corr);
+          point.getFluxAxis().setCorrections(corrs);
+
+          point.getBackgroundModel().setValue( c30 );   
+          point.getBackgroundModel().getAccuracy().setStatErrLow( c31 );
+          point.getBackgroundModel().getAccuracy().setStatErrHigh( c32 );
+          point.getBackgroundModel().getAccuracy().setQualityStatus( c33 );
             
-            data.add(point);
+          data.add(point);
         }
         
         return ds;

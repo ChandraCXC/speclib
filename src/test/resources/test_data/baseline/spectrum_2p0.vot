@@ -38,6 +38,9 @@
         <PARAM arraysize="*" datatype="char" ucd="meta.id;meta.dataset" utype="spec:DataID.DatasetID" value="ivo://ADS/Sa.CXO#obs/12345">
           <DESCRIPTION>IVOA Dataset ID</DESCRIPTION>
         </PARAM>
+        <PARAM arraysize="*" datatype="char" ucd="meta.id" utype="spec:DataID.CreatorDID" value="xxx-xxxx">
+          <DESCRIPTION>Creator defined Dataset ID</DESCRIPTION>
+        </PARAM>
         <PARAM arraysize="*" datatype="char" utype="spec:DataID.ObservationID" value="12345">
           <DESCRIPTION>Data provider internal observation ID</DESCRIPTION>
         </PARAM>
@@ -168,6 +171,359 @@
       </GROUP>
       <GROUP>
         <GROUP>
+          <PARAM arraysize="*" datatype="char" ucd="meta.id" utype="spec:CoordSys.CoordFrame.ID" value="CoordFrame_1">
+            <DESCRIPTION>ID string for coordinate frame</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" utype="spec:CoordSys.CoordFrame.Name" value="Sample">
+            <DESCRIPTION>Name of coordinate frame</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.ucd" utype="spec:CoordSys.CoordFrame.UCD" value="xxx.xxx">
+            <DESCRIPTION>UCD</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" utype="spec:CoordSys.CoordFrame.RefPos" value="UNKNOWN">
+            <DESCRIPTION>Frame origin</DESCRIPTION>
+          </PARAM>
+        </GROUP>
+        <GROUP>
+          <PARAM arraysize="*" datatype="char" ucd="meta.id" utype="spec:CoordSys.FluxFrame.ID" value="FluxFrame_1">
+            <DESCRIPTION>ID string for coordinate frame</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" utype="spec:CoordSys.FluxFrame.Name" value="B">
+            <DESCRIPTION>Name of photometric band</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.ucd" utype="spec:CoordSys.FluxFrame.UCD" value="phot.mag">
+            <DESCRIPTION>UCD for photometric calibration</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" utype="spec:CoordSys.FluxFrame.RefPos" value="UNKNOWN">
+            <DESCRIPTION>Flux frame origin</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.ref.ivorn" utype="spec:CoordSys.FluxFrame.refID" value="ivo://some.resource.edu/B_Filter/phot_cal">
+            <DESCRIPTION>URI for photometric calibration</DESCRIPTION>
+          </PARAM>
+        </GROUP>
+        <GROUP>
+          <PARAM arraysize="*" datatype="char" ucd="meta.id" utype="spec:CoordSys.SpaceFrame.ID" value="SpaceFrame_ICRS">
+            <DESCRIPTION>ID string for coordinate frame</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="pos.frame" utype="spec:CoordSys.SpaceFrame.Name" value="ICRS">
+            <DESCRIPTION>Name of the spatial coord frame</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.ucd" utype="spec:CoordSys.SpaceFrame.UCD" value="pos.eq">
+            <DESCRIPTION>Space frame UCD</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" utype="spec:CoordSys.SpaceFrame.RefPos" value="UNKNOWN">
+            <DESCRIPTION>Origin of SpaceFrame</DESCRIPTION>
+          </PARAM>
+          <PARAM datatype="double" ucd="time.equinox;pos.frame" utype="spec:CoordSys.SpaceFrame.Equinox" value="2000.0">
+            <DESCRIPTION>Equinox</DESCRIPTION>
+          </PARAM>
+        </GROUP>
+        <GROUP>
+          <PARAM arraysize="*" datatype="char" ucd="meta.id" utype="spec:CoordSys.SpectralFrame.ID" value="SpecFrame_HZ">
+            <DESCRIPTION>ID string for coordinate frame</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" utype="spec:CoordSys.SpectralFrame.Name" value="FREQ">
+            <DESCRIPTION>Spectral frame name</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.ucd" utype="spec:CoordSys.SpectralFrame.UCD" value="em.freq">
+            <DESCRIPTION>Spectral frame UCD</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="sdm:spect.frame" utype="spec:CoordSys.SpectralFrame.RefPos" value="TOPOCENTER">
+            <DESCRIPTION>Spectral frame origin</DESCRIPTION>
+          </PARAM>
+          <PARAM datatype="double" utype="spec:CoordSys.SpectralFrame.Redshift" value="0.0">
+            <DESCRIPTION>Spectral frame shift</DESCRIPTION>
+          </PARAM>
+        </GROUP>
+        <GROUP>
+          <PARAM arraysize="*" datatype="char" ucd="meta.id" utype="spec:CoordSys.TimeFrame.ID" value="TimeFrame_TT">
+            <DESCRIPTION>ID string for coordinate frame</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="sdm:time.frame" utype="spec:CoordSys.TimeFrame.Name" value="TT">
+            <DESCRIPTION>Timescale</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.ucd" utype="spec:CoordSys.TimeFrame.UCD" value="time">
+            <DESCRIPTION>Time frame UCD</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="time.scale" utype="spec:CoordSys.TimeFrame.RefPos" value="TOPOCENTER">
+            <DESCRIPTION>Time frame origin</DESCRIPTION>
+          </PARAM>
+          <PARAM datatype="double" ucd="arith.zp;time" utype="spec:CoordSys.TimeFrame.Zero" value="0.0">
+            <DESCRIPTION>Zero point of timescale in MJD</DESCRIPTION>
+          </PARAM>
+        </GROUP>
+        <GROUP>
+          <PARAM arraysize="*" datatype="char" ucd="meta.id" utype="spec:CoordSys.RedshiftFrame.ID" value="RSFrame_1">
+            <DESCRIPTION>ID string for coordinate frame</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" utype="spec:CoordSys.RedshiftFrame.Name" value="PRS">
+            <DESCRIPTION>Redshift frame name</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.ucd" utype="spec:CoordSys.RedshiftFrame.UCD" value="src.redshift.phot">
+            <DESCRIPTION>Redshift frame UCD</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" utype="spec:CoordSys.RedshiftFrame.RefPos" value="UNKNOWN">
+            <DESCRIPTION>Redshift frame origin</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" utype="spec:CoordSys.RedshiftFrame.DopplerDefinition" value="optical">
+            <DESCRIPTION>Doppler definition</DESCRIPTION>
+          </PARAM>
+        </GROUP>
+      </GROUP>
+      <GROUP>
+        <GROUP>
+          <PARAM arraysize="*" datatype="char" utype="spec:Char.FluxAxis.Name" value="flux">
+            <DESCRIPTION>name for flux axis</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.ucd" utype="spec:Char.FluxAxis.ucd" value="phot.flux.density;em.freq">
+            <DESCRIPTION>ucd for flux</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.unit" utype="spec:Char.FluxAxis.unit" value="W.m**(-2).Hz**(-1)">
+            <DESCRIPTION>Unit for flux</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.code.qual" utype="spec:Char.FluxAxis.CalibrationStatus" value="CALIBRATED">
+            <DESCRIPTION>Type of coord calibration</DESCRIPTION>
+          </PARAM>
+          <GROUP>
+            <PARAM datatype="double" name="flux_err" ucd="stat.error;phot.flux.density;em.freq" unit="W.m**(-2).Hz**(-1)" utype="spec:Char.FluxAxis.Accuracy.StatError" value="1.0E-35">
+              <DESCRIPTION>Statistical error</DESCRIPTION>
+            </PARAM>
+            <PARAM datatype="double" name="flux_syserr" ucd="stat.error.sys;phot.flux.density;em.freq" unit="W.m**(-2).Hz**(-1)" utype="spec:Char.FluxAxis.Accuracy.SysError" value="-1.0E-40">
+              <DESCRIPTION>Systematic error</DESCRIPTION>
+            </PARAM>
+          </GROUP>
+          <GROUP>
+            <PARAM datatype="int" utype="spec:Char.FluxAxis.QualityDefs.QualityCode.CodeNum" value="0">
+              <DESCRIPTION>Quality code numeric value</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" utype="spec:Char.FluxAxis.QualityDefs.QualityCode.Definition" value="Good">
+              <DESCRIPTION>Meaning of quality value</DESCRIPTION>
+            </PARAM>
+          </GROUP>
+          <GROUP>
+            <PARAM datatype="int" utype="spec:Char.FluxAxis.QualityDefs.QualityCode.CodeNum" value="1">
+              <DESCRIPTION>Quality code numeric value</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" utype="spec:Char.FluxAxis.QualityDefs.QualityCode.Definition" value="Bad">
+              <DESCRIPTION>Meaning of quality value</DESCRIPTION>
+            </PARAM>
+          </GROUP>
+        </GROUP>
+        <GROUP>
+          <PARAM arraysize="*" datatype="char" utype="spec:Char.TimeAxis.Name" value="time">
+            <DESCRIPTION>name for time axis</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.ucd" utype="spec:Char.TimeAxis.ucd" value="time">
+            <DESCRIPTION>ucd for time</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.unit" utype="spec:Char.TimeAxis.unit" value="d">
+            <DESCRIPTION>Unit for time</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.code.qual" utype="spec:Char.TimeAxis.CalibrationStatus" value="CALIBRATED">
+            <DESCRIPTION>Type of coord calibration</DESCRIPTION>
+          </PARAM>
+          <GROUP>
+            <PARAM datatype="double" name="time_binsiz" ucd="time.interval" unit="d" utype="spec:Char.TimeAxis.Accuracy.BinSize" value="2.89E-6">
+              <DESCRIPTION>Time bin size</DESCRIPTION>
+            </PARAM>
+            <PARAM datatype="double" name="time_err" ucd="stat.error;time" unit="d" utype="spec:Char.TimeAxis.Accuracy.StatError" value="2.89E-6">
+              <DESCRIPTION>Time coord measurement statistical error</DESCRIPTION>
+            </PARAM>
+            <PARAM datatype="double" name="time_syserr" ucd="stat.error.sys;time" unit="d" utype="spec:Char.TimeAxis.Accuracy.SysError" value="1.16E-6">
+              <DESCRIPTION>Time coord measurement systematic error</DESCRIPTION>
+            </PARAM>
+          </GROUP>
+          <GROUP>
+            <GROUP>
+              <PARAM arraysize="1" datatype="double" ucd="time.epoch;obs" utype="spec:Char.TimeAxis.Coverage.Location.Value" value="62514.3">
+                <DESCRIPTION>Exposure midpoint</DESCRIPTION>
+              </PARAM>
+            </GROUP>
+            <GROUP>
+              <PARAM datatype="double" ucd="time.duration;obs.exposure" utype="spec:Char.TimeAxis.Coverage.Bounds.Extent" value="0.416">
+                <DESCRIPTION>Total elapsed time</DESCRIPTION>
+              </PARAM>
+              <PARAM datatype="double" ucd="time.start;obs.exposure" utype="spec:Char.TimeAxis.Coverage.Bounds.Start" value="62514.2792">
+                <DESCRIPTION>Start time</DESCRIPTION>
+              </PARAM>
+              <PARAM datatype="double" ucd="time.end;obs.exposure" utype="spec:Char.TimeAxis.Coverage.Bounds.Stop" value="62514.3208">
+                <DESCRIPTION>Stop time</DESCRIPTION>
+              </PARAM>
+            </GROUP>
+            <GROUP>
+              <PARAM datatype="double" ucd="time.duration;obs.exposure" utype="spec:Char.TimeAxis.Coverage.Support.Extent" value="0.387">
+                <DESCRIPTION>Effective exposure time</DESCRIPTION>
+              </PARAM>
+            </GROUP>
+          </GROUP>
+          <GROUP>
+            <PARAM datatype="double" ucd="time.resolution" utype="spec:Char.TimeAxis.Resolution.refVal" value="2.89E-6">
+              <DESCRIPTION>Temporal resolution FWHM</DESCRIPTION>
+            </PARAM>
+          </GROUP>
+          <GROUP>
+            <PARAM datatype="double" ucd="time.interval" utype="spec:Char.TimeAxis.SamplingPrecision.SampleExtent" value="2.89E-6">
+              <DESCRIPTION>time bin size</DESCRIPTION>
+            </PARAM>
+            <GROUP>
+              <PARAM datatype="double" ucd="stat.filling;time" utype="spec:Char.TimeAxis.SamplingPrecision.SamplingPrecisionRefVal.FillFactor" value="0.93">
+                <DESCRIPTION>Sampling Filling factor</DESCRIPTION>
+              </PARAM>
+            </GROUP>
+          </GROUP>
+          <GROUP>
+            <PARAM datatype="int" utype="spec:Char.TimeAxis.QualityDefs.QualityCode.CodeNum" value="128">
+              <DESCRIPTION>Quality code numeric value</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" utype="spec:Char.TimeAxis.QualityDefs.QualityCode.Definition" value="Bad">
+              <DESCRIPTION>Meaning of quality value</DESCRIPTION>
+            </PARAM>
+          </GROUP>
+        </GROUP>
+        <GROUP>
+          <PARAM arraysize="*" datatype="char" ucd="meta.id" utype="spec:Char.SpatialAxis.Name" value="sky">
+            <DESCRIPTION>name for spatial axis</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.ucd" utype="spec:Char.SpatialAxis.ucd" value="pos.eq">
+            <DESCRIPTION>ucd for spatial coord</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.unit" utype="spec:Char.SpatialAxis.unit" value="deg">
+            <DESCRIPTION>Unit for spatial coord</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.code.qual" utype="spec:Char.SpatialAxis.CalibrationStatus" value="CALIBRATED">
+            <DESCRIPTION>Type of coord calibration</DESCRIPTION>
+          </PARAM>
+          <GROUP>
+            <PARAM datatype="double" name="sky_err" ucd="stat.error;pos.eq" unit="deg" utype="spec:Char.SpatialAxis.Accuracy.StatError" value="2.77E-4">
+              <DESCRIPTION>Astrometric statistical error</DESCRIPTION>
+            </PARAM>
+            <PARAM datatype="double" name="sky_syserr" ucd="stat.error.sys;pos.eq" unit="deg" utype="spec:Char.SpatialAxis.Accuracy.SysError" value="1.385E-5">
+              <DESCRIPTION>Systematic error</DESCRIPTION>
+            </PARAM>
+          </GROUP>
+          <GROUP>
+            <GROUP>
+              <PARAM arraysize="2" datatype="double" ucd="pos.eq" unit="deg" utype="spec:Char.SpatialAxis.Coverage.Location.Value" value="187.2767 2.0519">
+                <DESCRIPTION>Position</DESCRIPTION>
+              </PARAM>
+            </GROUP>
+            <GROUP>
+              <PARAM datatype="double" ucd="pos.angDistance;instr.fov" utype="spec:Char.SpatialAxis.Coverage.Bounds.Extent" value="3.0">
+                <DESCRIPTION>Aperture angular size</DESCRIPTION>
+              </PARAM>
+            </GROUP>
+            <GROUP>
+              <PARAM datatype="double" ucd="pos.angDistance;instr.fov" utype="spec:Char.SpatialAxis.Coverage.Support.Extent" value="10.0">
+                <DESCRIPTION>Field of view area</DESCRIPTION>
+              </PARAM>
+              <PARAM arraysize="*" datatype="char" utype="spec:Char.SpatialAxis.Coverage.Support.Area" value="circle 187.2767 2.0519 10.0">
+                <DESCRIPTION>Aperture region</DESCRIPTION>
+              </PARAM>
+            </GROUP>
+          </GROUP>
+          <GROUP>
+            <PARAM datatype="double" ucd="pos.angResolution" unit="arcsec" utype="spec:Char.SpatialAxis.Resolution.refVal" value="1.0">
+              <DESCRIPTION>Spatial resolution of data</DESCRIPTION>
+            </PARAM>
+          </GROUP>
+          <GROUP>
+            <PARAM datatype="double" ucd="phys.angSize;instr.pixel" utype="spec:Char.SpatialAxis.SamplingPrecision.SampleExtent" value="6.94E-6">
+              <DESCRIPTION>spatial bin size</DESCRIPTION>
+            </PARAM>
+            <GROUP>
+              <PARAM datatype="double" ucd="stat.filling;pos.eq" utype="spec:Char.SpatialAxis.SamplingPrecision.SamplingPrecisionRefVal.FillFactor" value="1.0">
+                <DESCRIPTION>Sampling Filling factor</DESCRIPTION>
+              </PARAM>
+            </GROUP>
+          </GROUP>
+          <GROUP>
+            <PARAM datatype="int" utype="spec:Char.SpatialAxis.QualityDefs.QualityCode.CodeNum" value="255">
+              <DESCRIPTION>Quality code numeric value</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" utype="spec:Char.SpatialAxis.QualityDefs.QualityCode.Definition" value="Bad">
+              <DESCRIPTION>Meaning of quality value</DESCRIPTION>
+            </PARAM>
+          </GROUP>
+        </GROUP>
+        <GROUP>
+          <PARAM arraysize="*" datatype="char" utype="spec:Char.SpectralAxis.Name" value="freq">
+            <DESCRIPTION>name for spectral axis</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.ucd" utype="spec:Char.SpectralAxis.ucd" value="em.freq">
+            <DESCRIPTION>ucd for spectral coord</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.unit" utype="spec:Char.SpectralAxis.unit" value="Hz">
+            <DESCRIPTION>Unit for spectral coord</DESCRIPTION>
+          </PARAM>
+          <PARAM arraysize="*" datatype="char" ucd="meta.code.qual" utype="spec:Char.SpectralAxis.CalibrationStatus" value="CALIBRATED">
+            <DESCRIPTION>Type of coord calibration</DESCRIPTION>
+          </PARAM>
+          <GROUP>
+            <PARAM datatype="double" name="freq_binsiz" ucd="em.freq;spect.binSize" unit="Hz" utype="spec:Char.SpectralAxis.Accuracy.BinSize" value="6.3575E11">
+              <DESCRIPTION>Wavelength bin size</DESCRIPTION>
+            </PARAM>
+            <PARAM datatype="double" name="freq_err" ucd="stat.error;em.freq" unit="Hz" utype="spec:Char.SpectralAxis.Accuracy.StatError" value="3.0E10">
+              <DESCRIPTION>Spectral coord measurement error</DESCRIPTION>
+            </PARAM>
+            <PARAM datatype="double" name="freq_syserr" ucd="stat.error.sys;em.freq" unit="Hz" utype="spec:Char.SpectralAxis.Accuracy.SysError" value="-1000.0">
+              <DESCRIPTION>Spectral coord measurement error</DESCRIPTION>
+            </PARAM>
+          </GROUP>
+          <GROUP>
+            <GROUP>
+              <PARAM arraysize="1" datatype="double" ucd="em.freq;instr.bandpass" unit="Hz" utype="spec:Char.SpectralAxis.Coverage.Location.Value" value="8.3E-14">
+                <DESCRIPTION>Spectral coord value</DESCRIPTION>
+              </PARAM>
+            </GROUP>
+            <GROUP>
+              <PARAM datatype="double" ucd="instr.bandwidth" utype="spec:Char.SpectralAxis.Coverage.Bounds.Extent" value="5.0E-14">
+                <DESCRIPTION>Width in spectral coordinate</DESCRIPTION>
+              </PARAM>
+              <PARAM datatype="double" ucd="em.freq;stat.min" unit="Hz" utype="spec:Char.SpectralAxis.Coverage.Bounds.Start" value="3.3E-14">
+                <DESCRIPTION>Start in spectral coordinate</DESCRIPTION>
+              </PARAM>
+              <PARAM datatype="double" ucd="em.freq;stat.max" unit="Hz" utype="spec:Char.SpectralAxis.Coverage.Bounds.Stop" value="1.33E-13">
+                <DESCRIPTION>Stop in spectral coordinate</DESCRIPTION>
+              </PARAM>
+            </GROUP>
+            <GROUP>
+              <PARAM datatype="double" ucd="instr.bandwidth" utype="spec:Char.SpectralAxis.Coverage.Support.Extent" value="1.0E-13">
+                <DESCRIPTION>Effective width of spectrum</DESCRIPTION>
+              </PARAM>
+            </GROUP>
+          </GROUP>
+          <GROUP>
+            <PARAM datatype="double" ucd="spect.resolution;em.freq" unit="Hz" utype="spec:Char.SpectralAxis.Resolution.refVal" value="6.3575E11">
+              <DESCRIPTION>Spectral resolution FWHM</DESCRIPTION>
+            </PARAM>
+            <GROUP>
+              <PARAM datatype="double" ucd="spect.resolution" utype="spec:Char.SpectralAxis.ResolPower.refVal" value="NaN">
+                <DESCRIPTION>Spectral resolving power</DESCRIPTION>
+              </PARAM>
+            </GROUP>
+          </GROUP>
+          <GROUP>
+            <PARAM datatype="double" ucd="em.freq;spect.binSize" unit="Hz" utype="spec:Char.SpectralAxis.SamplingPrecision.SampleExtent" value="6.3575E11">
+              <DESCRIPTION>Wavelength bin size</DESCRIPTION>
+            </PARAM>
+            <GROUP>
+              <PARAM datatype="double" ucd="stat.filling;em.freq" utype="spec:Char.SpectralAxis.SamplingPrecision.SamplingPrecisionRefVal.FillFactor" value="1.0">
+                <DESCRIPTION>Sampling Filling factor</DESCRIPTION>
+              </PARAM>
+            </GROUP>
+          </GROUP>
+          <GROUP>
+            <PARAM datatype="int" utype="spec:Char.SpectralAxis.QualityDefs.QualityCode.CodeNum" value="255">
+              <DESCRIPTION>Quality code numeric value</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" utype="spec:Char.SpectralAxis.QualityDefs.QualityCode.Definition" value="Bad">
+              <DESCRIPTION>Meaning of quality value</DESCRIPTION>
+            </PARAM>
+          </GROUP>
+        </GROUP>
+      </GROUP>
+      <GROUP>
+        <GROUP>
           <FIELDref name="freq" ref="184dd6f9-b9cf-4ae0-b2e2-aef684e00d1e" ucd="em.freq" utype="spec:Data.SpectralAxis.Value"/>
           <GROUP>
             <FIELDref name="freq_binsiz" ref="6b7bec5e-e363-40f7-823c-07943c087836" ucd="em.freq;spect.binSize" utype="spec:Data.SpectralAxis.Accuracy.BinSize"/>
@@ -192,9 +548,11 @@
           </GROUP>
         </GROUP>
         <GROUP>
-          <FIELDref name="bkg" ref="77288528-103b-4971-bf8d-b81d3bf489c1" ucd="phot.flux.density;em.freq" utype="spec:Data.BackgroundModel.Value"/>
+          <FIELDref name="bkg" ref="c1a12916-1349-483f-9ece-b0d4e4382c2c" ucd="phot.flux.density;em.freq" utype="spec:Data.BackgroundModel.Value"/>
           <GROUP>
-            <FIELDref name="bkg_qual" ref="a4bef28b-5f5f-496b-918d-93e513361272" ucd="meta.code.qual;phot.flux.density;em.freq" utype="spec:Data.BackgroundModel.Accuracy.QualityStatus"/>
+            <FIELDref name="bkg_errlo" ref="dbc9c139-9446-4387-bacf-9907828075a6" ucd="stat.error.sys;phot.flux.density;em.freq;stat.min" utype="spec:Data.BackgroundModel.Accuracy.StatErrLow"/>
+            <FIELDref name="bkg_errhi" ref="2654bf33-1462-421f-9622-3c39793de76a" ucd="stat.error.sys;phot.flux.density;em.freq;stat.max" utype="spec:Data.BackgroundModel.Accuracy.StatErrHigh"/>
+            <FIELDref name="bkg_qual" ref="ed13f378-2dac-4978-bf3c-72e9ca5638c5" ucd="meta.code.qual;phot.flux.density;em.freq" utype="spec:Data.BackgroundModel.Accuracy.QualityStatus"/>
           </GROUP>
         </GROUP>
       </GROUP>
@@ -210,59 +568,68 @@
       <FIELD arraysize="*" datatype="char" id="4bae693f-adbc-4044-843d-7b48af60463c"/>
       <FIELD datatype="double" id="8b4e64bb-046d-4722-be85-c8ba64e85743"/>
       <FIELD datatype="boolean" id="2b8bbdda-ee20-4eab-b5f1-853684465b3a"/>
-      <FIELD datatype="double" id="77288528-103b-4971-bf8d-b81d3bf489c1" unit="W.m**(-2).Hz**(-1)"/>
-      <FIELD datatype="int" id="a4bef28b-5f5f-496b-918d-93e513361272"/>
-      <DATA/>
-      <TABLEDATA>
-        <TR>
-          <TD>8.31555695E14</TD>
-          <TD>6.3575E11</TD>
-          <TD>3.0E10</TD>
-          <TD>-1000.0</TD>
-          <TD>10.0</TD>
-          <TD>3.49485448E-30</TD>
-          <TD>1.0E-35</TD>
-          <TD>-1.0E-40</TD>
-          <TD>0</TD>
-          <TD>ApFrac</TD>
-          <TD>0.75</TD>
-          <TD>true</TD>
-          <TD>NaN</TD>
-          <TD>1</TD>
-        </TR>
-        <TR>
-          <TD>8.31555695E14</TD>
-          <TD>6.3575E11</TD>
-          <TD>3.0E10</TD>
-          <TD>-1000.0</TD>
-          <TD>10.0</TD>
-          <TD>3.49485448E-30</TD>
-          <TD>1.0E-35</TD>
-          <TD>-1.0E-40</TD>
-          <TD>0</TD>
-          <TD>ApFrac</TD>
-          <TD>0.75</TD>
-          <TD>true</TD>
-          <TD>NaN</TD>
-          <TD>1</TD>
-        </TR>
-        <TR>
-          <TD>8.31555695E14</TD>
-          <TD>6.3575E11</TD>
-          <TD>3.0E10</TD>
-          <TD>-1000.0</TD>
-          <TD>10.0</TD>
-          <TD>3.49485448E-30</TD>
-          <TD>1.0E-35</TD>
-          <TD>-1.0E-40</TD>
-          <TD>0</TD>
-          <TD>ApFrac</TD>
-          <TD>0.75</TD>
-          <TD>true</TD>
-          <TD>NaN</TD>
-          <TD>1</TD>
-        </TR>
-      </TABLEDATA>
+      <FIELD datatype="double" id="c1a12916-1349-483f-9ece-b0d4e4382c2c" unit="W.m**(-2).Hz**(-1)"/>
+      <FIELD datatype="double" id="dbc9c139-9446-4387-bacf-9907828075a6" unit="W.m**(-2).Hz**(-1)"/>
+      <FIELD datatype="double" id="2654bf33-1462-421f-9622-3c39793de76a" unit="W.m**(-2).Hz**(-1)"/>
+      <FIELD datatype="int" id="ed13f378-2dac-4978-bf3c-72e9ca5638c5"/>
+      <DATA>
+        <TABLEDATA>
+          <TR>
+            <TD>8.32826233E14</TD>
+            <TD>6.3575E11</TD>
+            <TD>3.0E10</TD>
+            <TD>-1000.0</TD>
+            <TD>10.0</TD>
+            <TD>3.72981229E-30</TD>
+            <TD>1.0E-35</TD>
+            <TD>-1.0E-40</TD>
+            <TD>0</TD>
+            <TD>ApFrac</TD>
+            <TD>0.75</TD>
+            <TD>true</TD>
+            <TD>1.864906145E-30</TD>
+            <TD>1.5E-40</TD>
+            <TD>2.5E-40</TD>
+            <TD>1</TD>
+          </TR>
+          <TR>
+            <TD>8.32190479E14</TD>
+            <TD>6.3575E11</TD>
+            <TD>3.0E10</TD>
+            <TD>-1000.0</TD>
+            <TD>10.0</TD>
+            <TD>2.58023996E-30</TD>
+            <TD>1.0E-35</TD>
+            <TD>-1.0E-40</TD>
+            <TD>0</TD>
+            <TD>ApFrac</TD>
+            <TD>0.75</TD>
+            <TD>true</TD>
+            <TD>1.29011998E-30</TD>
+            <TD>1.5E-40</TD>
+            <TD>2.5E-40</TD>
+            <TD>1</TD>
+          </TR>
+          <TR>
+            <TD>8.31555695E14</TD>
+            <TD>6.3575E11</TD>
+            <TD>3.0E10</TD>
+            <TD>-1000.0</TD>
+            <TD>10.0</TD>
+            <TD>3.49485448E-30</TD>
+            <TD>1.0E-35</TD>
+            <TD>-1.0E-40</TD>
+            <TD>0</TD>
+            <TD>ApFrac</TD>
+            <TD>0.75</TD>
+            <TD>true</TD>
+            <TD>1.74742724E-30</TD>
+            <TD>1.5E-40</TD>
+            <TD>2.5E-40</TD>
+            <TD>1</TD>
+          </TR>
+        </TABLEDATA>
+      </DATA>
     </TABLE>
   </RESOURCE>
 </VOTABLE>

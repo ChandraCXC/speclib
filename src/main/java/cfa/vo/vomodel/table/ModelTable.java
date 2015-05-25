@@ -148,7 +148,7 @@ public class ModelTable implements Model {
         os = new FileOutputStream( outfile.getFile() );
         BufferedWriter buf = new BufferedWriter( new OutputStreamWriter( os ));
 
-        String fmt = "%1s %-100s & %-24s & %-70s & %-45s & %-25s & %-20s & %-40s & %-5s";
+        String fmt = "%1s %-125s & %-24s & %-70s & %-45s & %-25s & %-20s & %-40s & %-5s";
         
         // Write header lines
         buf.write("# -----------------------------------");
@@ -229,7 +229,7 @@ public class ModelTable implements Model {
         if ( this.map.contains( utype ) )
             result = this.map.indexOf(utype);
         else
-            throw new IllegalArgumentException("Utype invalid or not recognized.");
+            throw new IllegalArgumentException("Utype invalid or not recognized. "+utype.toString());
 
         return(result);
     }
@@ -259,7 +259,26 @@ public class ModelTable implements Model {
 
     public Integer getRecordIndexByTag(String label) 
     {
-        throw new UnsupportedOperationException("Method not yet implemented.");
+        String key;
+        Integer result = -1; // init to 'not found'
+
+        if ( this.map == null )
+            throw new IllegalStateException("No Model loaded.");
+
+        // null or empty string never matches.
+        if ( label == null || label.trim().isEmpty() )
+            return(result);
+
+        for (Utype item : this.map )
+        {
+            if ( item.matchTag(label))
+            {
+                result = this.map.indexOf(item);
+                break;
+            }
+        }
+
+        return(result);
     }
     
     public Utype getUtype(Integer utypenum) {
