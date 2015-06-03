@@ -182,7 +182,6 @@ public class MPArrayListTest {
         boolean caught;
 
         //Add Collection to MPArray
-        // TODO: Try different types of Collections.. what happens? what should happen?
         caught = false;
         try{
           basearr.addAll( qarr );

@@ -136,6 +136,8 @@ public class VOTMapper {
             mp = derivePathFromSubnode(table);
             if ( mp == null )
               mp = "TABLE"+ntables;
+            else if ( mp.indexOf("_")> -1)  // Unstructured content.
+              mp = mp.substring(0, mp.indexOf("_"));
 
             result.put(mp, table);
           }
@@ -200,7 +202,18 @@ public class VOTMapper {
           }
           else if ( eltype.equalsIgnoreCase(DOM_TAG_PARAM) )
           {
-            q = this.convertParam( (ParamElement)child );
+            try {
+              q = this.convertParam( (ParamElement)child );
+            } catch (IOException ex) {
+              Logger.getLogger(VOTMapper.class.getName()).log(Level.WARNING, null, ex);
+              continue;
+            }
+            if ( q.getModelpath() == null )
+            {
+              q.setModelpath("SpectralDataset_Custom");
+              continue;  //TODO: proper handling of unmodeled parameters.
+            }
+
             table.put( q.getModelpath(), q );
           }
           else if ( eltype.equalsIgnoreCase(DOM_TAG_FIELD) )
@@ -284,7 +297,12 @@ public class VOTMapper {
           }
           else if ( eltype.equalsIgnoreCase(DOM_TAG_PARAM) )
           {
-            q = this.convertParam( (ParamElement)child );
+            try{
+              q = this.convertParam( (ParamElement)child );
+            }catch (IOException ex){
+                Logger.getLogger(VOTMapper.class.getName()).log(Level.WARNING, null, ex);
+                continue;
+            }
             nparams++;
             mp = q.getModelpath();
             if ( mp == null )
@@ -330,7 +348,7 @@ public class VOTMapper {
        return param;   
     }
     
-    private Quantity convertParam( ParamElement param )
+    private Quantity convertParam( ParamElement param ) throws IOException
     {
         // Split param into equivalent of Field + value
         String strval = param.getAttribute( ATT_TAG_VALUE );
@@ -338,7 +356,7 @@ public class VOTMapper {
         return q;
     }
     
-    private Quantity convertParam( FieldElement param, String sval )
+    private Quantity convertParam( FieldElement param, String sval ) throws IOException
     {
         String tmpstr = "";
         Quantity q = new Quantity();
@@ -396,13 +414,12 @@ public class VOTMapper {
         {
             //TODO- Unmodeled element, Convert VOTable dtype to Java data type
             //dtype = convertDType( param.getAttribute( ATT_TAG_DTYPE ) );
-            throw new UnsupportedOperationException("Need to get datatype from parameter.");
+            return q;
+            //throw new UnsupportedOperationException("Need to get datatype from parameter.");
         }
-        //String sval = param.getAttribute( ATT_TAG_VALUE );
-        if ( sval == null || sval.equals(""))
-            // TODO - proper handling of NULL value
-            throw new UnsupportedOperationException("Null value representation not yet supported.");
 
+        // TODO - proper handling of NULL value by dtype.. 
+        // TODO - handle VOTable NULL value assignment.
         int arlen = -1;
         if ( param.hasAttribute(ATT_TAG_ARRSIZE ) && !dtype.equals("char"))
         {
@@ -415,16 +432,38 @@ public class VOTMapper {
 
         if ( dtype.equalsIgnoreCase("Double") )
         {   // Double, Double[]
-            if ( arlen < 0 )
+            if ( arlen < 0 ){
+              if ( sval == null || sval.isEmpty())
+                q.setValue( Double.NaN );
+              else
                 q.setValue( Double.valueOf(sval) );
-            else
-            {
+            }
+            else {
+                Double[] darr = new Double[arlen];
+                if ( sval == null || sval.isEmpty()){
+                  for ( int ii=0; ii< arlen; ii++)
+                    darr[ii] = Double.NaN;
+                }
+                else {
+                  // Split values, load Double array.
+                  String[] sarr = sval.split("\\s+");
+                  for ( int ii=0; ii< arlen; ii++)
+                    darr[ii] = Double.valueOf(sarr[ii]);
+                }
+                q.setValue(darr);
+            }
+        }
+        else if ( dtype.equalsIgnoreCase( "Long" ) )
+        {   // Long
+            if ( arlen < 0 )
+                q.setValue( Long.valueOf(sval) );
+            else {
                 // Split values, load Double array.
                 String[] sarr = sval.split("\\s+");
-                Double[] darr = new Double[arlen];
+                Long[] iarr = new Long[arlen];
                 for ( int ii=0; ii< arlen; ii++)
-                    darr[ii] = Double.valueOf(sarr[ii]);
-                q.setValue(darr);
+                    iarr[ii] = Long.valueOf(sarr[ii]);
+                q.setValue(iarr);
             }
         }
         else if ( dtype.equalsIgnoreCase( "Integer" ) )
@@ -473,8 +512,15 @@ public class VOTMapper {
         }
         else
         {
-           System.out.println("MCD TEMP: Bad element "+q.getModelpath());
-           throw new UnsupportedOperationException("Datatype not yet supported. ("+dtype+")");
+           // Instances where element does not match a supported datatype.
+           // Example; ObsConfig.Instrument utype placed on ObsConfig.Instrument.Name param.
+           // NOTE: when dtype of unmodeled elements are pulled from Param, this could be
+           //       either a modeled or unmodeled element.
+           // TODO - ModeledElementException || UnModeledElementException?
+           if ( q.getModelpath() == null )
+             throw new IOException("UnModeled element with unsupported data type. dtype="+dtype);
+           else
+             throw new IOException("Modeled element with unexpected data type. mp="+q.getModelpath()+"  dtype="+dtype);
         }
         
         return q;        
@@ -635,11 +681,14 @@ public class VOTMapper {
           {  // Add Quantity for each Column with data.
              key = (String)keys[jj];
              col = (Column)this.tabledata.get(key);
-             if ( (col.data.length > ii)&& (col.data[ii] != null) )
-             {
-               // Define Quantity from FIELD and String data value.
-               q = convertParam( col.info, col.data[ii] );
-               rec.put(key, q);
+             if ( (col.data.length > ii)&& (col.data[ii] != null) ){
+               try {
+                 // Define Quantity from FIELD and String data value.
+                 q = convertParam( col.info, col.data[ii] );
+                 rec.put(key, q);
+               } catch (IOException ex) {
+                 Logger.getLogger(VOTMapper.class.getName()).log(Level.WARNING, null, ex);
+               }
              }
           }
           

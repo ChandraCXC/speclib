@@ -23,11 +23,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.LinkedHashMap;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -93,7 +90,7 @@ public class VOTableIO implements IFileIO {
      *  @return doc
      *    {@link cfa.vo.speclib.SpectralDataset }
      */
-    public SpectralDataset read(URL file) {
+    public SpectralDataset read(URL file) throws IOException {
 
         SpectralDataset result;
         VOElement top = null;
@@ -102,9 +99,9 @@ public class VOTableIO implements IFileIO {
         try {
             top = new VOElementFactory().makeVOElement( file );
         } catch (SAXException ex) {
-            Logger.getLogger(VOTableIO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new IOException("Problem reading URL - "+file);
         } catch (IOException ex) {
-            Logger.getLogger(VOTableIO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new IOException("Problem reading URL - "+file);
         }
 
         // Use VOTMapper to convert the VOElement hierarchy to ModelDocument
@@ -131,7 +128,7 @@ public class VOTableIO implements IFileIO {
      *    {@link cfa.vo.speclib.SpectralDataset }
      */
     //TODO:  Implement
-    public SpectralDataset read(InputStream is) {
+    public SpectralDataset read(InputStream is) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -188,11 +185,8 @@ public class VOTableIO implements IFileIO {
             transformer.setOutputProperty( OutputKeys.INDENT, "yes");
             transformer.transform(source, strm);
             
-        //TODO - change exception action?
-        } catch (TransformerConfigurationException ex) {
-            Logger.getLogger(VOTableIO.class.getName()).log(Level.SEVERE, null, ex);
         } catch (TransformerException ex) {
-            Logger.getLogger(VOTableIO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new IOException("Problem transforming DOM.");
         }
 
         buf.flush();
@@ -218,26 +212,22 @@ public class VOTableIO implements IFileIO {
 
         // Extract underlying SpectralDocument from input dataset
         ModelDocument spdoc = null;
-        if ( Proxy.isProxyClass( ds.getClass() ))
-        {
+        if ( Proxy.isProxyClass( ds.getClass() )) {
            ModelProxy h = (ModelProxy)Proxy.getInvocationHandler( ds );
            spdoc = h.getDoc();
         }
-        else
-        {
-           // TODO - Some sort of Error
-           System.out.println("Input object is not a Proxy! ");
+        else {
+            throw new IllegalArgumentException("ds is not a Proxy type, got ("+ds.getClass().getSimpleName()+") instead.");
         }
         
         // Get model specification for this dataset.. to fill in any 
         // important missing information. (Utypes, UCDs, etc.)
         ModelFactory mf = new ModelFactory();
-        String tmpstr = ds.getDataModel().getName().getValue();
+        String tmpstr = this.identifyModel( ds );
         try {
             this.model = mf.newInstance( tmpstr );
         } catch (IOException ex) {
-            // TODO - what error handling do we want here?
-            Logger.getLogger(VOTableIO.class.getName()).log(Level.SEVERE, null, ex);
+            throw new IllegalArgumentException("ds represents unsupported model.");
         }
         
         /* Add VOTable declaration content */
@@ -424,7 +414,6 @@ public class VOTableIO implements IFileIO {
         String tmpstr;
         
         //  ID
-        //  TODO: Random ID generator? only set for ParamRef usage?
         if ( q.isSetID() )
           param.setAttribute( ATT_TAG_ID, q.getID() );
 
@@ -566,7 +555,7 @@ public class VOTableIO implements IFileIO {
         for (String mp : node.getKeys()) 
         {
             Object obj = node.get( mp );
-            // TODO - remove hack.. 
+            // TODO - remove hack.. Hardcoded break for 'Data' section.
             if ( obj.getClass().equals( MPArrayList.class ) && !mp.endsWith("Dataset_Data"))
             {
                 for (Object item : (MPArrayList)obj )
@@ -795,6 +784,17 @@ public class VOTableIO implements IFileIO {
               tr.appendChild( td );
           }
         }
+    }
+    
+    private String identifyModel( SpectralDataset ds )
+    {
+        String result = "";
+
+        // First try: DataModel element.
+        if ( ds.isSetDataModel() )
+          result = ds.getDataModel().getName().getValue();
+
+        return result;
     }
     
 }

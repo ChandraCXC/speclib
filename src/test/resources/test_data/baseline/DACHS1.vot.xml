@@ -1,0 +1,313 @@
+<?xml version='1.0' encoding='utf-8'?>
+<VOTABLE version="1.2" xmlns="http://www.ivoa.net/xml/VOTable/v1.2"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.ivoa.net/xml/VOTable/v1.2 http://vo.ari.uni-heidelberg.de/docs/schemata/VOTable-1.2.xsd">
+    <DESCRIPTION>Spectra from the Flash and Heros Echelle spectrographs developed at
+        Landessternwarte Heidelberg and mounted at La Silla and various other
+        observatories. The data mostly contains spectra of OB stars. Heros was
+        the name of the instrument after Flash got a second channel in 1995.
+    </DESCRIPTION>
+    <INFO name="legal" value="If you use this data, please acknowledge: &quot;This research made use of
+Flash/Heros data served through the GAVO data center&quot;. Thanks."></INFO>
+    <RESOURCE utype="spec:Spectrum">
+        <TABLE name="aesaiihe" utype="spec:Spectrum">
+            <DESCRIPTION>Spectrum from
+                http://dc.zah.uni-heidelberg.de/getproduct/flashheros/data/ca92/f0006.mt
+            </DESCRIPTION>
+            <INFO name="source" value="1996A&amp;A...312..539S"></INFO>
+            <GROUP utype="spec:Target">
+                <PARAMref ref="asewawie" utype="spec:Target.Name"/>
+                <PARAMref ref="ahsddane" utype="spec:Target.Redshift"/>
+                <PARAMref ref="aesddane" utype="spec:Target.pos.spoint"/>
+            </GROUP>
+            <GROUP utype="spec:Char">
+                <PARAMref ref="asoddane" utype="spec:AstroCoords.Position2D.Value2"/>
+                <PARAMref ref="ahnddane" utype="spec:Char.SpatialAxis.Coverage.Bounds.Extent"/>
+                <PARAMref ref="aeuddane" utype="spec:Char.TimeAxis.Coverage.Location.Value"/>
+                <PARAMref ref="asisbgoe" utype="spec:Char.TimeAxis.Coverage.Bounds.Extent"/>
+                <PARAMref ref="ahosbgoe" utype="spec:Char.SpectralAxis.Coverage.Location.Value"/>
+                <PARAMref ref="aemlgmue" utype="spec:Char.SpectralAxis.Coverage.Bounds.Extent"/>
+                <PARAMref ref="ahglgmue" utype="spec:Char.SpectralAxis.Coverage.Bounds.Start"/>
+                <PARAMref ref="ahnlgmue" utype="spec:Char.SpectralAxis.Coverage.Bounds.Stop"/>
+                <PARAMref ref="ahhpgnoe" utype="spec:Char.SpectralAxis.Ucd"/>
+                <PARAMref ref="ahtioadowgdn" utype="spec:Char.SpectralAxis.Accuracy.BinSize"/>
+                <PARAMref ref="ahbioadowgdn" utype="spec:Char.FluxAxis.Accuracy.SysError"/>
+                <PARAMref ref="ahepgnoe" utype="spec:Char.FluxAxis.Accuracy.StatError"/>
+                <PARAMref ref="aspioadowgdn" utype="spec:Char.SpectralAxis.Accuracy.StatError"/>
+                <PARAMref ref="apgioadowgdn" utype="spec:Char.SpectralAxis.Accuracy.SysError"/>
+                <PARAMref ref="aehioadowgdn" utype="spec:Char.SpectralAxis.CalibrationSatus"/>
+                <PARAMref ref="appioadowgdn" utype="spec:Char.SpectralAxis.Resolution.refVal"/>
+                <PARAMref ref="ahmpgnoe" utype="spec:Char.SpectralAxis.Unit"/>
+                <PARAMref ref="apipgnoe" utype="spec:Char.FluxAxis.Unit"/>
+            </GROUP>
+            <GROUP utype="spec:Curation">
+                <PARAMref ref="apupgnoe" utype="spec:Curation.Reference"/>
+                <PARAMref ref="aspwawie" utype="spec:DataID.DatasetID"/>
+                <PARAMref ref="ahawawie" utype="spec:Curation.Date"/>
+            </GROUP>
+            <GROUP utype="spec:DataID">
+                <PARAMref ref="aepwawie" utype="spec:DataID.Title"/>
+                <PARAMref ref="apawawie" utype="spec:DataID.CreatorDID"/>
+                <PARAMref ref="asawawie" utype="spec:DataID.Date"/>
+                <PARAMref ref="aplwawie" utype="spec:ObsConfig.Bandpass"/>
+                <PARAMref ref="asiwawie" utype="spec:DataID.Version"/>
+                <PARAMref ref="ahopgnoe" utype="spec:DataID.Creator"/>
+                <PARAMref ref="asipgnoe" utype="spec:DataID.Collection"/>
+                <PARAMref ref="ahipgnoe" utype="spec:ObsConfig.Instrument"/>
+                <PARAMref ref="apnpgnoe" utype="spec:ObsConfig.DataSource"/>
+                <PARAMref ref="asspgnoe" utype="spec:DataID.CreationType"/>
+            </GROUP>
+            
+            <FIELD ID="spectral" datatype="double" name="spectral" ucd="em.wl" unit="0.1 nm"
+                   utype="spec:Data.SpectralAxis.Value">
+                <DESCRIPTION>Wavelength</DESCRIPTION>
+            </FIELD>
+            <FIELD ID="flux" datatype="double" name="flux" ucd="phot.flux.density" utype="spec:Data.FluxAxis.Value">
+                <DESCRIPTION>Flux F(lambda)dlambda</DESCRIPTION>
+            </FIELD>
+            <PARAM arraysize="*" datatype="char" name="accref" ucd="meta.ref.url;meta.dataset"
+                   utype="spec:Access.Reference"
+                   value="http://dc.zah.uni-heidelberg.de/getproduct/flashheros/data/ca92/f0006.mt">
+                <DESCRIPTION>Access key for the data</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" name="owner" ucd="" value="">
+                <DESCRIPTION>Owner of the data</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" name="embargo" ucd="" unit="a" value="">
+                <DESCRIPTION>Date the data will become/became public</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" name="mime" ucd="" utype="spec:Access.Format" value="image/fits">
+                <DESCRIPTION>MIME type of the file served</DESCRIPTION>
+            </PARAM>
+            <PARAM datatype="int" name="accsize" ucd="VOX:Image_FileSize" unit="byte" utype="spec:Access.Size"
+                   value="97920">
+                <DESCRIPTION>Size of the data in bytes</DESCRIPTION>
+                <VALUES null="-1"></VALUES>
+            </PARAM>
+            <PARAM ID="aepwawie" arraysize="*" datatype="char" name="ssa_dstitle" ucd="meta.title;meta.dataset"
+                   utype="spec:DataID.Title" value="Flash/Heros bet Ori 1992-01-24 00:00:00">
+                <DESCRIPTION>Title or the dataset (usually, spectrum)</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="apawawie" arraysize="*" datatype="char" name="ssa_creatorDID" ucd="meta.id"
+                   utype="spec:DataID.CreatorDID" value="">
+                <DESCRIPTION>Dataset identifier assigned by the creator</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="aspwawie" arraysize="*" datatype="char" name="ssa_pubDID" ucd="" utype="spec:DataID.DatasetID"
+                   value="ivo://org.gavo.dc/~?flashheros/data/ca92/f0006.mt">
+                <DESCRIPTION>Dataset identifier assigned by the publisher</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="asawawie" arraysize="*" datatype="char" name="ssa_cdate" ucd="time;meta.dataset"
+                   utype="spec:DataID.Date" value="1993-05-18T00:00:00Z" xtype="adql:TIMESTAMP">
+                <DESCRIPTION>Processing/Creation date</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="ahawawie" arraysize="*" datatype="char" name="ssa_pdate" ucd="" utype="spec:Curation.Date"
+                   value="2014-07-31T07:20:52Z" xtype="adql:TIMESTAMP">
+                <DESCRIPTION>Date last published.</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="aplwawie" arraysize="*" datatype="char" name="ssa_bandpass" ucd="instr.bandpass"
+                   utype="spec:ObsConfig.Bandpass" value="">
+                <DESCRIPTION>Bandpass (i.e., rough spectral location) of this dataset; use something generic like
+                    'Optical' here.
+                </DESCRIPTION>
+            </PARAM>
+            <PARAM ID="asiwawie" arraysize="*" datatype="char" name="ssa_cversion" ucd="meta.version;meta.dataset"
+                   utype="spec:DataID.Version" value="">
+                <DESCRIPTION>Creator assigned version for this dataset (will be incremented when this particular item is
+                    changed).
+                </DESCRIPTION>
+            </PARAM>
+            <PARAM ID="asewawie" arraysize="*" datatype="char" name="ssa_targname" ucd="meta.id;src"
+                   utype="spec:Target.Name" value="bet Ori">
+                <DESCRIPTION>Common name of object observed.</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" name="ssa_targclass" ucd="src.class" utype="spec:Target.Class"
+                   value="star">
+                <DESCRIPTION>Object class (star, QSO,...)</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="ahsddane" datatype="float" name="ssa_redshift" ucd="src.redshift" utype="spec:Target.Redshift"
+                   value="">
+                <DESCRIPTION>Redshift of target object</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="aesddane" arraysize="*" datatype="char" name="ssa_targetpos" ucd="pos.eq;src"
+                   utype="spec:Target.pos.spoint" value="">
+                <DESCRIPTION>Equatorial (ICRS) position of the target object.</DESCRIPTION>
+            </PARAM>
+            <PARAM datatype="float" name="ssa_snr" ucd="stat.snr" utype="spec:Derived.SNR" value="">
+                <DESCRIPTION>Signal-to-noise ratio estimated for this dataset</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="asoddane" arraysize="*" datatype="char" name="ssa_location" ucd="pos.eq" unit="deg"
+                   utype="spec:AstroCoords.Position2D.Value2" value="78.634467,-8.201638">
+                <DESCRIPTION>ICRS location of aperture center</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="ahnddane" datatype="float" name="ssa_aperture" ucd="instr.fov" unit="deg"
+                   utype="spec:Char.SpatialAxis.Coverage.Bounds.Extent" value="17.6">
+                <DESCRIPTION>Angular diameter of aperture</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="aeuddane" datatype="double" name="ssa_dateObs" ucd="time.epoch" unit="d"
+                   utype="spec:Char.TimeAxis.Coverage.Location.Value" value="48645.0" xtype="mjd">
+                <DESCRIPTION>Midpoint of exposure</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="asisbgoe" datatype="float" name="ssa_timeExt" ucd="time.duration" unit="s"
+                   utype="spec:Char.TimeAxis.Coverage.Bounds.Extent" value="">
+                <DESCRIPTION>Exposure duration</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="ahosbgoe" datatype="float" name="ssa_specmid" ucd="em.wl;instr.bandpass" unit="m"
+                   utype="spec:Char.SpectralAxis.Coverage.Location.Value" value="5.38986e-07">
+                <DESCRIPTION>Midpoint of region covered in this dataset</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="aemlgmue" datatype="float" name="ssa_specext" ucd="em.wl;instr.bandwidth" unit="m"
+                   utype="spec:Char.SpectralAxis.Coverage.Bounds.Extent" value="2.8137e-07">
+                <DESCRIPTION>Width of the spectrum</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="ahglgmue" datatype="float" name="ssa_specstart" ucd="em.wl;stat.min" unit="m"
+                   utype="spec:Char.SpectralAxis.Coverage.Bounds.Start" value="3.98301e-07">
+                <DESCRIPTION>Lower value of spectral coordinate</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="ahnlgmue" datatype="float" name="ssa_specend" ucd="em.wl;stat.max" unit="m"
+                   utype="spec:Char.SpectralAxis.Coverage.Bounds.Stop" value="6.79671e-07">
+                <DESCRIPTION>Upper value of spectral coordinate</DESCRIPTION>
+            </PARAM>
+            <PARAM datatype="int" name="ssa_length" ucd="" utype="spec:Dataset.Length" value="23450">
+                <DESCRIPTION>Number of points in the spectrum</DESCRIPTION>
+                <VALUES null="-1"></VALUES>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" name="localKey" ucd="meta.id" value="ca92/f0006.mt">
+                <DESCRIPTION>Local observation key (used to connect to single orders).</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" name="ssa_fluxcalib" ucd=""
+                   utype="spec:Char.FluxAxis.CalibrationStatus" value="NORMALIZED">
+                <DESCRIPTION>Type of flux calibration</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" name="ssa_model" ucd="" utype="spec:Dataset.DataModel.Name"
+                   value="Spectrum-2.0">
+                <DESCRIPTION>Data model name and version</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" name="ssa_csysName" ucd="" utype="spec:CoordSys.SpaceFrame.Name"
+                   value="ICRS">
+                <DESCRIPTION>System RA and Dec are given in</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" name="ssa_timeSI" ucd="" utype="spec:Dataset.TimeSI" value="">
+                <DESCRIPTION>Time conversion factor in Osuna-Salgado convention.</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" name="ssa_spectralSI" ucd="" utype="spec:Dataset.SpectralSI" value="">
+                <DESCRIPTION>Spectral conversion factor in Osuna-Salgado convention</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="ahhpgnoe" arraysize="*" datatype="char" name="ssa_spectralucd" ucd=""
+                   utype="spec:Char.SpectralAxis.Ucd" value="em.wl">
+                <DESCRIPTION>UCD of the spectral column</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="ahmpgnoe" arraysize="*" datatype="char" name="ssa_spectralunit" ucd=""
+                   utype="spec:Char.SpectralAxis.Unit" value="0.1 nm">
+                <DESCRIPTION>Unit of the spectral column</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" name="ssa_fluxSI" ucd="" utype="spec:Dataset.FluxSI" value="">
+                <DESCRIPTION>Flux/magnitude conversion factor in Osuna-Salgado convention</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" name="ssa_fluxucd" ucd="" utype="spec:Char.FluxAxis.Ucd"
+                   value="phot.flux.density">
+                <DESCRIPTION>UCD of the flux column</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="apipgnoe" arraysize="*" datatype="char" name="ssa_fluxunit" ucd=""
+                   utype="spec:Char.FluxAxis.Unit" value=" ">
+                <DESCRIPTION>Unit of the flux column</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" name="ssa_dstype" ucd="" utype="spec:Dataset.Type" value="Spectrum">
+                <DESCRIPTION>Type of data (spectrum, time series, etc)</DESCRIPTION>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" name="ssa_publisher" ucd="" utype="spec:Curation.Publisher"
+                   value="ivo://org.gavo.dc">
+                <DESCRIPTION>Publisher of the datasets included here.</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="ahopgnoe" arraysize="*" datatype="char" name="ssa_creator" ucd="" utype="spec:DataID.Creator"
+                   value="">
+                <DESCRIPTION>Creator of the datasets included here.</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="asipgnoe" arraysize="*" datatype="char" name="ssa_collection" ucd=""
+                   utype="spec:DataID.Collection" value="">
+                <DESCRIPTION>IOVA id of the originating data collection</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="ahipgnoe" arraysize="*" datatype="char" name="ssa_instrument" ucd="meta.id;instr"
+                   utype="spec:ObsConfig.Instrument" value="Flash/Heros">
+                <DESCRIPTION>Instrument or code used to produce these datasets</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="apnpgnoe" arraysize="*" datatype="char" name="ssa_datasource" ucd=""
+                   utype="spec:ObsConfig.DataSource" value="pointed">
+                <DESCRIPTION>Method of generation for the data.</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="asspgnoe" arraysize="*" datatype="char" name="ssa_creationtype" ucd=""
+                   utype="spec:DataID.CreationType" value="archival">
+                <DESCRIPTION>Process used to produce the data</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="apupgnoe" arraysize="*" datatype="char" name="ssa_reference" ucd=""
+                   utype="spec:Curation.Reference" value="">
+                <DESCRIPTION>URL or bibcode of a publication describing this data.</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="ahepgnoe" datatype="float" name="ssa_fluxStatError" ucd="stat.error;phot.flux.density;em"
+                   utype="spec:Char.FluxAxis.Accuracy.StatError" value="">
+                <DESCRIPTION>Statistical error in flux</DESCRIPTION>
+                <VALUES null="NaN"></VALUES>
+            </PARAM>
+            <PARAM ID="ahbioadowgdn" datatype="float" name="ssa_fluxSysError" ucd="stat.error.sys;phot.flux.density;em"
+                   utype="spec:Char.FluxAxis.Accuracy.SysError" value="">
+                <DESCRIPTION>Systematic error in flux</DESCRIPTION>
+                <VALUES null="NaN"></VALUES>
+            </PARAM>
+            <PARAM ID="ahtioadowgdn" datatype="float" name="ssa_binSize" ucd="em.wl;spect.binSize" unit="m"
+                   utype="spec:Char.SpectralAxis.Accuracy.BinSize" value="">
+                <DESCRIPTION>Bin size in wavelength</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="aspioadowgdn" datatype="float" name="ssa_spectStatError" ucd="stat.error;em" unit="m"
+                   utype="spec:Char.SpectralAxis.Accuracy.StatError" value="0.05">
+                <DESCRIPTION>Statistical error in wavelength</DESCRIPTION>
+                <VALUES null="NaN"></VALUES>
+            </PARAM>
+            <PARAM ID="apgioadowgdn" datatype="float" name="ssa_spectSysError" ucd="stat.error.sys;em" unit="m"
+                   utype="spec:Char.SpectralAxis.Accuracy.SysError" value="">
+                <DESCRIPTION>Systematic error in wavelength</DESCRIPTION>
+                <VALUES null="NaN"></VALUES>
+            </PARAM>
+            <PARAM ID="aehioadowgdn" arraysize="*" datatype="char" name="ssa_speccalib" ucd="meta.code.qual"
+                   utype="spec:Char.SpectralAxis.CalibrationSatus" value="ABSOLUTE">
+                <DESCRIPTION>Type of wavelength calibration</DESCRIPTION>
+            </PARAM>
+            <PARAM ID="appioadowgdn" datatype="float" name="ssa_specres" ucd="spect.resolution;em.wl" unit="m"
+                   utype="spec:Char.SpectralAxis.Resolution.refVal" value="2.5e-11">
+                <DESCRIPTION>Resolution on the spectral axis</DESCRIPTION>
+                <VALUES null="NaN"></VALUES>
+            </PARAM>
+            <PARAM datatype="float" name="ssa_spaceError" ucd="stat.error;pos.eq" unit="deg"
+                   utype="spec:Char.SpatialAxis.Accuracy.StatError" value="">
+                <DESCRIPTION>Statistical error in position</DESCRIPTION>
+                <VALUES null="NaN"></VALUES>
+            </PARAM>
+            <PARAM arraysize="*" datatype="char" name="ssa_spaceCalib" ucd="meta.code.qual"
+                   utype="spec:Char.SpatialAxis.CalibrationStatus" value="">
+                <DESCRIPTION>Type of calibration in spatial coordinates</DESCRIPTION>
+            </PARAM>
+            <PARAM datatype="float" name="ssa_spaceRes" ucd="pos.angResolution" unit="deg"
+                   utype="spec:Char.SpatialAxis.Resolution.refVal" value="">
+                <DESCRIPTION>Spatial resolution of data</DESCRIPTION>
+            </PARAM>
+            <DATA>
+                <TABLEDATA>
+                    <TR>
+                        <TD>3983.00806</TD>
+                        <TD>0.0</TD>
+                    </TR>
+                    <TR>
+                        <TD>3983.128052436</TD>
+                        <TD>0.0</TD>
+                    </TR>
+                    <TR>
+                        <TD>3983.2480448720003</TD>
+                        <TD>0.0</TD>
+                    </TR>
+                    <TR>
+                        <TD>3983.368037308</TD>
+                        <TD>0.0</TD>
+                    </TR>
+                </TABLEDATA>
+            </DATA>
+        </TABLE>
+    </RESOURCE>
+</VOTABLE>

@@ -12,7 +12,6 @@ import java.util.List;
  */
 public interface CharacterizationAxis {
     
-    //TODO: Name,UCD,Unit properties..  as Quantity?
     public Quantity<String> getName();
     public Quantity<String> getUCD();
     public Quantity<String> getUnit();

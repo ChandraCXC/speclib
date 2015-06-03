@@ -7,8 +7,14 @@ package cfa.vo.vomodel.table;
 import cfa.vo.vomodel.Utype;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -150,12 +156,20 @@ public class ModelTableTest {
     public void testWrite() {
         if (verbose){ System.out.println("Test write"); }
         URL infile;
-        String outfile;
+        URL outfile = null;
         Boolean caught;
+
+        // Generate file names.
+        infile = ModelTable.class.getResource("/spectrum_2p0.txt");
+        URL outroot = this.getClass().getResource("/test_data");
+        try {
+            outfile = new URL( outroot.toString() + "/out/spectrum_2p0.txt" );
+        } catch (MalformedURLException ex) {
+            fail("Output file location not found.");
+        }
 
         // Load model spec.
         ModelTable instance = new ModelTable();
-        infile = ModelTable.class.getResource("/spectrum_2p0.txt");
         caught = false;
         try {
             instance.read( infile );
@@ -172,10 +186,7 @@ public class ModelTableTest {
         catch (IOException ex){caught=false;} //not right exception
         assertTrue(caught);
 
-        // Generate output file name.
-        URL outroot = this.getClass().getResource("/test_data");
-        outfile = outroot.toString() + "/out/spectrum_2p0.txt";        
-
+        // Write to file.
         caught = false;
         try{
             instance.write( outfile );
@@ -184,7 +195,12 @@ public class ModelTableTest {
         catch (IOException ex){caught=true;}
         assertFalse(caught);
         
-        //TODO - add verification of infile vs outfile.
+        // Validate results against baseline.
+        String tmpstr = outroot.getFile()+"/baseline/spec2p0_model_table.txt";
+        String savfile = tmpstr.replaceFirst(".*:", "");
+        String runfile = outfile.getFile().replaceFirst(".*:", "");
+        
+        this.compare_files( savfile, runfile );
     }
 
     /**
@@ -321,10 +337,6 @@ public class ModelTableTest {
         expResult = -1;
         result = model.getRecordIndexByTag( utype );
         assertEquals(expResult, result );
-        
-//        try{ result = model.getRecordIndexByTag(utype.getTag());}
-//        catch ( UnsupportedOperationException ex){ caught = true;}
-//        assertTrue(caught);
     }
     
     /**
@@ -523,4 +535,57 @@ public class ModelTableTest {
         assertEquals(expResult, result.get(97));
         assertEquals(expSize, result.size());
     }    
+    
+    private void compare_files( String savfile, String runfile )
+    {
+        int ndiffs = 0;
+        try {
+            List<String> savdata = Files.readAllLines(Paths.get(savfile),Charset.defaultCharset());
+            List<String> outdata = Files.readAllLines(Paths.get(runfile),Charset.defaultCharset());
+
+            int nrows = savdata.size();
+            if ( savdata.size() != outdata.size())
+            {
+                System.out.println("File sizes differ "+savdata.size()+" vs "+outdata.size());
+                ndiffs++;
+                if ( outdata.size() > nrows )
+                    nrows = outdata.size();
+            }
+
+            String sline;
+            String oline;
+            for ( int ii = 0; ii < nrows; ii++ )
+            {
+               if ( ii >= savdata.size() )
+                   sline = "MISSING";
+               else
+               {
+                 sline = savdata.get(ii).replaceAll("........-....-....-....-............", "ID");
+                 savdata.set(ii, sline);
+               }
+               if ( ii >= outdata.size() )
+                   oline = "MISSING";
+               else
+               {
+                 oline = outdata.get(ii).replaceAll("........-....-....-....-............", "ID");
+                 outdata.set(ii, oline);
+               }
+
+               if ( ! sline.equals( oline ))
+               {
+                   System.out.println("Line "+ii+" differs:");
+                   System.out.println("    Expected: "+sline);
+                   System.out.println("    Resulted: "+oline);
+                   System.out.println("");
+                   ndiffs++;
+               }
+            }
+            assertEquals( "Files differ! ", 0 , ndiffs);
+
+        } catch (IOException ex) {
+            System.out.println("Test compare_files.. hit IO Exception = ");
+            Logger.getLogger(ModelTableTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
 }

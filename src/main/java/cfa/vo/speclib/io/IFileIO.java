@@ -23,7 +23,7 @@ public interface IFileIO {
      *  @return
      *    {@link cfa.vo.speclib.SpectralDataset }
      */
-    SpectralDataset read( URL file );
+    SpectralDataset read( URL file ) throws IOException;
 
     /** Read Spectral Dataset from provided Stream
      *  @param is 
@@ -31,7 +31,7 @@ public interface IFileIO {
      *  @return
      *    {@link cfa.vo.speclib.SpectralDataset }
      */
-    SpectralDataset read( InputStream is );
+    SpectralDataset read( InputStream is ) throws IOException;
 
     /** Write Spectral Dataset to specified URL
      *  @param file 

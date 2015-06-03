@@ -369,7 +369,7 @@ public class ModelProxy implements InvocationHandler
                 Method m = proxy.getClass().getMethod("get"+property, (Class<?>[])null);
                 l = (List)this.getProperty( proxy, m, args );
               } catch (NoSuchMethodException ex) {
-                // TODO: This shouldn't happen.. maybe should be ERROR instead
+                // TODO: This shouldn't happen.. maybe should be ERROR instead?
                 l = new MPArrayList<Object>();
               }
            }                                   

@@ -63,8 +63,6 @@ public class TestInvocation {
     public void tearDown() {
     }
 
-    // TODO: Add set test for URI type DataID.DatasetID
-
     @Test
     public void testBasicGet()
     {
@@ -271,8 +269,6 @@ public class TestInvocation {
         if ( verbose ){ System.out.println("+ Add records to extracted List"); }
         qarr.add( new Quantity("WFC") );
         qarr.add( new Quantity("Sloan") );
-
-        //TODO: NEED TO UPDATE MODEL PATH ON THESE
         
         // Extract specific Collection getCollection(1)
         if ( verbose ){ System.out.println("+ Get Indexed Property Element"); }
@@ -395,9 +391,10 @@ public class TestInvocation {
         if ( verbose ){ System.out.println("  + Number of Exceptions caught = "+count);}
         assertEquals( count, 2 );
 
+        //TODO: This should fail, Prefix defined type is String.
         q = new Quantity();
         q.setValue(Double.NaN);
-        dm.setPrefix( q );  //TODO: This should fail, expected type is String.
+        dm.setPrefix( q );
 
     }
 }

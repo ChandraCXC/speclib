@@ -1,5 +1,6 @@
 package cfa.vo.speclib;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 /**
@@ -246,15 +247,22 @@ public class Quantity<T> {
         // If value is set, preserve the data type
         if ( this.dtype == null )
             this.dtype = inval.getClass();
+        
+        if ( inval.getClass().equals(this.dtype) )
+            this.value = inval;
+        else if ( this.dtype.isArray() && this.dtype.getComponentType().equals(inval.getClass()) )
+        {
+          // Source is Scalar of same type as this Array.. load array from scalar value.
+          Object arr = Array.newInstance( inval.getClass(), 1 );
+          Array.set( arr, 0, inval );
+          this.setValue((T)arr );
+        }
         else
-            if ( (this.dtype != null )&&(! inval.getClass().equals(this.dtype)))
-                throw new IllegalArgumentException("Value must be of type "+this.dtype.getSimpleName()+" on "+this.modelpath);
-
-        this.value = inval;
+            throw new IllegalArgumentException("Value must be of type "+this.dtype.getSimpleName()+" on "+this.modelpath);
     }
    
     /**
-     * Fill content of this Quanity object with the content of the provided
+     * Fill content of this Quantity object with the content of the provided
      * source Quantity.  Facilitates copying a Quantity to an existing object.
      * 
      * @param src

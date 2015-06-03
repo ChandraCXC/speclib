@@ -231,6 +231,9 @@ public class ModelObjectFactory {
 
        for ( String key: doc.getKeys() )
        {
+          if ( key.equals("SpectralDataset_Length"))
+              continue;  // TODO: How to handle this calculated element.. cannot be 'set'
+          
           // Strip base from key, including associated array annotation.
           String regex = "^".concat(base).concat("_*").replace("[]", "\\[\\]").replace("].","]\\.");
           mp = key.replaceFirst( regex, "");

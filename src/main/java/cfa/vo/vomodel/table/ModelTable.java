@@ -135,7 +135,7 @@ public class ModelTable implements Model {
      * 
      * @param filename 
      */
-    public void write( String filename ) throws IOException
+    public void write( URL filename ) throws IOException
     {
         OutputStream os;
         Entry item;
@@ -144,8 +144,7 @@ public class ModelTable implements Model {
             throw new FileNotFoundException("Null URL input. ");
 
         // Open output stream
-        URL outfile = new URL( filename );
-        os = new FileOutputStream( outfile.getFile() );
+        os = new FileOutputStream( filename.getFile() );
         BufferedWriter buf = new BufferedWriter( new OutputStreamWriter( os ));
 
         String fmt = "%1s %-125s & %-24s & %-70s & %-45s & %-25s & %-20s & %-40s & %-5s";

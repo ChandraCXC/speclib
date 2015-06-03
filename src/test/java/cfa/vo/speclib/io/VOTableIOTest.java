@@ -75,7 +75,23 @@ public class VOTableIOTest {
     @After
     public void tearDown() {
     }
+    
+    @Test
+    public void testRead_DACHS1() {
+        if (verbose){ System.out.println("Test read(URL)"); }
+        URL file = this.getClass().getResource("/test_data/baseline/DACHS1.vot.xml");
+        VOTableIO instance = new VOTableIO();
+        SpectralDataset expResult = null;
+        SpectralDataset result = null;
+        boolean ok;
+        try {
+          result = instance.read(file);
+        } catch (IOException ex){
+            fail("Error reading input file. "+file);
+        }
 
+    }
+    
     /**
      * Test of read method, of class VOTableIO.
      */
@@ -85,9 +101,13 @@ public class VOTableIOTest {
         URL file = this.getClass().getResource("/test_data/baseline/spectrum_2p0.vot");
         VOTableIO instance = new VOTableIO();
         SpectralDataset expResult = null;
-        SpectralDataset result;
+        SpectralDataset result = null;
         boolean ok;
-        result = instance.read(file);
+        try {
+          result = instance.read(file);
+        } catch (IOException ex){
+            fail("Error reading input file. "+file);
+        }
         
         // Verify by checking selected values.
         Quantity q;
@@ -137,6 +157,7 @@ public class VOTableIOTest {
            assertEquals(expResult, result);
         }
         catch (UnsupportedOperationException ex) { ok = true; }
+        catch (IOException iox ){ ok = false; }
         assertTrue( ok );
     }
 
@@ -231,8 +252,10 @@ public class VOTableIOTest {
         
         // Read baseline file.
         VOTableIO instance = new VOTableIO();
-        SpectralDataset result;
-        result = instance.read(infile);
+        SpectralDataset result = null;
+        try {
+          result = instance.read(infile);
+        } catch (IOException ex ){ fail("Error reading baseline file. "+infile);}
         
         // Pull most troublesome element from the dataset
         boolean ok = result.getData().get(0).getFluxAxis().getCorrections(0).isSetApplied();
@@ -340,10 +363,9 @@ public class VOTableIOTest {
           ds.getDataID().setDate("2001-12-08T03:11:11");
           ds.getDataID().setVersion("001");
           ds.getDataID().setCreationType("Archival");
-          //  NOTE: Alternatively, for List type.. you can get the List and add
-          //        the Quantities, but you also have to set the model path
-          //        to them... see Contributor below
-          List<Quantity> items = new ArrayList<Quantity>();  // TODO - need VOList type to propogate modelpath.
+          //  NOTE: Alternatively, for List type.. you can get the List 
+          //        and add the Quantities, see Contributors below
+          List<Quantity> items = new ArrayList<Quantity>();
           items.add( new Quantity("Collection1","Chandra",null,null));
           items.add( new Quantity("Collection2","X-Ray",null,null));
           items.add( new Quantity("Collection3","Third Cambridge Catalogue of Radio Sources",null,null));
@@ -533,9 +555,6 @@ public class VOTableIOTest {
           specchar.getCoverage().getBounds().setExtent(5e-14);
           specchar.getCoverage().getBounds().setStart(new Quantity(null, 3.3e-14, "Hz","em.freq;stat.min"));
           specchar.getCoverage().getBounds().setStop(new Quantity(null, 1.33e-13, "Hz","em.freq;stat.max"));
-//          specchar.getCoverage().getBounds().getLimits().setUnit("Hz");
-//          specchar.getCoverage().getBounds().getLimits().setStart(3.3e-14);
-//          specchar.getCoverage().getBounds().getLimits().setStop(1.33e-13);
           specchar.getCoverage().getSupport().setExtent(10e-14);
           specchar.getResolution().setRefVal(new Quantity(null,6.3575e+11,"Hz","spect.resolution;em.freq") );
           specchar.getResolution().getResolPower().setRefVal(Double.NaN);
@@ -594,7 +613,7 @@ public class VOTableIOTest {
           Quantity c32 = new Quantity("bkg_errhi",2.5e-40,"W.m**(-2).Hz**(-1)","stat.error.sys;phot.flux.density;em.freq;stat.max");
           Quantity c33 = new Quantity("bkg_qual",(Integer)1,null,"meta.code.qual;phot.flux.density;em.freq");
 
-          //TODO - Should not have to go back to the factory to generate 
+          //TODO - Would prefer to not go back to the factory to generate 
           //       new instances of List entries.. not sure how to tell
           //       it which flavor of content is wanted (ie subclass of List type)
           SPPoint point = (SPPoint)factory.newInstance( SPPoint.class );
