@@ -22,6 +22,7 @@ import uk.ac.starlink.votable.FieldElement;
 import uk.ac.starlink.votable.FieldRefElement;
 import uk.ac.starlink.votable.GroupElement;
 import uk.ac.starlink.votable.ParamElement;
+import uk.ac.starlink.votable.ParamRefElement;
 import uk.ac.starlink.votable.TableElement;
 import uk.ac.starlink.votable.VOElement;
 import uk.ac.starlink.votable.VOStarTable;
@@ -40,6 +41,7 @@ public class VOTMapper {
     private final static String DOM_TAG_FIELD     = "FIELD";    
     private final static String DOM_TAG_FIELDREF  = "FIELDref";
     private final static String DOM_TAG_PARAM     = "PARAM";
+    private final static String DOM_TAG_PARAMREF  = "PARAMref";
     private final static String DOM_TAG_DATA      = "DATA";
     private final static String DOM_TAG_TABLEDATA = "TABLEDATA";
     private final static String DOM_TAG_ROW       = "TR";
@@ -88,6 +90,19 @@ public class VOTMapper {
         
         result = convertResource( (VOElement)resources.item(0) );
                
+        return result;
+    }
+
+    public ModelDocument convert( VOElement doc, Model model )
+    {
+        ModelDocument result;
+
+        // Assign provided model to internal storage.
+        this.model = model;
+        
+        // Process document.
+        result = convert( doc );
+
         return result;
     }
 
@@ -173,13 +188,14 @@ public class VOTMapper {
         int ngroups = 0;
         
         // Find and load data model specification matching this dataset.
-        String modelName = this.identifyModel( doc );
-        try {
-            this.model = new ModelFactory().newInstance( modelName );
-        } catch (IOException ex) {
+        if ( this.model == null ){
+          try {
+            this.model = this.identifyModel( doc );
+          } catch (IOException ex) {
             Logger.getLogger(VOTableIO.class.getName()).log(Level.SEVERE, null, ex);
+          }
         }
-        
+
         // Process FIELD elements to local Column objects
         this.loadColumnData( doc );
 
@@ -295,10 +311,15 @@ public class VOTMapper {
               }
             }
           }
-          else if ( eltype.equalsIgnoreCase(DOM_TAG_PARAM) )
+          else if (( eltype.equalsIgnoreCase(DOM_TAG_PARAM) ) || 
+                   ( eltype.equalsIgnoreCase("BOB") ) )
+//                   ( eltype.equalsIgnoreCase(DOM_TAG_PARAMREF) ) )
           {
             try{
-              q = this.convertParam( (ParamElement)child );
+              if ( eltype.equalsIgnoreCase(DOM_TAG_PARAM) )
+                q = this.convertParam( (ParamElement)child );
+              else
+                q = this.convertParamRef( (ParamRefElement)child );
             }catch (IOException ex){
                 Logger.getLogger(VOTMapper.class.getName()).log(Level.WARNING, null, ex);
                 continue;
@@ -307,7 +328,8 @@ public class VOTMapper {
             mp = q.getModelpath();
             if ( mp == null )
             {
-              mp = "Param"+nparams;
+              mp = "CustomParam"+nparams;
+              continue;
             }
             if ( mp.matches(".+\\[\\]\\.*[a-zA-Z]*$") )
             { // Array Element.. 
@@ -329,7 +351,7 @@ public class VOTMapper {
           }
           else if ( eltype.equalsIgnoreCase(DOM_TAG_FIELDREF) )
           {
-            //System.out.println("Skipping FIELDref in GROUP ");
+            //System.out.println("Skipping FIELDref in GROUP, already handled separately. ");
           }
           else
             System.out.println("MCD TEMP: Unexpected Node in GROUP = "+eltype);
@@ -358,7 +380,7 @@ public class VOTMapper {
     
     private Quantity convertParam( FieldElement param, String sval ) throws IOException
     {
-        String tmpstr = "";
+        String tmpstr;
         Quantity q = new Quantity();
             
         // UType - identifies element within model.
@@ -525,6 +547,24 @@ public class VOTMapper {
         
         return q;        
     }
+    
+    private Quantity convertParamRef( ParamRefElement paramref ) throws IOException
+    {
+        // Get copy of associated PARAM element
+        ParamElement param = (ParamElement)paramref.getParam().cloneNode(true);
+
+        // Override attributes defined on the reference
+        if ( paramref.hasAttribute(ATT_TAG_UCD) )
+            param.setAttribute(ATT_TAG_UCD, paramref.getAttribute(ATT_TAG_UCD) );
+        
+        if ( paramref.hasAttribute(ATT_TAG_UTYPE) )
+            param.setAttribute(ATT_TAG_UTYPE, paramref.getAttribute(ATT_TAG_UTYPE) );
+
+        // Define Quantity for this element
+        Quantity q = convertParam( param );
+        return q;
+    }
+    
     private void loadColumnData( TableElement table )
     {
         Column col;   // Column corresponding to FIELD element
@@ -760,12 +800,13 @@ public class VOTMapper {
        return data;
     }
     
-    private String identifyModel( VOElement top )
+    private Model identifyModel( VOElement top ) throws IOException
     {
         // First try: Param with expected UType.
         NodeList params = top.getElementsByVOTagName(DOM_TAG_PARAM);
         ParamElement param;
-        String result = "";
+        String modelname = "";
+        Model result;
 
         String expected = "Dataset.DataModel.Name";
         String actual; // Actual model path value
@@ -775,10 +816,11 @@ public class VOTMapper {
            actual = param.getAttribute(ATT_TAG_UTYPE);
            if ( actual != null && actual.contains(expected))
            {
-             result = param.getAttribute(ATT_TAG_VALUE);
+             modelname = param.getAttribute(ATT_TAG_VALUE);
              break;
            }
         }
+        result = new ModelFactory().newInstance( modelname );
         return result;
     }
 

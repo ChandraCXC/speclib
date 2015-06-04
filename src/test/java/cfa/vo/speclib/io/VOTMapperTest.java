@@ -7,6 +7,8 @@ package cfa.vo.speclib.io;
 import cfa.vo.speclib.Quantity;
 import cfa.vo.speclib.doc.MPArrayList;
 import cfa.vo.speclib.doc.ModelDocument;
+import cfa.vo.vomodel.Model;
+import cfa.vo.vomodel.ModelFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -95,6 +97,45 @@ public class VOTMapperTest {
         }
         
         // Verify some elements
+        this.validate_results( result );
+        
+    }
+
+    /**
+     * Test of convert method, of class VOTMapper.
+     */
+    @Test
+    public void testConvert_VOElement_WithModel() {
+        if (verbose){System.out.println("convert_VOT_WithModel");}
+        VOTMapper instance = new VOTMapper();
+        ModelDocument expResult = null;
+        Model model = null;
+        try{
+          model = new ModelFactory().newInstance("SPECTRUM-2.0");
+        }catch (IOException ex){
+          fail();
+        }
+        
+        // Convert document according to model.
+        ModelDocument result = instance.convert(top, model);
+
+        // Top level, only 1 element.. the TABLE;
+        assertEquals(1, result.getKeys().size());
+
+        if ( verbose )
+        {
+          System.out.println("Content:");
+          System.out.println(result.toString());
+        }
+        
+        // Verify some elements
+        this.validate_results( result );
+        
+    }
+
+    private void validate_results( ModelDocument result )
+    {
+
         // URL element
         ModelDocument tmp = (ModelDocument)result.get("SpectralDataset");
         tmp = (ModelDocument)tmp.get("SpectralDataset_DataModel");
@@ -134,6 +175,7 @@ public class VOTMapperTest {
         tmp = (ModelDocument)((MPArrayList)tmp.get("SpectralDataset_Data")).get(1);
         q = (Quantity)tmp.get("SpectralDataset_Data[].SPPoint_SpectralAxis_Accuracy_StatError");
         assertEquals( 3.0e10, q.getValue());
-        
+
     }
+
 }

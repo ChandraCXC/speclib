@@ -119,6 +119,48 @@ public class VOTableIO implements IFileIO {
         
         return result;
     }
+    
+    /** Read Spectral Dataset from specified URL and interpret according to 
+     *  the provided Model specification.
+     * 
+     *  @param file 
+     *     {@link java.net.URL}
+     *  @param model
+     *     {@link cfa.vo.vomodel.Model}
+     * 
+     *  @return doc
+     *    {@link cfa.vo.speclib.SpectralDataset }
+     */
+    public SpectralDataset read(URL file, Model model) throws IOException {
+
+        SpectralDataset result;
+        VOElement top = null;
+
+        // Use STIL package factory to interpret file to VOTable elements.
+        try {
+            top = new VOElementFactory().makeVOElement( file );
+        } catch (SAXException ex) {
+            throw new IOException("Problem reading URL - "+file);
+        } catch (IOException ex) {
+            throw new IOException("Problem reading URL - "+file);
+        }
+
+        // Use VOTMapper to convert the VOElement hierarchy to ModelDocument
+        // according to the provided model specification.
+        ModelDocument doc = new VOTMapper().convert( top, model );
+        
+        // Use ModelObjectFactory to provide Proxy interface
+        // NOTE: everything above is generic, though the mapper will use the
+        //       model defintion, it is auto-determined.  Here, we expect a 
+        //       specific type of Proxy to be returned.  The Factory is 
+        //       currently only setup for 1 model, so this will work, but 
+        //       this part of the thread is model specific.  We'll either 
+        //       need to determine the model type from the document to 
+        //       initialize the factory, or take a different approach.
+        result = (SpectralDataset)new ModelObjectFactory().build( doc );
+        
+        return result;
+    }
 
     /** Read Spectral Dataset from provided input stream
      *  @param is 
@@ -222,12 +264,13 @@ public class VOTableIO implements IFileIO {
         
         // Get model specification for this dataset.. to fill in any 
         // important missing information. (Utypes, UCDs, etc.)
-        ModelFactory mf = new ModelFactory();
-        String tmpstr = this.identifyModel( ds );
-        try {
-            this.model = mf.newInstance( tmpstr );
-        } catch (IOException ex) {
+        if ( this.model == null )
+        {
+          try {
+            this.model = this.identifyModel( ds ); 
+          } catch (IOException ex) {
             throw new IllegalArgumentException("ds represents unsupported model.");
+          }
         }
         
         /* Add VOTable declaration content */
@@ -786,14 +829,16 @@ public class VOTableIO implements IFileIO {
         }
     }
     
-    private String identifyModel( SpectralDataset ds )
+    private Model identifyModel( SpectralDataset ds ) throws IOException
     {
-        String result = "";
+        String modelname = "";
+        Model result;
 
         // First try: DataModel element.
         if ( ds.isSetDataModel() )
-          result = ds.getDataModel().getName().getValue();
-
+          modelname = ds.getDataModel().getName().getValue();
+        
+        result = new ModelFactory().newInstance( modelname );
         return result;
     }
     

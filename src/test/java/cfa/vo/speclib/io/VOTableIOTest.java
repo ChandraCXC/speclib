@@ -24,6 +24,8 @@ import cfa.vo.speclib.SpectralCharAxis;
 import cfa.vo.speclib.SpectralDataset;
 import cfa.vo.speclib.TimeCharAxis;
 import cfa.vo.speclib.doc.ModelObjectFactory;
+import cfa.vo.vomodel.Model;
+import cfa.vo.vomodel.ModelFactory;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -110,34 +112,32 @@ public class VOTableIOTest {
         }
         
         // Verify by checking selected values.
-        Quantity q;
+        this.verify_read_results( result );
         
-        // URL element
-        q = result.getDataModel().getURL();
-        assertEquals("http://www.ivoa.net/sample/spectral",((URL)q.getValue()).toString());
-
-        // Double element
-        q = result.getTarget().getRedshift();
-        assertEquals((Double)0.15833, q.getValue());
-        
-        // String element
-        q = result.getCuration().getPublisher();
-        assertEquals("Chandra X-ray Center",q.getValue());
-        
-        // Element through array
-        q = result.getObsConfig().getObservingElements().get(0).getName();
-        assertEquals("CHANDRA", q.getValue());
-        
-        // Array Element
-        q = result.getDataID().getCollections().get(2);
-        assertEquals("Third Cambridge Catalogue of Radio Sources", q.getValue());
-        
-        // Data Element
-        q = result.getData().get(1).getSpectralAxis().getAccuracy().getStatError();
-        assertEquals( 3.0e10, q.getValue());
-
     }
 
+    /**
+     * Test of read method, of class VOTableIO.
+     */
+    @Test
+    public void testRead_URL_WithModel() {
+        if (verbose){ System.out.println("Test read(URL, Model)"); }
+        URL file = this.getClass().getResource("/test_data/baseline/spectrum_2p0.vot");
+        VOTableIO instance = new VOTableIO();
+        SpectralDataset expResult = null;
+        SpectralDataset result = null;
+        boolean ok;
+        try {
+          Model model = new ModelFactory().newInstance("SPECTRUM-2.0");
+          result = instance.read(file, model);
+        } catch (IOException ex){
+            fail("Error reading input file. "+file);
+        }
+        
+        // Verify by checking selected values.
+        this.verify_read_results( result );
+    }
+    
     /**
      * Test of read method, of class VOTableIO.
      */
@@ -274,6 +274,35 @@ public class VOTableIOTest {
         
         this.compare_files( savfile, runfile );
         
+    }
+    private void verify_read_results( SpectralDataset result )
+    {
+        Quantity q;
+        
+        // URL element
+        q = result.getDataModel().getURL();
+        assertEquals("http://www.ivoa.net/sample/spectral",((URL)q.getValue()).toString());
+
+        // Double element
+        q = result.getTarget().getRedshift();
+        assertEquals((Double)0.15833, q.getValue());
+        
+        // String element
+        q = result.getCuration().getPublisher();
+        assertEquals("Chandra X-ray Center",q.getValue());
+        
+        // Element through array
+        q = result.getObsConfig().getObservingElements().get(0).getName();
+        assertEquals("CHANDRA", q.getValue());
+        
+        // Array Element
+        q = result.getDataID().getCollections().get(2);
+        assertEquals("Third Cambridge Catalogue of Radio Sources", q.getValue());
+        
+        // Data Element
+        q = result.getData().get(1).getSpectralAxis().getAccuracy().getStatError();
+        assertEquals( 3.0e10, q.getValue());
+
     }
 
     private void compare_files( String savfile, String runfile )
