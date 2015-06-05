@@ -7,21 +7,20 @@ package cfa.vo.speclib.io;
 import cfa.vo.speclib.Quantity;
 import cfa.vo.speclib.doc.MPArrayList;
 import cfa.vo.speclib.doc.ModelDocument;
+import cfa.vo.vomodel.DefaultModelBuilder;
 import cfa.vo.vomodel.Model;
-import cfa.vo.vomodel.ModelFactory;
+import org.junit.*;
+import org.xml.sax.SAXException;
+import uk.ac.starlink.votable.VOElement;
+import uk.ac.starlink.votable.VOElementFactory;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.xml.sax.SAXException;
-import uk.ac.starlink.votable.VOElement;
-import uk.ac.starlink.votable.VOElementFactory;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  *
@@ -111,7 +110,7 @@ public class VOTMapperTest {
         ModelDocument expResult = null;
         Model model = null;
         try{
-          model = new ModelFactory().newInstance("SPECTRUM-2.0");
+          model = new DefaultModelBuilder("SPECTRUM-2.0").build();
         }catch (IOException ex){
           fail();
         }

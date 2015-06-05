@@ -7,8 +7,11 @@ package cfa.vo.speclib.io;
 import cfa.vo.speclib.Quantity;
 import cfa.vo.speclib.doc.MPArrayList;
 import cfa.vo.speclib.doc.ModelDocument;
+import cfa.vo.vomodel.DefaultModelBuilder;
 import cfa.vo.vomodel.Model;
-import cfa.vo.vomodel.ModelFactory;
+import org.w3c.dom.NodeList;
+import uk.ac.starlink.votable.*;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -17,15 +20,6 @@ import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.w3c.dom.NodeList;
-import uk.ac.starlink.votable.FieldElement;
-import uk.ac.starlink.votable.FieldRefElement;
-import uk.ac.starlink.votable.GroupElement;
-import uk.ac.starlink.votable.ParamElement;
-import uk.ac.starlink.votable.ParamRefElement;
-import uk.ac.starlink.votable.TableElement;
-import uk.ac.starlink.votable.VOElement;
-import uk.ac.starlink.votable.VOStarTable;
 
 /**
  *
@@ -833,7 +827,7 @@ public class VOTMapper {
              break;
            }
         }
-        result = new ModelFactory().newInstance( modelname );
+        result = new DefaultModelBuilder(modelname).build();
         return result;
     }
 

@@ -10,35 +10,24 @@ import cfa.vo.speclib.doc.MPArrayList;
 import cfa.vo.speclib.doc.ModelDocument;
 import cfa.vo.speclib.doc.ModelObjectFactory;
 import cfa.vo.speclib.doc.ModelProxy;
+import cfa.vo.vomodel.DefaultModelBuilder;
 import cfa.vo.vomodel.Model;
-import cfa.vo.vomodel.ModelFactory;
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.lang.reflect.Proxy;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.LinkedHashMap;
-import java.util.UUID;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+import uk.ac.starlink.votable.*;
+
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-import uk.ac.starlink.votable.FieldElement;
-import uk.ac.starlink.votable.FieldRefElement;
-import uk.ac.starlink.votable.GroupElement;
-import uk.ac.starlink.votable.ParamElement;
-import uk.ac.starlink.votable.TableElement;
-import uk.ac.starlink.votable.VODocument;
-import uk.ac.starlink.votable.VOElement;
-import uk.ac.starlink.votable.VOElementFactory;
+import java.io.*;
+import java.lang.reflect.Proxy;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.LinkedHashMap;
+import java.util.UUID;
 
 /**
  * This class implements the IFileIO interface, providing methods to 
@@ -838,7 +827,7 @@ public class VOTableIO implements IFileIO {
         if ( ds.isSetDataModel() )
           modelname = ds.getDataModel().getName().getValue();
         
-        result = new ModelFactory().newInstance( modelname );
+        result = new DefaultModelBuilder(modelname).build();
         return result;
     }
     

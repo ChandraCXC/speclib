@@ -4,34 +4,14 @@
  */
 package cfa.vo.speclib.io;
 
-import cfa.vo.speclib.ApFrac;
-import cfa.vo.speclib.Bandpass;
-import cfa.vo.speclib.CharacterizationAxis;
-import cfa.vo.speclib.CoordFrame;
-import cfa.vo.speclib.CoordSys;
-import cfa.vo.speclib.Correction;
-import cfa.vo.speclib.DataSource;
-import cfa.vo.speclib.Facility;
-import cfa.vo.speclib.FluxCharAxis;
-import cfa.vo.speclib.FluxFrame;
-import cfa.vo.speclib.Instrument;
-import cfa.vo.speclib.ObservingElement;
-import cfa.vo.speclib.QualityCode;
-import cfa.vo.speclib.Quantity;
-import cfa.vo.speclib.SPPoint;
-import cfa.vo.speclib.SpatialCharAxis;
-import cfa.vo.speclib.SpectralCharAxis;
-import cfa.vo.speclib.SpectralDataset;
-import cfa.vo.speclib.TimeCharAxis;
+import cfa.vo.speclib.*;
 import cfa.vo.speclib.doc.ModelObjectFactory;
+import cfa.vo.vomodel.DefaultModelBuilder;
 import cfa.vo.vomodel.Model;
-import cfa.vo.vomodel.ModelFactory;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import cfa.vo.vomodel.ModelMetadata;
+import org.junit.*;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -43,11 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -77,20 +53,41 @@ public class VOTableIOTest {
     @After
     public void tearDown() {
     }
-    
+
     @Test
-    public void testRead_DACHS1() {
+    public void testRead_DACHS1() throws IOException {
         if (verbose){ System.out.println("Test read(URL)"); }
         URL file = this.getClass().getResource("/test_data/baseline/DACHS1.vot.xml");
         VOTableIO instance = new VOTableIO();
         SpectralDataset expResult = null;
         SpectralDataset result = null;
         boolean ok;
-        try {
-          result = instance.read(file);
-        } catch (IOException ex){
-            fail("Error reading input file. "+file);
-        }
+           Model model = new DefaultModelBuilder("Spectrum-2.0")
+                   .withModelMetadata(new ModelMetadata() {
+                       @Override
+                       public String getTitle() {
+                           return null;
+                       }
+
+                       @Override
+                       public String getModelName() {
+                           return null;
+                       }
+
+                       @Override
+                       public String getPrefix() {
+                           return "spec2";
+                       }
+
+                       @Override
+                       public URL getReferenceURL() {
+                           return null;
+                       }
+                   })
+                   .build();
+           result = instance.read(file, model);
+           assertEquals("bet Ori", result.getTarget().getName().getValue());
+
 
     }
     
@@ -128,14 +125,14 @@ public class VOTableIOTest {
         SpectralDataset result = null;
         boolean ok;
         try {
-          Model model = new ModelFactory().newInstance("SPECTRUM-2.0");
+          Model model = new DefaultModelBuilder("SPECTRUM-2.0").build();
           result = instance.read(file, model);
         } catch (IOException ex){
             fail("Error reading input file. "+file);
         }
         
         // Verify by checking selected values.
-        this.verify_read_results( result );
+        this.verify_read_results(result);
     }
     
     /**
@@ -301,7 +298,7 @@ public class VOTableIOTest {
         
         // Data Element
         q = result.getData().get(1).getSpectralAxis().getAccuracy().getStatError();
-        assertEquals( 3.0e10, q.getValue());
+        assertEquals(3.0e10, q.getValue());
 
     }
 
@@ -399,15 +396,15 @@ public class VOTableIOTest {
           items.add( new Quantity("Collection2","X-Ray",null,null));
           items.add( new Quantity("Collection3","Third Cambridge Catalogue of Radio Sources",null,null));
           ds.getDataID().setCollections(items);
-          ds.getDataID().setLogo( new URL("http://www.cfa.harvard.edu/common/images/left/cfa-logo.gif"));
+          ds.getDataID().setLogo(new URL("http://www.cfa.harvard.edu/common/images/left/cfa-logo.gif"));
 
           items = ds.getDataID().getContributors();
           items.add( new Quantity("Contributor1", "This research has made use of software provided by the Chandra X-ray Center (CXC) in the application packages CIAO, ChIPS, and Sherpa.",null,null));
 
           // Curation metadata
           ds.getCuration().setPublisher("Chandra X-ray Center");
-          ds.getCuration().setPublisherID( new URI("ivo://cfa.harvard.edu"));
-          ds.getCuration().setPublisherDID( new URI("ivo://cfa.harvard.edu/UNKNOWN"));
+          ds.getCuration().setPublisherID(new URI("ivo://cfa.harvard.edu"));
+          ds.getCuration().setPublisherDID(new URI("ivo://cfa.harvard.edu/UNKNOWN"));
           ds.getCuration().setReleaseDate("2007-03-11T10:33:14");
           ds.getCuration().setVersion("002");
           ds.getCuration().setRights("public");
@@ -512,8 +509,8 @@ public class VOTableIOTest {
           fluxchar.setUCD("phot.flux.density;em.freq");
           fluxchar.setUnit("W.m**(-2).Hz**(-1)");
           fluxchar.setCalibrationStatus("CALIBRATED");
-          fluxchar.getAccuracy().setStatError(new Quantity("flux_err",1.0e-35,"W.m**(-2).Hz**(-1)","stat.error;phot.flux.density;em.freq"));
-          fluxchar.getAccuracy().setSysError(new Quantity("flux_syserr",-1.0e-40,"W.m**(-2).Hz**(-1)","stat.error.sys;phot.flux.density;em.freq"));
+          fluxchar.getAccuracy().setStatError(new Quantity("flux_err", 1.0e-35, "W.m**(-2).Hz**(-1)", "stat.error;phot.flux.density;em.freq"));
+          fluxchar.getAccuracy().setSysError(new Quantity("flux_syserr", -1.0e-40, "W.m**(-2).Hz**(-1)", "stat.error.sys;phot.flux.density;em.freq"));
           List<QualityCode> quals = fluxchar.getQualityDefs();
           QualityCode qcode = (QualityCode)factory.newInstance( QualityCode.class );
           qcode.setCodeNum(0);
@@ -529,15 +526,15 @@ public class VOTableIOTest {
           timechar.setUCD("time");
           timechar.setUnit("d");
           timechar.setCalibrationStatus("CALIBRATED");
-          timechar.getAccuracy().setBinSize(new Quantity("time_binsiz",2.89e-6,"d","time.interval"));
-          timechar.getAccuracy().setStatError(new Quantity("time_err",2.89e-6,"d","stat.error;time"));
-          timechar.getAccuracy().setSysError(new Quantity("time_syserr",1.16e-6,"d","stat.error.sys;time"));
+          timechar.getAccuracy().setBinSize(new Quantity("time_binsiz", 2.89e-6, "d", "time.interval"));
+          timechar.getAccuracy().setStatError(new Quantity("time_err", 2.89e-6, "d", "stat.error;time"));
+          timechar.getAccuracy().setSysError(new Quantity("time_syserr", 1.16e-6, "d", "stat.error.sys;time"));
 
           pos = new Double[]{ 62514.3 };
           timechar.getCoverage().getLocation().setValue( pos );
           timechar.getCoverage().getBounds().setExtent(0.416);
-          timechar.getCoverage().getBounds().setStart( 62514.2792 );
-          timechar.getCoverage().getBounds().setStop( 62514.3208);
+          timechar.getCoverage().getBounds().setStart(62514.2792);
+          timechar.getCoverage().getBounds().setStop(62514.3208);
           timechar.getCoverage().getSupport().setExtent(0.387);
           timechar.getResolution().setRefVal(2.89e-6);
           timechar.getSamplingPrecision().setSampleExtent(2.89e-6);
@@ -554,16 +551,16 @@ public class VOTableIOTest {
           spacechar.setUCD("pos.eq");
           spacechar.setUnit("deg");
           spacechar.setCalibrationStatus("CALIBRATED");
-          spacechar.getAccuracy().setStatError(new Quantity("sky_err",2.77e-4,"deg","stat.error;pos.eq"));
-          spacechar.getAccuracy().setSysError(new Quantity("sky_syserr",1.385e-5,"deg","stat.error.sys;pos.eq"));
+          spacechar.getAccuracy().setStatError(new Quantity("sky_err", 2.77e-4, "deg", "stat.error;pos.eq"));
+          spacechar.getAccuracy().setSysError(new Quantity("sky_syserr", 1.385e-5, "deg", "stat.error.sys;pos.eq"));
           pos = new Double[]{ 187.2767, 2.0519};
           spacechar.getCoverage().getLocation().setValue(new Quantity(null, pos, "deg","pos.eq"));
           spacechar.getCoverage().getBounds().setExtent(3.0);
           spacechar.getCoverage().getSupport().setExtent(10.0);
           spacechar.getCoverage().getSupport().setArea("circle 187.2767 2.0519 10.0");
-          spacechar.getResolution().setRefVal(new Quantity(null,1.0,"arcsec","pos.angResolution") );
+          spacechar.getResolution().setRefVal(new Quantity(null, 1.0, "arcsec", "pos.angResolution"));
           spacechar.getSamplingPrecision().setSampleExtent(6.94e-6);
-          spacechar.getSamplingPrecision().getSamplingPrecisionRefVal().setFillFactor(new Quantity(null,1.0,null,"stat.filling;pos.eq"));
+          spacechar.getSamplingPrecision().getSamplingPrecisionRefVal().setFillFactor(new Quantity(null, 1.0, null, "stat.filling;pos.eq"));
           quals = spacechar.getQualityDefs();
           qcode = (QualityCode)factory.newInstance( QualityCode.class );
           qcode.setCodeNum(255);
@@ -575,15 +572,15 @@ public class VOTableIOTest {
           specchar.setUCD("em.freq");
           specchar.setUnit("Hz");
           specchar.setCalibrationStatus("CALIBRATED");
-          specchar.getAccuracy().setBinSize(new Quantity("freq_binsiz",6.3575e+11,"Hz","em.freq;spect.binSize"));
-          specchar.getAccuracy().setStatError(new Quantity("freq_err",3.0e+10,"Hz","stat.error;em.freq"));
-          specchar.getAccuracy().setSysError( new Quantity("freq_syserr",-1.0e+3,"Hz","stat.error.sys;em.freq"));
+          specchar.getAccuracy().setBinSize(new Quantity("freq_binsiz", 6.3575e+11, "Hz", "em.freq;spect.binSize"));
+          specchar.getAccuracy().setStatError(new Quantity("freq_err", 3.0e+10, "Hz", "stat.error;em.freq"));
+          specchar.getAccuracy().setSysError(new Quantity("freq_syserr", -1.0e+3, "Hz", "stat.error.sys;em.freq"));
 
           pos = new Double[]{ 8.3e-14 };
           specchar.getCoverage().getLocation().setValue(new Quantity(null, pos, "Hz","em.freq;instr.bandpass"));
           specchar.getCoverage().getBounds().setExtent(5e-14);
-          specchar.getCoverage().getBounds().setStart(new Quantity(null, 3.3e-14, "Hz","em.freq;stat.min"));
-          specchar.getCoverage().getBounds().setStop(new Quantity(null, 1.33e-13, "Hz","em.freq;stat.max"));
+          specchar.getCoverage().getBounds().setStart(new Quantity(null, 3.3e-14, "Hz", "em.freq;stat.min"));
+          specchar.getCoverage().getBounds().setStop(new Quantity(null, 1.33e-13, "Hz", "em.freq;stat.max"));
           specchar.getCoverage().getSupport().setExtent(10e-14);
           specchar.getResolution().setRefVal(new Quantity(null,6.3575e+11,"Hz","spect.resolution;em.freq") );
           specchar.getResolution().getResolPower().setRefVal(Double.NaN);

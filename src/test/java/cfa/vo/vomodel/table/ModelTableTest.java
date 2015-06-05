@@ -5,6 +5,8 @@
 package cfa.vo.vomodel.table;
 
 import cfa.vo.vomodel.Utype;
+import org.junit.*;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -15,11 +17,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -38,8 +36,7 @@ public class ModelTableTest {
     public static void setUpClass() {
         verbose = false;
         try{
-            model = new ModelTable();
-            model.read( ModelTable.class.getResource("/spectrum_2p0.txt") );
+            model = new ModelTableBuilder(ModelTable.class.getResource("/spectrum_2p0.txt")).build();
         }
         catch ( IOException e ){
             System.out.println( e.getMessage());
@@ -59,60 +56,6 @@ public class ModelTableTest {
     public void tearDown() {
     }
 
-    @Test
-    public void testEmptyModel() 
-    {
-        String tmpstr;
-        Boolean ok = false;
-        
-        if (verbose){ System.out.println("Test Empty Model Handling.");}
-        
-        if (verbose){ System.out.println("  + Create empty model table.");}
-        ModelTable instance = new ModelTable();
-
-        if (verbose){ System.out.println("  + Access attributes.");}
-        try {
-            tmpstr = instance.getModelName();
-        }
-        catch ( IllegalStateException ex )
-        {
-            ok = true;
-        }
-        if ( !ok ){ fail("getModelName"); }
-        ok = false;
-
-        try {
-            tmpstr = instance.getPrefix();
-        }
-        catch ( IllegalStateException ex )
-        {
-            ok = true;
-        }
-        if ( !ok ){ fail("getPrefix"); }
-        ok = false;
-
-        try {
-            tmpstr = instance.getReferenceURL().toString();
-        }
-        catch ( IllegalStateException ex )
-        {
-            ok = true;
-        }
-        if ( !ok ){ fail("getReferenceURL"); }
-
-        if (verbose){ System.out.println("  + Access record.");}
-        try {
-            tmpstr = instance.getUCD( 7 );
-        }
-        catch ( IllegalStateException ex )
-        {
-            ok = true;
-        }
-        if ( !ok ){ fail("getUCD"); }
-
-        assert(ok);
-    }
-
     /**
      * Test of read method, of class ModelTable.
      */
@@ -124,12 +67,12 @@ public class ModelTableTest {
         String badfile = "/badname.txt";
 
         if (verbose){ System.out.println("  + Create Empty ModelTable.");}
-        ModelTable instance = new ModelTable();
+        ModelTable instance = null;
 
         if (verbose){ System.out.println("  + Read Bad Filename.");}
         try{
             caught = false;
-            instance.read(ModelTable.class.getResource(badfile));
+            instance = new ModelTableBuilder(ModelTable.class.getResource(badfile)).build();
         }
         catch (FileNotFoundException ex){caught=true;}
         catch (IOException ex){caught=false;} //not right exception
@@ -138,7 +81,7 @@ public class ModelTableTest {
         if (verbose){ System.out.println("  + Read Model File.");}
         try{
             caught = false;
-            instance.read(ModelTable.class.getResource(filename));
+            instance = new ModelTableBuilder(ModelTable.class.getResource(filename)).build();
         }
         catch (FileNotFoundException ex){caught=true;}
         catch (IOException ex){caught=true;}
@@ -158,6 +101,7 @@ public class ModelTableTest {
         URL infile;
         URL outfile = null;
         Boolean caught;
+        ModelTable instance = null;
 
         // Generate file names.
         infile = ModelTable.class.getResource("/spectrum_2p0.txt");
@@ -169,10 +113,10 @@ public class ModelTableTest {
         }
 
         // Load model spec.
-        ModelTable instance = new ModelTable();
+
         caught = false;
         try {
-            instance.read( infile );
+            instance = new ModelTableBuilder(infile).build();
         } 
         catch (IOException ex) { caught=true; }
         assertFalse(caught);

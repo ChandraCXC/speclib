@@ -4,43 +4,13 @@
  */
 package cfa.vo.vomodel;
 
-import java.net.URL;
 import java.util.List;
 
 /**
  *
  * @author mdittmar
  */
-public interface Model {
-    
-    /**
-     * Returns the title string associated with this model
-     * 
-     * @return Data Model title.
-     */
-    public String getTitle();
-    /**
-     * Returns the defined name string for the model, typically in format 
-     * "[name]-[version].[subversion]"
-     * 
-     * @return Data Model name.
-     */
-    public String getModelName();
-    /**
-     * Returns the defined prefix string for the model.  The prefix string is 
-     * used as part of the Utype to indicate which model the element is from.
-     * 
-     * @return Model prefix.
-     */
-    public String getPrefix();
-    /**
-     * Returns the {@link URL} pointer to the location containing reference 
-     * information about the model.  This may be the location of the XML Schema
-     * or other resource.
-     * 
-     * @return URL pointer to reference information.
-     */
-    public URL getReferenceURL();
+public interface Model extends ModelMetadata {
 
     /**
      * Returns a numerical index of the model record corresponding to the 

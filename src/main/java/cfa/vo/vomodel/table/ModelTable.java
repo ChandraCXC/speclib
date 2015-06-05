@@ -3,19 +3,11 @@
  * and open the template in the editor.
  */
 package cfa.vo.vomodel.table;
+
 import cfa.vo.vomodel.Model;
 import cfa.vo.vomodel.Utype;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,14 +31,8 @@ public class ModelTable implements Model {
     /**
      * Constructor to generate empty ModelTable.
      */
-    public ModelTable()
-    {
-        this.title = null;
-        this.name = null;
-        this.prefix = null;
-        this.refURL = null;
-        this.map = null;
-        this.data = null;
+    ModelTable(ModelTableBuilder builder) throws IOException {
+        read(builder.getUrl(), builder);
     }
     
     /**
@@ -56,8 +42,25 @@ public class ModelTable implements Model {
      * @throws FileNotFoundException if URL cannot be resolved
      * @throws IOException on error reading file
      */
-    public void read( URL filepath ) throws IOException
+    protected final void read( URL filepath, ModelTableBuilder builder ) throws IOException
     {
+        String builderTitle = builder.getTitle();
+        String builderName = builder.getName();
+        String builderPrefix = builder.getPrefix();
+        URL builderRefURL = builder.getRefURL();
+
+        if (builderTitle != null)
+            this.title = builder.getTitle();
+
+        if (builderName != null)
+            this.name = builder.getName();
+
+        if (builderPrefix != null)
+            this.prefix = builder.getPrefix();
+
+        if (builderRefURL != null)
+            this.refURL = builder.getRefURL();
+
         InputStream is;
         BufferedReader br;
         String line;    // line from table
@@ -90,18 +93,22 @@ public class ModelTable implements Model {
            // process rows
            if ( line.startsWith("Title=") )
            {
+               if (this.title != null) continue;
                this.title = line.substring(line.indexOf("=")+1);
            }
            else if ( line.startsWith("Name=") )
            {
+               if (this.name != null) continue;
                this.name = line.substring(line.indexOf("=")+1);
            }
            else if ( line.startsWith("Prefix=") )
            {
+               if (this.prefix != null) continue;
                this.prefix = line.substring(line.indexOf("=")+1);
            }
            else if ( line.startsWith("URL=") )
            {
+               if (this.refURL != null) continue;
                String tmp = line.substring(line.indexOf("=")+1).trim();
                this.refURL = new URL( tmp );
            }

@@ -5,6 +5,8 @@
 package cfa.vo.vomodel;
 
 import cfa.vo.vomodel.table.ModelTable;
+import cfa.vo.vomodel.table.ModelTableBuilder;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -13,13 +15,15 @@ import java.util.HashMap;
  *
  * @author mdittmar
  */
-public class ModelFactory {
+public class DefaultModelBuilder extends AbstractModelBuilder {
     
     // Keep store of which models are supported, and by which method.
     private HashMap<String, String> supported;
+    private String modelName;
     
-    public ModelFactory()
+    public DefaultModelBuilder(String modelName)
     {
+        this.modelName = modelName;
         supported = new HashMap();
         supported.put("SPECTRUM-2.0","Table");
     }
@@ -27,14 +31,12 @@ public class ModelFactory {
     /**
      * Constructor to generate an Object pre-loaded with the specified 
      * VO Data Model definition.
-     * 
-     * @param modelName  VO Data Model name as specified in model document.
-     *                   expected format [name]-[version].[subversion]
+     *
      * @throws IllegalArgumentException if model name is not recognized.
      * @throws IOException on problem loading model definition.
      * @return Model interface to Object.
      */
-    public Model newInstance( String modelName ) throws IOException
+    public Model build() throws IOException
     {
         Model model;
         String key = modelName.toUpperCase();
@@ -52,12 +54,14 @@ public class ModelFactory {
 
         return model;
     }
-    
+
     private Model load_table( String modelName ) throws IOException
     {
-        ModelTable table;
+        ModelTable model;
         String resourceFile;
         URL resourceURL;
+
+//        boolean fail=false;
         
         if ( modelName.equals("SPECTRUM-1.03") )
         {
@@ -75,16 +79,17 @@ public class ModelFactory {
             throw new IllegalArgumentException("Invalid or unrecognized Model name.");
 
         try {
-            resourceURL = ModelFactory.class.getResource(resourceFile);
-            table = new ModelTable();
-            table.read( resourceURL );
+            resourceURL = DefaultModelBuilder.class.getResource(resourceFile);
+            model = (ModelTable) new ModelTableBuilder(resourceURL)
+                    .withModelMetadata(getModelMetadata())
+                    .build();
         }
         catch( IOException e )
         {
             throw e;
         }
 
-        return( table );
+        return( model );
     }
     
 }
