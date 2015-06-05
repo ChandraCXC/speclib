@@ -64,6 +64,7 @@ public class VOTMapper {
  
     private Model model;   // DataModel specification interface
     private LinkedHashMap< String, Column > tabledata;
+    private int level = 1;
 
     //Constructors
     public VOTMapper()
@@ -276,8 +277,10 @@ public class VOTMapper {
         ModelDocument node = new ModelDocument();
         Quantity q;       // Quantity element
         String mp;        // model path for element
+        String gp = null; // model path for this group
         int ngroups = 0;  // number of subgroups found
         int nparams = 0;  // number of parameters found
+        this.level++;     // Increment depth marker
 
         VOElement[] children = group.getChildren();
         for ( VOElement child: children )
@@ -312,8 +315,7 @@ public class VOTMapper {
             }
           }
           else if (( eltype.equalsIgnoreCase(DOM_TAG_PARAM) ) || 
-                   ( eltype.equalsIgnoreCase("BOB") ) )
-//                   ( eltype.equalsIgnoreCase(DOM_TAG_PARAMREF) ) )
+                   ( eltype.equalsIgnoreCase(DOM_TAG_PARAMREF) ) )
           {
             try{
               if ( eltype.equalsIgnoreCase(DOM_TAG_PARAM) )
@@ -329,6 +331,16 @@ public class VOTMapper {
             if ( mp == null )
             {
               mp = "CustomParam"+nparams;
+              q.setModelpath(mp);
+              continue;
+            }
+            if ( gp == null )
+              gp = getSubPath( mp , this.level );
+            if (! mp.contains(gp))
+            { // model path inconsistent with the group.. mark as custom
+                System.out.println("MCD TEMP: Override bad group content -"+mp);
+              mp = "CustomParam"+nparams;
+              q.setModelpath(mp);
               continue;
             }
             if ( mp.matches(".+\\[\\]\\.*[a-zA-Z]*$") )
@@ -356,8 +368,9 @@ public class VOTMapper {
           else
             System.out.println("MCD TEMP: Unexpected Node in GROUP = "+eltype);
         }
+        this.level--;     // Decrement depth marker
         
-        // Can have empty node if only contained FIELDrefs.. don't need those.
+        // Can have empty node if only contained PARAMrefs or FIELDrefs.. don't need those.
         if ( ngroups + nparams == 0 )
           return null;
         else
@@ -549,7 +562,7 @@ public class VOTMapper {
     }
     
     private Quantity convertParamRef( ParamRefElement paramref ) throws IOException
-    {
+    {        
         // Get copy of associated PARAM element
         ParamElement param = (ParamElement)paramref.getParam().cloneNode(true);
 
@@ -558,7 +571,7 @@ public class VOTMapper {
             param.setAttribute(ATT_TAG_UCD, paramref.getAttribute(ATT_TAG_UCD) );
         
         if ( paramref.hasAttribute(ATT_TAG_UTYPE) )
-            param.setAttribute(ATT_TAG_UTYPE, paramref.getAttribute(ATT_TAG_UTYPE) );
+           param.setAttribute(ATT_TAG_UTYPE, paramref.getAttribute(ATT_TAG_UTYPE) );
 
         // Define Quantity for this element
         Quantity q = convertParam( param );
@@ -830,11 +843,23 @@ public class VOTMapper {
         
         if ( (node != null) && (node.getKeys().size() > 0 ))
         {
-           result = (String)(node.getKeys().toArray())[0];
-           int last = result.lastIndexOf("_");
-           if ( last > 0 )
-             result = result.substring(0, last);
+           String first = (String)(node.getKeys().toArray())[0];
+           result = getSubPath(first, this.level+1);
         }
         return result;
+    }
+    private String getSubPath( String mp, int depth )
+    {
+       int last = 0;
+       int ii = 0;
+       while ( (ii < depth) && ( last > -1 ))
+       {
+          last = mp.indexOf("_",last+1);
+          ii++;
+       }
+       if ( last > 0 )
+         mp = mp.substring(0, last);
+
+       return mp;
     }
 }

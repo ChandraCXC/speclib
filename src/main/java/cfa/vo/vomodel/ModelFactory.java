@@ -55,11 +55,9 @@ public class ModelFactory {
     
     private Model load_table( String modelName ) throws IOException
     {
-        ModelTable model;
+        ModelTable table;
         String resourceFile;
         URL resourceURL;
-
-//        boolean fail=false;
         
         if ( modelName.equals("SPECTRUM-1.03") )
         {
@@ -78,15 +76,15 @@ public class ModelFactory {
 
         try {
             resourceURL = ModelFactory.class.getResource(resourceFile);
-            model = new ModelTable();
-            model.read( resourceURL );
+            table = new ModelTable();
+            table.read( resourceURL );
         }
         catch( IOException e )
         {
             throw e;
         }
 
-        return( model );
+        return( table );
     }
     
 }
