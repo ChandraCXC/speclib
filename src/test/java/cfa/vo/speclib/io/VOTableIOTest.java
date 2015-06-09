@@ -7,8 +7,8 @@ package cfa.vo.speclib.io;
 import cfa.vo.speclib.*;
 import cfa.vo.speclib.doc.ModelObjectFactory;
 import cfa.vo.vomodel.DefaultModelBuilder;
+import cfa.vo.vomodel.Entry;
 import cfa.vo.vomodel.Model;
-import cfa.vo.vomodel.ModelMetadata;
 import org.junit.*;
 
 import java.io.*;
@@ -20,7 +20,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,32 +64,30 @@ public class VOTableIOTest {
         SpectralDataset expResult = null;
         SpectralDataset result = null;
         boolean ok;
-           Model model = new DefaultModelBuilder("Spectrum-2.0")
-                   .withModelMetadata(new ModelMetadata() {
-                       @Override
-                       public String getTitle() {
-                           return null;
-                       }
+        Map<Entry, Entry> overrides = new HashMap();
+        Entry original = new Entry(
+                "SpectralDataset_Characterization_CharacterizationAxes[].SpectralCharAxis_CalibrationStatus",
+                "String",
+                "OPT",
+                "Char.SpectralAxis.CalibrationStatus",
+                "",
+                "meta.code.qual",
+                "CALIBRATED",
+                "Type of coord calibration"
+        );
 
-                       @Override
-                       public String getModelName() {
-                           return null;
-                       }
+        Entry newEntry = new Entry(original);
+        newEntry.tag = "Char.SpectralAxis.CalibrationSatus";
 
-                       @Override
-                       public String getPrefix() {
-                           return "spec2";
-                       }
+        overrides.put(original, newEntry);
 
-                       @Override
-                       public URL getReferenceURL() {
-                           return null;
-                       }
-                   })
-                   .build();
-           result = instance.read(file, model);
-           assertEquals("bet Ori", result.getTarget().getName().getValue());
-
+        Model model = new DefaultModelBuilder("Spectrum-2.0")
+//               .overrideEntries(overrides)
+               .withPrefix("spec2")
+               .build();
+        result = instance.read(file, model);
+        assertEquals("bet Ori", result.getTarget().getName().getValue());
+//        assertEquals("", SpectralUtils.getSpectralCharAxis(result).getCalibrationStatus().getValue());
 
     }
     

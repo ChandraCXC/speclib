@@ -2,6 +2,7 @@ package cfa.vo.vomodel;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 /**
  * Created by olaurino on 6/4/15.
@@ -11,16 +12,17 @@ public abstract class AbstractModelBuilder implements ModelBuilder {
     private String prefix;
     private String name;
     private String title;
+    private List<Entry> entries;
 
-    public ModelMetadata getModelMetadata() {
-        return new ModelMetadata() {
+    public ModelData getModelData() {
+        return new ModelData() {
             @Override
             public String getTitle() {
                 return title;
             }
 
             @Override
-            public String getModelName() {
+            public String getName() {
                 return name;
             }
 
@@ -33,16 +35,22 @@ public abstract class AbstractModelBuilder implements ModelBuilder {
             public URL getReferenceURL() {
                 return refURL;
             }
+
+            @Override
+            public List<Entry> getEntries() {
+                return entries;
+            }
         };
     }
 
     @Override
-    public AbstractModelBuilder withModelMetadata(ModelMetadata modelMetadata) {
-        if (modelMetadata != null) {
-            this.name = modelMetadata.getModelName();
-            this.prefix = modelMetadata.getPrefix();
-            this.refURL = modelMetadata.getReferenceURL();
-            this.title = modelMetadata.getTitle();
+    public AbstractModelBuilder withModelData(ModelData modelData) {
+        if (modelData != null) {
+            this.name = modelData.getName();
+            this.prefix = modelData.getPrefix();
+            this.refURL = modelData.getReferenceURL();
+            this.title = modelData.getTitle();
+            this.entries = modelData.getEntries();
         }
         return this;
     }

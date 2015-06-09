@@ -10,6 +10,7 @@ import cfa.vo.vomodel.table.ModelTableBuilder;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -20,12 +21,18 @@ public class DefaultModelBuilder extends AbstractModelBuilder {
     // Keep store of which models are supported, and by which method.
     private HashMap<String, String> supported;
     private String modelName;
+    private Map<Entry, Entry> overrides = new HashMap();
     
     public DefaultModelBuilder(String modelName)
     {
         this.modelName = modelName;
         supported = new HashMap();
         supported.put("SPECTRUM-2.0","Table");
+    }
+
+    public DefaultModelBuilder overrideEntries(Map<Entry, Entry> overrides) {
+        this.overrides = overrides;
+        return this;
     }
     
     /**
@@ -81,7 +88,8 @@ public class DefaultModelBuilder extends AbstractModelBuilder {
         try {
             resourceURL = DefaultModelBuilder.class.getResource(resourceFile);
             model = (ModelTable) new ModelTableBuilder(resourceURL)
-                    .withModelMetadata(getModelMetadata())
+                    .overrideEntries(overrides)
+                    .withModelData(getModelData())
                     .build();
         }
         catch( IOException e )

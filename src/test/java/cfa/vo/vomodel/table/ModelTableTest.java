@@ -88,7 +88,7 @@ public class ModelTableTest {
         assertFalse(caught);
 
         if (verbose){ System.out.println("  + Access Model info.");}
-        String name = instance.getModelName();
+        String name = instance.getName();
         assertTrue( name.equals("Spectrum-2.0"));
     }
 
@@ -159,13 +159,13 @@ public class ModelTableTest {
     }
 
     /**
-     * Test of getModelName method, of class ModelTable.
+     * Test of getName method, of class ModelTable.
      */
     @Test
     public void testGetModelName() {
-        if (verbose){ System.out.println("Test getModelName"); }
+        if (verbose){ System.out.println("Test getName"); }
         String expResult = "Spectrum-2.0";
-        String result = model.getModelName();
+        String result = model.getName();
         assertEquals(expResult, result);
     }
 

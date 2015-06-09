@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author mdittmar
  */
-public interface Model extends ModelMetadata {
+public interface Model extends ModelData {
 
     /**
      * Returns a numerical index of the model record corresponding to the 

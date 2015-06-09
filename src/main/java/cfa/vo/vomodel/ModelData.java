@@ -1,11 +1,12 @@
 package cfa.vo.vomodel;
 
 import java.net.URL;
+import java.util.List;
 
 /**
  * Created by olaurino on 6/4/15.
  */
-public interface ModelMetadata {
+public interface ModelData {
     /**
      * Returns the title string associated with this model
      *
@@ -19,7 +20,7 @@ public interface ModelMetadata {
      *
      * @return Data Model name.
      */
-    String getModelName();
+    String getName();
 
     /**
      * Returns the defined prefix string for the model.  The prefix string is
@@ -37,4 +38,11 @@ public interface ModelMetadata {
      * @return URL pointer to reference information.
      */
     URL getReferenceURL();
+
+    /**
+     * Return the list of entries for the Model definition.
+     *
+     * @return a {@link java.util.List} of {@link cfa.vo.vomodel.Entry}
+     */
+    List<Entry> getEntries();
 }

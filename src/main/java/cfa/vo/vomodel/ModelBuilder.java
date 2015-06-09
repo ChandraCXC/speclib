@@ -22,7 +22,7 @@ public interface ModelBuilder {
 
     ModelBuilder withRefURL(URL refURL);
 
-    ModelBuilder withModelMetadata(ModelMetadata modelMetadata);
+    ModelBuilder withModelData(ModelData modelData);
 
     public Model build() throws Exception;
 

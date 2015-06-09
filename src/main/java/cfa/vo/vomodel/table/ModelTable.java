@@ -4,6 +4,7 @@
  */
 package cfa.vo.vomodel.table;
 
+import cfa.vo.vomodel.Entry;
 import cfa.vo.vomodel.Model;
 import cfa.vo.vomodel.Utype;
 
@@ -127,7 +128,11 @@ public class ModelTable implements Model {
                record.unit   = parts[5].trim();
                record.descr  = parts[6].trim();
                record.mult   = parts[7].trim();
-               
+
+               if (builder.getOverrides().keySet().contains(record)) {
+                   record = builder.getOverrides().get(record);
+               }
+
                key = new Utype( record.modelpath, record.tag, this.prefix );
                //this.map.put(key, count);
                this.map.add(key);
@@ -203,7 +208,7 @@ public class ModelTable implements Model {
         return( this.title );
     }
 
-    public String getModelName() {
+    public String getName() {
         if ( this.name == null )
             throw new IllegalStateException("No Model loaded.");
         
@@ -224,7 +229,12 @@ public class ModelTable implements Model {
         return( this.refURL );
     }
 
-    public Integer getRecordIndex(Utype utype) 
+    @Override
+    public List<Entry> getEntries() {
+        return data;
+    }
+
+    public Integer getRecordIndex(Utype utype)
     {
         String key;
         Integer result;
