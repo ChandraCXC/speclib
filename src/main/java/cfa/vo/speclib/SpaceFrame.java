@@ -19,7 +19,7 @@ public interface SpaceFrame extends Frame {
     public void setEquinox( Quantity<Double> value );
     public void setReferencePosition( Quantity<String> value );
     
-    public boolean isSetEquinox();
-    public boolean isSetReferencePosition();
+    public boolean hasEquinox();
+    public boolean hasReferencePosition();
     
 }

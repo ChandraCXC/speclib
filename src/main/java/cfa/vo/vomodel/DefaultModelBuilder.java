@@ -22,6 +22,7 @@ public class DefaultModelBuilder extends AbstractModelBuilder {
     private HashMap<String, String> supported;
     private String modelName;
     private Map<Entry, Entry> overrides = new HashMap();
+    public static final String DEFAULT_MODEL_NAME = "SPECTRUM-2.0";
     
     public DefaultModelBuilder(String modelName)
     {

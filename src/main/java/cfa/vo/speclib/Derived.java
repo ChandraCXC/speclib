@@ -21,8 +21,8 @@ public interface Derived {
     public void setSNR( Quantity<Double> q );
     public void setVarAmpl( Quantity<Double> q );
     
-    public boolean isSetSNR();
-    public boolean isSetVarAmpl();
-    public boolean isSetRedshift();
+    public boolean hasSNR();
+    public boolean hasVarAmpl();
+    public boolean hasRedshift();
 
 }

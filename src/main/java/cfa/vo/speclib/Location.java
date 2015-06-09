@@ -13,6 +13,6 @@ public interface Location {
     public Quantity<Double[]> getValue();
     public void setValue( Double[] value );
     public void setValue( Quantity<Double[]> value );
-    public boolean isSetValue();
+    public boolean hasValue();
     
 }

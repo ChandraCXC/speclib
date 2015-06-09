@@ -16,5 +16,5 @@ public interface CoordFrame extends Frame {
     
     public void setReferencePosition( Quantity<String> value );
     
-    public boolean isSetReferencePosition();
+    public boolean hasReferencePosition();
 }

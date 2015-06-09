@@ -22,8 +22,8 @@ public abstract interface Frame {
     public void setName( Quantity<String> value );
     public void setUCD( Quantity<String> value );
     
-    public boolean isSetID();
-    public boolean isSetName();
-    public boolean isSetUCD();
+    public boolean hasID();
+    public boolean hasName();
+    public boolean hasUCD();
 
 }

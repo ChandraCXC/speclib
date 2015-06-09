@@ -18,7 +18,7 @@ public interface SamplingPrecision {
     public void setSampleExtent( Quantity<Double> value );
     public void setSamplingPrecisionRefVal( SamplingPrecisionRefVal value );
     
-    public boolean isSetSampleExtent();
-    public boolean isSetSamplingPrecisionRefVal();
+    public boolean hasSampleExtent();
+    public boolean hasSamplingPrecisionRefVal();
     
 }

@@ -29,8 +29,8 @@ public interface SpectralDataset extends Dataset{
     public void setData( List<SPPoint> value );
     public void setData( int index, SPPoint value );
 
-    public boolean isSetSpectralSI();
-    public boolean isSetTimeSI();
-    public boolean isSetFluxSI();
-    public boolean isSetData();
+    public boolean hasSpectralSI();
+    public boolean hasTimeSI();
+    public boolean hasFluxSI();
+    public boolean hasData();
 }

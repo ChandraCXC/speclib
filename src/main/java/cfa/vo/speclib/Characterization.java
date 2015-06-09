@@ -18,5 +18,5 @@ public interface Characterization {
     public void setCharacterizationAxes( List<CharacterizationAxis> value );
     public void setCharacterizationAxes( int index, CharacterizationAxis value );
 
-    public boolean isSetCharacterizationAxes();
+    public boolean hasCharacterizationAxes();
 }

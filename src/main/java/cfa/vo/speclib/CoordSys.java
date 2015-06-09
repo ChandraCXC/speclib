@@ -34,12 +34,12 @@ public interface CoordSys {
 
     public void setID( Quantity<String> value );
     
-    public void isSetID();
-    public void isSetCoordFrames();
-    public void isSetSpaceFrame();
-    public void isSetSpectralFrame();
-    public void isSeTimeFrame();
-    public void isSetRedshiftFrame();
-    public void isSetFluxFrames();
+    public void hasID();
+    public void hasCoordFrames();
+    public void hasSpaceFrame();
+    public void hasSpectralFrame();
+    public void hasimeFrame();
+    public void hasRedshiftFrame();
+    public void hasFluxFrames();
     
 }

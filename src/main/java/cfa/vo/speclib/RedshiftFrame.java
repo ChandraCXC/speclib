@@ -19,7 +19,7 @@ public interface RedshiftFrame extends Frame {
     public void setDopplerDefinition( Quantity<String> value );
     public void setReferencePosition( Quantity<String> value );
     
-    public boolean isSetDopplerDefinition();
-    public boolean isSetReferencePosition();
+    public boolean hasDopplerDefinition();
+    public boolean hasReferencePosition();
     
 }

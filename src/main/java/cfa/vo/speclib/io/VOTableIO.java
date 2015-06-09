@@ -820,12 +820,12 @@ public class VOTableIO implements IFileIO {
     
     private Model identifyModel( SpectralDataset ds ) throws IOException
     {
-        String modelname = "";
+        String modelname = ds.getDataModel().getName().getValue(); // Always reachable because of NullObject pattern
         Model result;
 
-        // First try: DataModel element.
-        if ( ds.isSetDataModel() )
-          modelname = ds.getDataModel().getName().getValue();
+        if ( modelname == null || modelname.isEmpty() )
+          modelname = DefaultModelBuilder.DEFAULT_MODEL_NAME;
+          // This check should probably be moved in the DefaultModelBuilder implementation
         
         result = new DefaultModelBuilder(modelname).build();
         return result;

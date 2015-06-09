@@ -37,13 +37,13 @@ public interface Accuracy {
     public void setSysError( Quantity<Double> value );
     public void setQualityStatus( Quantity<Integer> value );
 
-    public boolean isSetBinLow();
-    public boolean isSetBinHigh();
-    public boolean isSetBinSize();
-    public boolean isSetStatError();
-    public boolean isSetStatErrLow();
-    public boolean isSetStatErrHigh();
-    public boolean isSetSysError();
-    public boolean isSetQualityStatus();
+    public boolean hasBinLow();
+    public boolean hasBinHigh();
+    public boolean hasBinSize();
+    public boolean hasStatError();
+    public boolean hasStatErrLow();
+    public boolean hasStatErrHigh();
+    public boolean hasSysError();
+    public boolean hasQualityStatus();
     
 }

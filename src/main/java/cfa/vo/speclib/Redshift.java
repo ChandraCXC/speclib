@@ -21,7 +21,7 @@ public interface Redshift {
     public void setStatError( Quantity<Double> q );
     public void setConfidence( Quantity<Double> q );
     
-    public boolean isSetValue();
-    public boolean isSetStatError();
-    public boolean isSetConfidence();
+    public boolean hasValue();
+    public boolean hasStatError();
+    public boolean hasConfidence();
 }

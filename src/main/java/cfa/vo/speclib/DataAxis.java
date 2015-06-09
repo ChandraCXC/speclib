@@ -34,8 +34,8 @@ public interface DataAxis {
     public void setCorrections( int index, Correction value );
     public void setResolution( Resolution value );
     
-    public boolean isSetValue();
-    public boolean isSetAccuracty();
-    public boolean isSetCorrections();
-    public boolean isSetResolution();
+    public boolean hasValue();
+    public boolean hasAccuracty();
+    public boolean hasCorrections();
+    public boolean hasResolution();
 }

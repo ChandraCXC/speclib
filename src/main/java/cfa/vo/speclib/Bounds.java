@@ -24,9 +24,9 @@ public interface Bounds {
     public void setStop( Quantity<Double> value );
 //    public void setLimits( Interval value );
     
-    public boolean isSetExtent();
-    public boolean isSetStart();
-    public boolean isSetStop();
-//    public boolean isSetLimits();
+    public boolean hasExtent();
+    public boolean hasStart();
+    public boolean hasStop();
+//    public boolean hasLimits();
     
 }

@@ -17,8 +17,8 @@ public interface Coverage {
     public void setBounds( Bounds value );
     public void setSupport( Support value );
     
-    public boolean isSetLocation();
-    public boolean isSetBounds();
-    public boolean isSetSupport();
+    public boolean hasLocation();
+    public boolean hasBounds();
+    public boolean hasSupport();
     
 }

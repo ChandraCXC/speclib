@@ -19,7 +19,7 @@ public interface Contact {
     public void setName( Quantity<String> value );
     public void setEmail( Quantity<String> value );
     
-    public boolean isSetName();
-    public boolean isSetEmail();
+    public boolean hasName();
+    public boolean hasEmail();
 
 }

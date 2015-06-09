@@ -17,6 +17,6 @@ public interface Correction {
     public void setApplied( Boolean value );    
     public void setApplied( Quantity<Boolean> value );
     
-    public boolean isSetName();
-    public boolean isSetApplied();
+    public boolean hasName();
+    public boolean hasApplied();
 }

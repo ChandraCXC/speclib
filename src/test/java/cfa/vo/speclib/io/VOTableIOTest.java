@@ -255,7 +255,7 @@ public class VOTableIOTest {
         } catch (IOException ex ){ fail("Error reading baseline file. "+infile);}
         
         // Pull most troublesome element from the dataset
-        boolean ok = result.getData().get(0).getFluxAxis().getCorrections(0).isSetApplied();
+        boolean ok = result.getData().get(0).getFluxAxis().getCorrections(0).hasApplied();
         assertTrue( ok );
         
         // Write as VOTable.

@@ -23,8 +23,8 @@ public interface DataModel {
     public void setPrefix( Quantity<String> q );
     public void setURL( Quantity<URL> q );
 
-    public boolean isSetName();
-    public boolean isSetPrefix();
-    public boolean isSetURL();
+    public boolean hasName();
+    public boolean hasPrefix();
+    public boolean hasURL();
 
 }

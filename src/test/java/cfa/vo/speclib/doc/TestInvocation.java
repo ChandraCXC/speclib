@@ -4,24 +4,14 @@
  */
 package cfa.vo.speclib.doc;
 
-import cfa.vo.speclib.Correction;
-import cfa.vo.speclib.Dataset;
-import cfa.vo.speclib.DataID;
-import cfa.vo.speclib.DataModel;
-import cfa.vo.speclib.GenericCorr;
-import cfa.vo.speclib.Quantity;
-import cfa.vo.speclib.SpectralDataset;
+import cfa.vo.speclib.*;
+import org.junit.*;
+
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
@@ -159,30 +149,30 @@ public class TestInvocation {
 
         // Set "Primitive"
         if ( verbose ){ System.out.println("+ Assign 'Primitive'");}
-        assertFalse( ds.isSetDataProductType());
+        assertFalse( ds.hasDataProductType());
         ds.setDataProductType("Spectrum");
-        assertTrue( ds.isSetDataProductType());
+        assertTrue( ds.hasDataProductType());
         
         // Set Quantity
         if ( verbose ){ System.out.println("+ Assign Quantity");}
         q = new Quantity("prefix", "spec", "", "" );
-        assertFalse( dm.isSetPrefix());
+        assertFalse( dm.hasPrefix());
         dm.setPrefix( q );
-        assertTrue( dm.isSetPrefix());
+        assertTrue( dm.hasPrefix());
 
         // Set Quantity List
         if ( verbose ){ System.out.println("+ Assign Quantity List");}
         qarr.add( new Quantity("Madame Curie" ));
         qarr.add( new Quantity("Albert Einstein" ));
-        assertFalse( did.isSetContributors());
+        assertFalse( did.hasContributors());
         did.setContributors( qarr );
-        assertTrue( did.isSetContributors());
+        assertTrue( did.hasContributors());
         
         // Set Interface
         if ( verbose ){ System.out.println("+ Assign Interface");}
-        assertFalse( ds.isSetDataModel());
+        assertFalse( ds.hasDataModel());
         ds.setDataModel( dm );
-        assertTrue( ds.isSetDataModel());
+        assertTrue( ds.hasDataModel());
         
         // show ds
         if ( verbose ){
@@ -194,16 +184,16 @@ public class TestInvocation {
         // Re-Assign property with Quantity
         if ( verbose ){ System.out.println("+ Re-Assign with Quantity"); }
         q = new Quantity("type","Photometry","","");
-        assertTrue( ds.isSetDataProductType());
+        assertTrue( ds.hasDataProductType());
         ds.setDataProductType( q );
-        assertTrue( ds.isSetDataProductType());
+        assertTrue( ds.hasDataProductType());
         assertEquals( ds.getDataProductType().getValue(), "Photometry");
 
         // Re-Assign property with Quantity
         if ( verbose ){ System.out.println("+ Re-Assign with 'Primitive'"); }
-        assertTrue( dm.isSetPrefix());
+        assertTrue( dm.hasPrefix());
         dm.setPrefix( "phot" );
-        assertTrue( dm.isSetPrefix());
+        assertTrue( dm.hasPrefix());
         assertEquals( dm.getPrefix().getValue(), "phot");
         assertEquals( dm.getPrefix().getName(), "prefix");
 

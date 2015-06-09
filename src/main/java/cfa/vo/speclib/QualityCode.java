@@ -19,6 +19,6 @@ public interface QualityCode {
     public void setCodeNum( Quantity<Integer> value );
     public void setDefinition( Quantity<String> value );
     
-    public boolean isSetCodeNum();
-    public boolean isSetDefinition();
+    public boolean hasCodeNum();
+    public boolean hasDefinition();
 }

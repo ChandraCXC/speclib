@@ -15,7 +15,7 @@ public interface Curation {
 
     public Contact getContact();
     public void setContact( Contact value );
-    public boolean isSetContact();
+    public boolean hasContact();
 
     public Quantity<String> getPublisher();
     public Quantity<URI> getPublisherID();
@@ -43,12 +43,12 @@ public interface Curation {
     public void setReference( int index, Quantity value );
     public void setReferences( List<Quantity> values );
     
-    public boolean isSetPublisher();
-    public boolean isSetPublisherID();
-    public boolean isSetPublisherDID();
-    public boolean isSetReleaseDate();
-    public boolean isSetVersion();
-    public boolean isSetRights();
-    public boolean isSetReferences();
+    public boolean hasPublisher();
+    public boolean hasPublisherID();
+    public boolean hasPublisherDID();
+    public boolean hasReleaseDate();
+    public boolean hasVersion();
+    public boolean hasRights();
+    public boolean hasReferences();
         
 }

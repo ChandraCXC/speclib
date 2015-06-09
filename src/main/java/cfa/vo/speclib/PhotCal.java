@@ -20,8 +20,8 @@ public interface PhotCal {
     public void setZeroPoint( ZeroPoint value );
     public void setMagnitudeSystem( MagnitudeSystem value );
 
-    public boolean isSetIdentifier();
-    public boolean isSetZeroPoint();
-    public boolean isSetMagnitudeSystem();
+    public boolean hasIdentifier();
+    public boolean hasZeroPoint();
+    public boolean hasMagnitudeSystem();
     
 }

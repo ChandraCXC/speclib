@@ -15,5 +15,5 @@ public interface Resolution {
     
     public void setRefVal( Quantity<Double> value );
     
-    public void isSetRefVal();
+    public void hasRefVal();
 }

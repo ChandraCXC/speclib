@@ -44,16 +44,16 @@ public interface Dataset {
     public void setProposal( Proposal value );
     public void setTarget( Target value );
     
-    public boolean isSetDataProductType();
-    public boolean isSetDataProductSubtype();
-    public boolean isSetCalibLevel();
-    public boolean isSetDataModel();
-    public boolean isSetCuration();
-    public boolean isSetCharacterization();
-    public boolean isSetCoordSys();
-    public boolean isSetDataID();
-    public boolean isSetDerived();
-    public boolean isSetObsConfig();
-    public boolean isSetProposal();
-    public boolean isSetTarget();
+    public boolean hasDataProductType();
+    public boolean hasDataProductSubtype();
+    public boolean hasCalibLevel();
+    public boolean hasDataModel();
+    public boolean hasCuration();
+    public boolean hasCharacterization();
+    public boolean hasCoordSys();
+    public boolean hasDataID();
+    public boolean hasDerived();
+    public boolean hasObsConfig();
+    public boolean hasProposal();
+    public boolean hasTarget();
 }

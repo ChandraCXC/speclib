@@ -91,9 +91,9 @@ public class ModelProxy implements InvocationHandler
             this.setProperty( proxy, method, args );
             result = null;
         }
-        else if ( method.getName().startsWith("isSet") )
+        else if ( method.getName().startsWith("has") )
         {
-            result = this.check( method.getName().replaceFirst("isSet", "") );
+            result = this.check( method.getName().replaceFirst("has", "") );
         }
         else if ( method.getName().startsWith("is"))
         {

@@ -39,11 +39,10 @@ public interface CharacterizationAxis {
     public void setQualityDefs( List<QualityCode> value );
     public void setQualityDefs( int index, QualityCode value );
 
-    public boolean isSet();
-    public boolean isSetAccuracy();
-    public boolean isSetCoordSys();
-    public boolean isSetCoverage();
-    public boolean isSetResolution();
-    public boolean isSetQualityDefs();
+    public boolean hasAccuracy();
+    public boolean hasCoordSys();
+    public boolean hasCoverage();
+    public boolean hasResolution();
+    public boolean hasQualityDefs();
     
 }

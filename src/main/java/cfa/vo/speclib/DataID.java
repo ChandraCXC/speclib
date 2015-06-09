@@ -54,15 +54,15 @@ public interface DataID {
     public void setVersion( Quantity<String> value );
     public void setObservationID( Quantity<String> value );
     
-    public boolean isSetCollections();
-    public boolean isSetContributors();
-    public boolean isSetCreationType();
-    public boolean isSetCreator();
-    public boolean isSetCreatorDID();
-    public boolean isSetDatasetID();
-    public boolean isSetDate();
-    public boolean isSetLogo();
-    public boolean isSetTitle();
-    public boolean isSetVersion();
-    public boolean isSetObservationID();
+    public boolean hasCollections();
+    public boolean hasContributors();
+    public boolean hasCreationType();
+    public boolean hasCreator();
+    public boolean hasCreatorDID();
+    public boolean hasDatasetID();
+    public boolean hasDate();
+    public boolean hasLogo();
+    public boolean hasTitle();
+    public boolean hasVersion();
+    public boolean hasObservationID();
 }

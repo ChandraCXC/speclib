@@ -13,5 +13,5 @@ public interface SamplingPrecisionRefVal {
     public Quantity<Double> getFillFactor();
     public void setFillFactor( Double value );
     public void setFillFactor( Quantity<Double> value );
-    public boolean isSetFillFactor();
+    public boolean hasFillFactor();
 }

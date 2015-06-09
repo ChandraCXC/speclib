@@ -19,6 +19,6 @@ public interface TimeFrame extends Frame {
     public void setZero( Quantity<Double> value );
     public void setReferencePosition( Quantity<String> value );
     
-    public boolean isSetReferencePosition();
-    public boolean isSetZero();
+    public boolean hasReferencePosition();
+    public boolean hasZero();
 }

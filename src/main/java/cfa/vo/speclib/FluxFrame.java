@@ -23,7 +23,7 @@ public interface FluxFrame extends Frame {
     public void setRefID( Quantity<URI> value );
     public void setReferencePosition( Quantity<String> value );
     
-    public boolean isSetRefID();
-    public boolean isSetReferencePosition();
-    public boolean isSetPhotCal();
+    public boolean hasRefID();
+    public boolean hasReferencePosition();
+    public boolean hasPhotCal();
 }

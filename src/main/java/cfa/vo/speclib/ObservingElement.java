@@ -13,6 +13,6 @@ public abstract interface ObservingElement {
     public Quantity<String> getName();
     public void setName( String value );
     public void setName( Quantity<String> value );
-    public boolean isSetName();            
+    public boolean hasName();
 
 }

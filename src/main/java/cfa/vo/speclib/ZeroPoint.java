@@ -22,8 +22,8 @@ public interface ZeroPoint {
     public void setReferenceMagnitude( Quantity<Double> value );
     public void setType( Quantity<Integer> value );
 
-    public boolean isSetFlux();
-    public boolean isSetReferenceMagnitude();
-    public boolean isSetType();
+    public boolean hasFlux();
+    public boolean hasReferenceMagnitude();
+    public boolean hasType();
 
 }

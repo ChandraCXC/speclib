@@ -18,7 +18,7 @@ public interface SPPoint {
     public void setFluxAxis( FluxDataAxis value );
     public void setBackgroundModel( FluxDataAxis value );
 
-    public boolean isSetSpectralAxis();
-    public boolean isSetFluxAxis();
-    public boolean isSetBackgroundModel();    
+    public boolean hasSpectralAxis();
+    public boolean hasFluxAxis();
+    public boolean hasBackgroundModel();    
 }

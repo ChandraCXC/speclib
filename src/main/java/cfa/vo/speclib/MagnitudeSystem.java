@@ -21,7 +21,7 @@ public interface MagnitudeSystem {
     public void setType( Quantity<String> value );
     public void setReferenceSpectrum( Quantity<URI> value );
 
-    public boolean isSetType();
-    public boolean isSetReferenceSpectrum();
+    public boolean hasType();
+    public boolean hasReferenceSpectrum();
     
 }

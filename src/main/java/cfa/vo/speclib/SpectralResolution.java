@@ -14,6 +14,6 @@ public interface SpectralResolution extends Resolution {
         
     public void setResolPower( ResolPower value );
     
-    public boolean isSetResolPower();
+    public boolean hasResolPower();
     
 }

@@ -15,6 +15,6 @@ public interface ResolPower {
 
     public void setRefVal( Quantity<Double> value );
 
-    public boolean isSetRefVal();
+    public boolean hasRefVal();
     
 }

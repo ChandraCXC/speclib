@@ -17,5 +17,5 @@ public interface ObsConfig {
     public void setObservingElements( List<ObservingElement> value );
     public void setObservingElements( int index, ObservingElement value );
     
-    public boolean isSetObservingElements();
+    public boolean hasObservingElements();
 }
