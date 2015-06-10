@@ -19,7 +19,7 @@ public interface SpectralFrame extends Frame {
     public void setRedshift( Quantity<Double> value );
     public void setReferencePosition( Quantity<String> value );
     
-    public boolean isSetRedshift();
-    public boolean isSetReferencePosition();
+    public boolean hasRedshift();
+    public boolean hasReferencePosition();
     
 }

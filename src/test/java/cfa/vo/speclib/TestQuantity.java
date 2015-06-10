@@ -74,14 +74,14 @@ public class TestQuantity
         Quantity q = new Quantity();
 
         // nothing should be set 
-        assertEquals( false , q.isSetModelpath());
-        assertEquals( false , q.isSetID());
-        assertEquals( false , q.isSetName());
-        assertEquals( false , q.isSetDescription());
-        assertEquals( false , q.isSetUnit());
-        assertEquals( false , q.isSetUCD());
-        assertEquals( false , q.isSetUtype());
-        assertEquals( false , q.isSetValue());
+        assertEquals( false , q.hasModelpath());
+        assertEquals( false , q.hasID());
+        assertEquals( false , q.hasName());
+        assertEquals( false , q.hasDescription());
+        assertEquals( false , q.hasUnit());
+        assertEquals( false , q.hasUCD());
+        assertEquals( false , q.hasUtype());
+        assertEquals( false , q.hasValue());
         
         q.setModelpath("SPEC_TARGET_NAME");
         q.setID("001");
@@ -93,14 +93,14 @@ public class TestQuantity
         q.setValue("NGC-1701");
 
         // everything should be set
-        assertEquals( true , q.isSetModelpath());
-        assertEquals( true , q.isSetID());
-        assertEquals( true , q.isSetName());
-        assertEquals( true , q.isSetDescription());
-        assertEquals( true , q.isSetUnit());
-        assertEquals( true , q.isSetUCD());
-        assertEquals( true , q.isSetUtype());
-        assertEquals( true , q.isSetValue());
+        assertEquals( true , q.hasModelpath());
+        assertEquals( true , q.hasID());
+        assertEquals( true , q.hasName());
+        assertEquals( true , q.hasDescription());
+        assertEquals( true , q.hasUnit());
+        assertEquals( true , q.hasUCD());
+        assertEquals( true , q.hasUtype());
+        assertEquals( true , q.hasValue());
 
         // check values
         assertEquals("SPEC_TARGET_NAME", q.getModelpath());
@@ -119,14 +119,14 @@ public class TestQuantity
         Quantity q = new Quantity("NGC-1701");
 
         // only value should be set 
-        assertEquals( false , q.isSetModelpath());
-        assertEquals( false , q.isSetID());
-        assertEquals( false , q.isSetName());
-        assertEquals( false , q.isSetDescription());
-        assertEquals( false , q.isSetUnit());
-        assertEquals( false , q.isSetUCD());
-        assertEquals( false , q.isSetUtype());
-        assertEquals( true  , q.isSetValue());
+        assertEquals( false , q.hasModelpath());
+        assertEquals( false , q.hasID());
+        assertEquals( false , q.hasName());
+        assertEquals( false , q.hasDescription());
+        assertEquals( false , q.hasUnit());
+        assertEquals( false , q.hasUCD());
+        assertEquals( false , q.hasUtype());
+        assertEquals( true  , q.hasValue());
         
         q.setModelpath("SPEC_TARGET_NAME");
         q.setID("001");
@@ -137,14 +137,14 @@ public class TestQuantity
         q.setUtype("spec:Target.Name");
 
         // everything should be set
-        assertEquals( true , q.isSetModelpath());
-        assertEquals( true , q.isSetID());
-        assertEquals( true , q.isSetName());
-        assertEquals( true , q.isSetDescription());
-        assertEquals( true , q.isSetUnit());
-        assertEquals( true , q.isSetUCD());
-        assertEquals( true , q.isSetUtype());
-        assertEquals( true , q.isSetValue());
+        assertEquals( true , q.hasModelpath());
+        assertEquals( true , q.hasID());
+        assertEquals( true , q.hasName());
+        assertEquals( true , q.hasDescription());
+        assertEquals( true , q.hasUnit());
+        assertEquals( true , q.hasUCD());
+        assertEquals( true , q.hasUtype());
+        assertEquals( true , q.hasValue());
 
         // check values
         assertEquals("SPEC_TARGET_NAME", q.getModelpath());
@@ -163,14 +163,14 @@ public class TestQuantity
         Quantity q = new Quantity("target", "NGC-1701", "", "meta.id;src"  );
 
         // check attributes set 
-        assertEquals( false , q.isSetModelpath());
-        assertEquals( false , q.isSetID());
-        assertEquals( true  , q.isSetName());
-        assertEquals( false , q.isSetDescription());
-        assertEquals( true  , q.isSetUnit());
-        assertEquals( true  , q.isSetUCD());
-        assertEquals( false , q.isSetUtype());
-        assertEquals( true  , q.isSetValue());
+        assertEquals( false , q.hasModelpath());
+        assertEquals( false , q.hasID());
+        assertEquals( true  , q.hasName());
+        assertEquals( false , q.hasDescription());
+        assertEquals( true  , q.hasUnit());
+        assertEquals( true  , q.hasUCD());
+        assertEquals( false , q.hasUtype());
+        assertEquals( true  , q.hasValue());
         
         q.setModelpath("SPEC_TARGET_NAME");
         q.setID("001");
@@ -178,14 +178,14 @@ public class TestQuantity
         q.setUtype("spec:Target.Name");
 
         // everything should be set
-        assertEquals( true , q.isSetModelpath());
-        assertEquals( true , q.isSetID());
-        assertEquals( true , q.isSetName());
-        assertEquals( true , q.isSetDescription());
-        assertEquals( true , q.isSetUnit());
-        assertEquals( true , q.isSetUCD());
-        assertEquals( true , q.isSetUtype());
-        assertEquals( true , q.isSetValue());
+        assertEquals( true , q.hasModelpath());
+        assertEquals( true , q.hasID());
+        assertEquals( true , q.hasName());
+        assertEquals( true , q.hasDescription());
+        assertEquals( true , q.hasUnit());
+        assertEquals( true , q.hasUCD());
+        assertEquals( true , q.hasUtype());
+        assertEquals( true , q.hasValue());
 
         // check values
         assertEquals("SPEC_TARGET_NAME", q.getModelpath());

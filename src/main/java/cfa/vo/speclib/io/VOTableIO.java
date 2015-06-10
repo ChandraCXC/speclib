@@ -316,7 +316,7 @@ public class VOTableIO implements IFileIO {
         // FieldRef: ID, UCD, UTYPE, NAME, DESCRIPTION 
 
         //  ID
-        if ( q.isSetID() )
+        if ( q.hasID() )
         {
           field.setAttribute( ATT_TAG_ID, q.getID() );
           ref.setAttribute( ATT_TAG_REF, q.getID() );
@@ -329,30 +329,30 @@ public class VOTableIO implements IFileIO {
         }
         
         //  Description
-        if ( q.isSetDescription() )
+        if ( q.hasDescription() )
           ref.setAttribute( ATT_TAG_DESC, q.getDescription() );
         
         //  Name
-        if ( q.isSetName() )
+        if ( q.hasName() )
           ref.setAttribute( ATT_TAG_NAME, q.getName() );
 
         //  UType - fill from model spec if not provided.
-        if ( q.isSetUtype() )
+        if ( q.hasUtype() )
           ref.setAttribute( ATT_TAG_UTYPE, q.getUtype() );
         else if ( ndx >= 0 )
           ref.setAttribute( ATT_TAG_UTYPE, this.model.getUtype(ndx).getTag() );
         
         //  UCD - fill from model spec if not provided
-        if ( q.isSetUCD() )
+        if ( q.hasUCD() )
           ref.setAttribute( ATT_TAG_UCD, q.getUCD() );
         else if ( ndx >= 0 && (! this.model.getUCD(ndx).isEmpty()) )
           ref.setAttribute( ATT_TAG_UCD, this.model.getUCD(ndx) );
 
         //  Unit
-        if ( q.isSetUnit() )
+        if ( q.hasUnit() )
           field.setAttribute( ATT_TAG_UNIT, q.getUnit() );
 
-        if ( q.isSetValue())
+        if ( q.hasValue())
         {
           //  DataType
           String dtype = q.getValue().getClass().getSimpleName();
@@ -446,12 +446,12 @@ public class VOTableIO implements IFileIO {
         String tmpstr;
         
         //  ID
-        if ( q.isSetID() )
+        if ( q.hasID() )
           param.setAttribute( ATT_TAG_ID, q.getID() );
 
         //  Description - serialized as subelement of param.
         tmpstr = null;
-        if ( q.isSetDescription() )
+        if ( q.hasDescription() )
             tmpstr = q.getDescription();
         else if ( ndx >= 0 && (! this.model.getDescription(ndx).isEmpty()) )
             tmpstr = this.model.getDescription(ndx);
@@ -464,26 +464,26 @@ public class VOTableIO implements IFileIO {
         }
         
         //  Name
-        if ( q.isSetName() )
+        if ( q.hasName() )
           param.setAttribute( ATT_TAG_NAME, q.getName() );
 
         //  UType - fill from model spec if not provided.
-        if ( q.isSetUtype() )
+        if ( q.hasUtype() )
           param.setAttribute( ATT_TAG_UTYPE, q.getUtype() );
         else if ( ndx >= 0 )
           param.setAttribute( ATT_TAG_UTYPE, this.model.getUtype(ndx).getTag() );
         
         //  UCD - fill from model spec if not provided
-        if ( q.isSetUCD() )
+        if ( q.hasUCD() )
           param.setAttribute( ATT_TAG_UCD, q.getUCD() );
         else if ( ndx >= 0 && (! this.model.getUCD(ndx).isEmpty()) )
           param.setAttribute( ATT_TAG_UCD, this.model.getUCD(ndx) );
 
         //  Unit
-        if ( q.isSetUnit() )
+        if ( q.hasUnit() )
           param.setAttribute( ATT_TAG_UNIT, q.getUnit() );
 
-        if ( q.isSetValue())
+        if ( q.hasValue())
         {
           tmpstr = null;
           

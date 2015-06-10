@@ -270,53 +270,53 @@ public class Quantity<T> {
      */
     public void fill( Quantity src )
     {
-        if (src.isSetID())
+        if (src.hasID())
           this.id = src.getID();
-        if (src.isSetDescription())
+        if (src.hasDescription())
           this.description = src.getDescription();
-        if (src.isSetModelpath())
+        if (src.hasModelpath())
           this.modelpath = src.getModelpath();
-        if (src.isSetName())
+        if (src.hasName())
           this.name = src.getName();
-        if (src.isSetUCD())
+        if (src.hasUCD())
           this.ucd = src.getUCD();
-        if (src.isSetUnit())
+        if (src.hasUnit())
           this.unit = src.getUnit();
-        if (src.isSetUtype())
+        if (src.hasUtype())
           this.utype = src.getUtype();
-        if (src.isSetValue())
+        if (src.hasValue())
           this.setValue( (T)src.getValue() );
     }
     
-    public boolean isSetModelpath()
+    public boolean hasModelpath()
     {
         return (this.modelpath != null);
     }    
-    public boolean isSetID()
+    public boolean hasID()
     {
         return (this.id != null);
     }    
-    public boolean isSetName()
+    public boolean hasName()
     {
         return (this.name != null);
     }    
-    public boolean isSetDescription()
+    public boolean hasDescription()
     {
         return (this.description != null);
     }    
-    public boolean isSetUnit()
+    public boolean hasUnit()
     {
         return (this.unit != null);
     }    
-    public boolean isSetUCD()
+    public boolean hasUCD()
     {
         return (this.ucd != null);
     }    
-    public boolean isSetUtype()
+    public boolean hasUtype()
     {
         return (this.utype != null);
     }    
-    public boolean isSetValue()
+    public boolean hasValue()
     {
         return (this.value != null);
     }    

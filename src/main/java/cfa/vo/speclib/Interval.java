@@ -19,7 +19,7 @@ public class Interval extends Quantity {
     {
         Double[] result;
 
-        if (!this.isSetValue())
+        if (!this.hasValue())
             this.setValue( new Double[2] );
 
         result = (Double[])this.getValue();
@@ -31,7 +31,7 @@ public class Interval extends Quantity {
     {
         Double[] result;
 
-        if (!this.isSetValue())
+        if (!this.hasValue())
             this.setValue( new Double[2] );
 
         result = (Double[])this.getValue();
@@ -43,7 +43,7 @@ public class Interval extends Quantity {
     {
         Double[] value;
 
-        if (!this.isSetValue())
+        if (!this.hasValue())
             this.setValue( new Double[2] );
 
         value = (Double[])this.getValue();
@@ -54,7 +54,7 @@ public class Interval extends Quantity {
     {
         Double[] value;
 
-        if (!this.isSetValue())
+        if (!this.hasValue())
             this.setValue( new Double[2] );
 
         value = (Double[])this.getValue();

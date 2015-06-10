@@ -12,5 +12,5 @@ public interface Proposal {
     public Quantity<String> getIdentifier();
     public void setIdentifier( String value );
     public void setIdentifier( Quantity<String> q );
-    public boolean isSetIdentifier();
+    public boolean hasIdentifier();
 }
