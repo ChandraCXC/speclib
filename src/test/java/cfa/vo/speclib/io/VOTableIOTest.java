@@ -82,16 +82,18 @@ public class VOTableIOTest {
         overrides.put(original, newEntry);
 
         Model model = new DefaultModelBuilder("Spectrum-2.0")
-//               .overrideEntries(overrides)
+               .overrideEntries(overrides)
                .withPrefix("spec2")
                .build();
         result = instance.read(file, model);
         
-        // Check number of axes created.. this file has multiple defs of the axis metadata
+        // Check number of axes created.. this file has multiple (2) defs of the (4) axis metadata
         assertEquals( 8, result.getCharacterization().getCharacterizationAxes().size());
         
+        // Check regular parameter element (prefix override)
         assertEquals("bet Ori", result.getTarget().getName().getValue());
-//        assertEquals("", SpectralUtils.getSpectralCharAxis(result).getCalibrationStatus().getValue());
+        // Check utype override element
+        assertEquals("ABSOLUTE", SpectralUtils.getSpectralCharAxis(result).getCalibrationStatus().getValue());
 
     }
     
