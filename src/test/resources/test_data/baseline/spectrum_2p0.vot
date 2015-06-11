@@ -79,7 +79,7 @@
         <PARAM arraysize="*" datatype="char" ucd="meta.ref.url;meta.curation" utype="spec:Curation.PublisherDID" value="ivo://cfa.harvard.edu/UNKNOWN">
           <DESCRIPTION>Publisher specified dataset ID</DESCRIPTION>
         </PARAM>
-        <PARAM arraysize="*" datatype="char" utype="spec:Curation.ReleaseDate" value="2007-03-11T10:33:14">
+        <PARAM arraysize="*" datatype="char" utype="spec:Curation.Date" value="2007-03-11T10:33:14">
           <DESCRIPTION>Date curated dataset last modified</DESCRIPTION>
         </PARAM>
         <PARAM arraysize="*" datatype="char" ucd="meta.version;meta.curation" utype="spec:Curation.Version" value="002">
