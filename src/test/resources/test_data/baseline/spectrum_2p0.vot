@@ -154,6 +154,9 @@
         <PARAM datatype="double" ucd="stat.snr" utype="spec:Derived.SNR" value="1.3">
           <DESCRIPTION>Signal-to-noise for spectrum</DESCRIPTION>
         </PARAM>
+        <PARAM datatype="double" ucd="src.var.amplitude;arith.ratio" utype="spec:Derived.VarAmpl" value="1.0E-4">
+          <DESCRIPTION>Variability amplitude as fraction of mean</DESCRIPTION>
+        </PARAM>
         <GROUP>
           <PARAM datatype="double" ucd="src.redshift" utype="spec:Derived.Redshift.Value" value="0.159">
             <DESCRIPTION>Measured redshift for spectrum</DESCRIPTION>
@@ -165,9 +168,6 @@
             <DESCRIPTION>Confidence value on redshift</DESCRIPTION>
           </PARAM>
         </GROUP>
-        <PARAM datatype="double" ucd="src.var.amplitude;arith.ratio" utype="spec:Derived.VarAmpl" value="1.0E-4">
-          <DESCRIPTION>Variability amplitude as fraction of mean</DESCRIPTION>
-        </PARAM>
       </GROUP>
       <GROUP>
         <GROUP>

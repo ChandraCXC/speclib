@@ -17,7 +17,11 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -152,7 +156,7 @@ public class VOTMapper {
             result.put(mp, table);
           }
           else
-            System.out.println("MCD TEMP: Unexpected Node in RESOURCE = "+eltype);
+            System.out.println("MCD TEMP: Unsupported Element type in RESOURCE = "+eltype);
         }
         return result;
     }
@@ -178,11 +182,17 @@ public class VOTMapper {
     {
         ModelDocument table = new ModelDocument();
         ModelDocument node; // Group within Table.
+        String nodepath = "SpectralDataset"; //TODO: Fixme, determine dynamically.
         String mp;
         Quantity q;
         int ngroups = 0;
+        int nparams = 0;
+
+        List<Map.Entry<String,Quantity>> paramStack= new ArrayList<>();
         
         // Find and load data model specification matching this dataset.
+        // TODO: without a model spec. this code cannot do very much with the file,
+        //       should the Exception go to the client? (maybe local Exception type).
         if ( this.model == null ){
           try {
             this.model = this.identifyModel( doc );
@@ -194,8 +204,38 @@ public class VOTMapper {
         // Process FIELD elements to local Column objects
         this.loadColumnData( doc );
 
-        // Process the child elements of the table.. 
+        // Gather PARAM elements for processing as a unit.
         VOElement[] children = doc.getChildren();
+        for ( VOElement child: children )
+        {
+          String eltype = child.getTagName();
+          if ( eltype.equalsIgnoreCase(DOM_TAG_PARAM) )
+          {
+            try {
+              q = this.convertParam( (ParamElement)child );
+            } catch (Throwable ex) {
+              Logger.getLogger(VOTMapper.class.getName()).log(Level.WARNING, null, ex);
+              continue;
+            }
+            nparams++;
+            mp = q.getModelpath();
+            if ( (mp == null) || (! mp.contains(nodepath)))
+            {
+              if (mp != null)
+                System.out.println("MCD TEMP: Override bad group content -"+mp);
+              
+              mp = nodepath+"_Custom[].CustomParam"+nparams;
+              q.setModelpath(mp);
+            }
+            
+            // Add to parameter stack
+            paramStack.add( new SimpleEntry<String, Quantity>(mp, q));
+          }
+        }
+        // Process Parameter stack
+        processParameterStack( table, nodepath, paramStack );
+
+        // Process remaining element types
         for ( VOElement child: children )
         {
           String eltype = child.getTagName();
@@ -208,32 +248,19 @@ public class VOTMapper {
               mp = derivePathFromSubnode(node);
               if ( mp == null )
                 mp = "Group"+ngroups;
-              table.put(mp, node);
+              this.addSubnode( table, nodepath, node, mp );
             }
           }
-          else if ( eltype.equalsIgnoreCase(DOM_TAG_PARAM) )
+          else if (( eltype.equalsIgnoreCase(DOM_TAG_PARAM) ) ||
+                   ( eltype.equalsIgnoreCase(DOM_TAG_FIELD) ) )
           {
-            try {
-              q = this.convertParam( (ParamElement)child );
-            } catch (Throwable ex) {
-              Logger.getLogger(VOTMapper.class.getName()).log(Level.WARNING, null, ex);
-              continue;
-            }
-            if ( q.getModelpath() == null )
-            {
-              q.setModelpath("SpectralDataset_Custom");
-              continue;  //TODO: proper handling of unmodeled parameters.
-            }
-
-            table.put( q.getModelpath(), q );
-          }
-          else if ( eltype.equalsIgnoreCase(DOM_TAG_FIELD) )
-          {
-            //System.out.println(" Skip FIELD Node in TABLE ");
+            //PARAM elements handled above.
+            //FIELD element already processed;
+            continue;
           }
           else if ( eltype.equalsIgnoreCase(DOM_TAG_DATA) )
           {
-            // Data node, follows all Groups, Params, Fields.. 
+            // Data node in VOTable, follows all Groups, Params, Fields.. 
             // Generate ModelDocument of Column data content and add to table.
             MPArrayList<ModelDocument> data = convertColumnData();
             if ( data != null )
@@ -245,7 +272,7 @@ public class VOTMapper {
             }
           }
           else
-            System.out.println("MCD TEMP: Unexpected Node in TABLE = "+eltype);
+            System.out.println("MCD TEMP: Unsupported Element type in TABLE = "+eltype);
         }
         return table;
     }
@@ -268,17 +295,57 @@ public class VOTMapper {
      */
     private ModelDocument convertGroup( GroupElement group )
     {
-        ModelDocument node = new ModelDocument();
+        ModelDocument node = new ModelDocument();  // this node
+        String nodepath;                           // model path for this node
+        
         Quantity q;       // Quantity element
         String mp;        // model path for element
-        String gp = null; // model path for this group
         int ngroups = 0;  // number of subgroups found
         int nparams = 0;  // number of parameters found
         this.level++;     // Increment depth marker
 
+        // Stack of parameters associated with this group.. must process together.
+        List<Map.Entry<String,Quantity>> paramStack= new ArrayList<>();
+
+        // Get model path to group.
+        nodepath = identifyNode( group );
+
+        // Gather PARAM and PARAMref elements for processing as a unit.
         VOElement[] children = group.getChildren();
-        for ( VOElement child: children )
-        {
+        for ( VOElement child: children ) {
+          String eltype = child.getTagName();
+          if (( eltype.equalsIgnoreCase(DOM_TAG_PARAM) ) || 
+              ( eltype.equalsIgnoreCase(DOM_TAG_PARAMREF) ) )
+          {
+            try{
+              if ( eltype.equalsIgnoreCase(DOM_TAG_PARAM) )
+                q = this.convertParam( (ParamElement)child );
+              else
+                q = this.convertParamRef( (ParamRefElement)child );
+            }catch (IOException ex){
+                Logger.getLogger(VOTMapper.class.getName()).log(Level.WARNING, null, ex);
+                continue;
+            }
+            nparams++;
+            mp = q.getModelpath();
+            if ( (mp == null) || (! mp.contains(nodepath)))
+            {
+              if (mp != null)
+                System.out.println("MCD TEMP: Override bad group content -"+mp);
+              
+              mp = nodepath+"_Custom[].CustomParam"+nparams;
+              q.setModelpath(mp);
+            }
+            
+            // Add to parameter stack
+            paramStack.add( new SimpleEntry<String, Quantity>(mp, q));
+          }
+        }
+        // Process Parameter stack
+        processParameterStack( node, nodepath, paramStack );
+        
+        // Process the child elements of the Node.. then other types
+        for ( VOElement child: children ) {
           String eltype = child.getTagName();
           if ( eltype.equalsIgnoreCase(DOM_TAG_GROUP) )
           {
@@ -288,7 +355,7 @@ public class VOTMapper {
               ngroups++;
               mp = derivePathFromSubnode(subnode);
               if ( mp == null )
-                mp = "Group"+ngroups;
+                mp = nodepath+"_Group"+ngroups;
               if ( mp.matches(".+\\[\\]\\.*[a-zA-Z]*$") )
               { // Array Element.. 
                 String arraymp = mp.substring(0, mp.lastIndexOf('[') );
@@ -309,58 +376,16 @@ public class VOTMapper {
             }
           }
           else if (( eltype.equalsIgnoreCase(DOM_TAG_PARAM) ) || 
-                   ( eltype.equalsIgnoreCase(DOM_TAG_PARAMREF) ) )
+                   ( eltype.equalsIgnoreCase(DOM_TAG_PARAMREF) ) ||
+                   ( eltype.equalsIgnoreCase(DOM_TAG_FIELDREF) )
+                  )
           {
-            try{
-              if ( eltype.equalsIgnoreCase(DOM_TAG_PARAM) )
-                q = this.convertParam( (ParamElement)child );
-              else
-                q = this.convertParamRef( (ParamRefElement)child );
-            } catch (Throwable ex) {
-                Logger.getLogger(VOTMapper.class.getName()).log(Level.WARNING, null, ex);
-                continue;
-            }
-            nparams++;
-            mp = q.getModelpath();
-            if ( mp == null )
-            {
-              mp = "CustomParam"+nparams;
-              q.setModelpath(mp);
+              //PARAM, PARAMRef elements handled above.
+              //FIELDRef elements already processed.
               continue;
-            }
-            if ( gp == null )
-              gp = getSubPath( mp , this.level );
-            if (! mp.contains(gp))
-            { // model path inconsistent with the group.. mark as custom
-                System.out.println("MCD TEMP: Override bad group content -"+mp);
-              mp = "CustomParam"+nparams;
-              q.setModelpath(mp);
-              continue;
-            }
-            if ( mp.matches(".+\\[\\]\\.*[a-zA-Z]*$") )
-            { // Array Element.. 
-              String arraymp = mp.substring(0, mp.lastIndexOf('[') );
-              if ( node.contains(arraymp))
-                  ((MPArrayList)node.get(arraymp)).add(q);
-              else
-              {
-                  MPArrayList qarr = new MPArrayList();
-                  qarr.setModelpath(arraymp);
-                  qarr.add(q);
-                  node.put( arraymp, qarr );
-              }
-            }
-            else
-            { // Regular Parameter.. add to node.
-              node.put( mp, q );
-            }
-          }
-          else if ( eltype.equalsIgnoreCase(DOM_TAG_FIELDREF) )
-          {
-            //System.out.println("Skipping FIELDref in GROUP, already handled separately. ");
           }
           else
-            System.out.println("MCD TEMP: Unexpected Node in GROUP = "+eltype);
+            System.out.println("MCD TEMP: Unsupported Element type in GROUP = "+eltype);
         }
         this.level--;     // Decrement depth marker
         
@@ -400,8 +425,10 @@ public class VOTMapper {
           q.setUtype(utype);
         }
         else
-          System.out.println("MCD TEMP: Unmodeled Element - "+utype);
-        
+        { // preserve user utype, but do not set model path.
+          q.setUtype(utype);
+        }
+
         if ( param.hasAttribute(ATT_TAG_ID) )
         {
           tmpstr = param.getAttribute(ATT_TAG_ID);
@@ -807,6 +834,124 @@ public class VOTMapper {
        return data;
     }
     
+    // ModelDocument method  addElementStack( stack )? => addElements( List<ModelElement> )
+    private void processParameterStack( ModelDocument node, String base, List<Map.Entry<String,Quantity>> stack )
+    {
+        // map to hold set of subnode groupings from input parameter stack
+        LinkedHashMap<String, List<Map.Entry<String,Quantity>> > subnodeMap = new LinkedHashMap<>();
+        // individual subnode grouping of parameters from the input stack
+        List<Map.Entry<String,Quantity>> substack;
+
+        String mp;          // model path of the node.
+        String subnodepath; // model path of the subnode.
+        for ( Map.Entry<String,Quantity> entry: stack )
+        {
+            // Group entries into common subnodes
+            // If entry has no subnode, it is an element of this node.
+            subnodepath = null;
+            mp = entry.getKey();
+            if ( mp.contains("Custom")) // TODO: - handle custom items.
+                continue;
+            
+            if ( mp.indexOf("_",base.length()+1 ) > -1 )
+                subnodepath = mp.substring(0, mp.indexOf("_",base.length()+1 ));
+
+            if ( subnodepath == null ){
+              // parameter is an element of this node.. may be individual or in array
+              if ( mp.matches(".+\\[\\]\\.*[a-zA-Z]*$") ) {
+                // Array Element.. 
+                String arraymp = mp.substring(0, mp.lastIndexOf('[') );
+                if ( node.contains(arraymp))
+                  ((MPArrayList)node.get(arraymp)).add(entry.getValue());
+                else {
+                  MPArrayList qarr = new MPArrayList();
+                  qarr.setModelpath(arraymp);
+                  qarr.add(entry.getValue());
+                  node.put( arraymp, qarr );
+                }
+              }
+              else
+              { // Regular Parameter.. add to node.
+                node.put(mp, entry.getValue());
+              }
+            }
+            else {
+                // Entry is ungrouped parameter, add to subnode list
+                substack = subnodeMap.get(subnodepath);
+                if ( substack == null ) {
+                   substack = new ArrayList<Map.Entry<String,Quantity>>();
+                   subnodeMap.put(subnodepath, substack);
+                }
+                substack.add( entry );
+            }            
+        }
+        // Process each Subnode group
+        for ( Map.Entry<String, List<Map.Entry<String,Quantity>>> entry: subnodeMap.entrySet() )
+        {
+          subnodepath = entry.getKey();
+          substack = entry.getValue();
+          
+          ModelDocument subnode = new ModelDocument();
+          processParameterStack( subnode, subnodepath, substack ); // Recursive processing.
+          
+          this.addSubnode(node, base, subnode, subnodepath);
+
+        }
+    }
+    
+    // ModelDocument method  addSubnode( ModelDocument subnode, String subnodepath ) => addSubnode( ModelDocument subnode )
+    private void addSubnode( ModelDocument node, String nodepath, ModelDocument subnode, String subnodepath )
+    {
+        
+      if ( subnodepath.matches(".+\\[\\]\\.*[a-zA-Z]*$") ){
+        // Array Element.. 
+        String arraymp = subnodepath.substring(0, subnodepath.lastIndexOf('[') );
+        if ( node.contains(arraymp)){
+          ((MPArrayList)node.get(arraymp)).add(subnode);
+        }
+        else
+        {
+          MPArrayList garr = new MPArrayList();
+          garr.setModelpath(arraymp);
+          garr.add(subnode);
+          node.put( arraymp, garr );
+        }
+      }
+      else {
+        // Non-Array Element
+        if (! node.contains( subnodepath ) ){
+          // node does not contain this subnode.. add it.
+          node.put(subnodepath, subnode);
+        }
+        else {
+          // Document already contains this group.. merge contents to it
+          // NOTE: this will replace existing elements in the subnode, 
+          //       array elements will be added to,
+          //       so its content should already have been swept for 
+          //       grouping issues. ie: run through this process.
+          ModelDocument existingGroup = (ModelDocument)node.get( subnodepath );
+
+          // TODO: - evaluate Merge logic.. should we recursively merge subnodes too?
+          
+          Object[] keys = subnode.getKeys().toArray();
+          for ( int jj=0; jj < keys.length; jj++ )
+          {
+              String key = (String)keys[jj];
+              Object elem = subnode.get( key );
+              if ( (elem.getClass() == MPArrayList.class ) && ( existingGroup.contains(key)) ){
+                // Array Element already exists on node.. add elements
+                MPArrayList existingArray = (MPArrayList)existingGroup.get(key);
+                for ( Object item: (MPArrayList)elem )
+                  existingArray.add(item);
+              }
+              else  //All others overwrite.
+                existingGroup.put(key, elem);
+                  
+          }
+        }
+      }        
+    }
+    
     private Model identifyModel( VOElement top ) throws IOException
     {
         // First try: Param with expected UType.
@@ -830,6 +975,45 @@ public class VOTMapper {
         result = new DefaultModelBuilder(modelname).build();
         return result;
     }
+    
+    // Identify Node..
+    //   extracted from the first modeled parameter.
+    private String identifyNode( GroupElement node )
+    {
+        String nodepath = "UNKNOWN";
+        Quantity q;
+        String mp = null;
+
+        // TODO: - node may have utype, could check this against model spec.
+        VOElement[] children = node.getChildren();
+        for ( VOElement child: children ) {
+          String eltype = child.getTagName();
+          if ( eltype.equalsIgnoreCase(DOM_TAG_GROUP) ){
+              mp = identifyNode( (GroupElement)child );
+          }
+          else if (( eltype.equalsIgnoreCase(DOM_TAG_PARAM) ) || 
+                   ( eltype.equalsIgnoreCase(DOM_TAG_PARAMREF) ) )
+          {
+            try{
+              if ( eltype.equalsIgnoreCase(DOM_TAG_PARAM) )
+                q = this.convertParam( (ParamElement)child );
+              else
+                q = this.convertParamRef( (ParamRefElement)child );
+            }catch (IOException ex){
+                continue;
+            }
+            mp = q.getModelpath();
+          }
+          if ( mp != null )
+          {
+            // First modeled param, get node path to the current level.
+            nodepath = getSubPath( mp, this.level );
+            break;
+          }
+        }
+
+        return nodepath;
+    }
 
     private String derivePathFromSubnode( ModelDocument node )
     {
@@ -844,6 +1028,7 @@ public class VOTMapper {
     }
     private String getSubPath( String mp, int depth )
     {
+       String result = mp;
        int last = 0;
        int ii = 0;
        while ( (ii < depth) && ( last > -1 ))
@@ -852,8 +1037,8 @@ public class VOTMapper {
           ii++;
        }
        if ( last > 0 )
-         mp = mp.substring(0, last);
+         result = mp.substring(0, last);
 
-       return mp;
+       return result;
     }
 }

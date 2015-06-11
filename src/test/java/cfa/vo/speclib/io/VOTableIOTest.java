@@ -58,7 +58,7 @@ public class VOTableIOTest {
 
     @Test
     public void testRead_DACHS1() throws IOException {
-        if (verbose){ System.out.println("Test read(URL)"); }
+        if (verbose){ System.out.println("Test DACHS1()"); }
         URL file = this.getClass().getResource("/test_data/baseline/DACHS1.vot.xml");
         VOTableIO instance = new VOTableIO();
         SpectralDataset expResult = null;
@@ -86,6 +86,10 @@ public class VOTableIOTest {
                .withPrefix("spec2")
                .build();
         result = instance.read(file, model);
+        
+        // Check number of axes created.. this file has multiple defs of the axis metadata
+        assertEquals( 8, result.getCharacterization().getCharacterizationAxes().size());
+        
         assertEquals("bet Ori", result.getTarget().getName().getValue());
 //        assertEquals("", SpectralUtils.getSpectralCharAxis(result).getCalibrationStatus().getValue());
 
@@ -441,10 +445,10 @@ public class VOTableIOTest {
 
           // Derived metadata
           ds.getDerived().setSNR(Double.valueOf("1.3"));
+          ds.getDerived().getVarAmpl().setValue(Double.valueOf("0.0001"));
           ds.getDerived().getRedshift().setValue(Double.valueOf("0.159"));
           ds.getDerived().getRedshift().setStatError(Double.valueOf("0.002"));
           ds.getDerived().getRedshift().setConfidence(Double.valueOf("0.999"));
-          ds.getDerived().getVarAmpl().setValue(Double.valueOf("0.0001"));
           
           // CoordSys metadata
           List<CoordSys> systems = ds.getCoordSys();
