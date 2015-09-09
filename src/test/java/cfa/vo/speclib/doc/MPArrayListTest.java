@@ -70,27 +70,24 @@ public class MPArrayListTest {
         
     }
     
-    /**
-     * Test of getModelpath method, of class MPArrayList.
-     */
+    // Test ModeledElement Interface.
+    
     @Test
     public void testGetModelpath() {
         if (verbose){ System.out.println("Test getModelpath");}
 
         MPArrayList<Double> instance = new MPArrayList<Double>();
-        String expResult = "UNKNOWN";
+        String expResult = ModeledElement.MP_UNDEFINED; 
         String result = instance.getModelpath();
         assertEquals( expResult, result );
     }
 
-    /**
-     * Test of setModelPath method, of class MPArrayList.
-     */
     @Test
     public void testSetModelpath() {
         if (verbose){ System.out.println("Test setModelpath");}
 
         MPArrayList instance = new MPArrayList();
+        Boolean ok;
 
         // Assign value.. check changes from default
         String mp = "Some_Path";
@@ -98,11 +95,114 @@ public class MPArrayListTest {
         String result = instance.getModelpath();
         assertEquals(mp, result);
 
-        // Assign null.. check sets to empty 
+        // Verify provided mp "must not be null"
+        ok = false;
         mp = null;
-        instance.setModelpath( mp );
-        result = instance.getModelpath();
-        assertEquals( "", result );
+        try{
+          instance.setModelpath( mp );
+          fail("Expected Exception not thrown.");
+        }
+        catch ( IllegalArgumentException ex ){ ok = true; }
+        assertTrue( ok );
+        
+        // Verify provided mp "must not be empty"
+        ok = false;
+        mp = "";
+        try{
+          instance.setModelpath( mp );
+          fail("Expected Exception not thrown.");
+        }
+        catch ( IllegalArgumentException ex ){ ok = true; }
+        assertTrue( ok );
+    }
+    
+    @Test
+    public void testSetModelpathPropagation() {
+        if (verbose){ System.out.println("Test setModelpathPropagation");}
+        
+        // Verify propagation of model path to child elements.
+        String mp = "Some_Path";
+        String expected;
+
+        // MPQuantity Array
+        MPArrayList<MPQuantity> qarr = this.createMPQArray();
+        qarr.setModelpath(mp);
+        
+        // Check path of child elements.
+        assertEquals( 3, qarr.size());
+        expected = mp+"[]";
+        for ( MPQuantity q: qarr ) {
+           assertEquals( expected, q.getModelpath() );
+        }
+
+        // MPNode Array
+        MPArrayList<MPNode> nodes = this.createMPNodeArray();
+        nodes.setModelpath(mp);
+        
+        // Check path of child elements.
+        assertEquals( 3, nodes.size());
+        expected = mp+"[].Pos";
+        for ( MPNode node: nodes ) {
+           assertEquals( expected, node.getModelpath() );
+        }
+    }
+    
+    @Test
+    public void testRebaseModelpath()
+    {
+        if (verbose){ System.out.println("Test rebaseModelpath");}
+        
+        String base = "Some_Path_To";
+        String newbase = "Some_Other";
+        String expected;
+
+      // MPNode Array
+        // Create Array of MPNodes containing MPQuantity elements.
+        MPArrayList<MPNode> nodes = this.createMPNodeArray();
+        nodes.setModelpath(base);
+        
+        // Check initial state
+        assertEquals(base, nodes.getModelpath());
+        assertEquals(base+"[].Pos", nodes.get(0).getModelpath());
+
+        // Rebase array
+        nodes.rebaseModelpath(newbase);
+
+        // Check resulting state
+        assertEquals(newbase+"_To", nodes.getModelpath());
+        assertEquals(newbase+"_To[].Pos", nodes.get(0).getModelpath());
+
+        // Strip base path from the array and contents
+        nodes.rebaseModelpath( null );
+        
+        expected = "To";
+        assertEquals(expected, nodes.getModelpath());
+        assertEquals(expected+"[].Pos", nodes.get(0).getModelpath());
+
+        
+      // MPQuantity Array
+        // Create Array of MPQuantity elements.
+        MPArrayList<MPQuantity> qarr = this.createMPQArray();
+        qarr.setModelpath(base);
+        
+        // Check initial state
+        assertEquals(base, qarr.getModelpath());
+        assertEquals(base+"[]", qarr.get(0).getModelpath());
+
+        // Rebase array
+        qarr.rebaseModelpath(newbase);
+
+        // Check resulting state
+        assertEquals(newbase+"_To", qarr.getModelpath());
+        assertEquals(newbase+"_To[]", qarr.get(0).getModelpath());
+        
+        
+        // Strip base path from the array and contents
+        qarr.rebaseModelpath( null );
+        
+        expected = "To";
+        assertEquals(expected, qarr.getModelpath());
+        assertEquals(expected+"[]", qarr.get(0).getModelpath());
         
     }
     
@@ -114,20 +214,20 @@ public class MPArrayListTest {
     {
         if (verbose){ System.out.println("Test add");}
 
-        Quantity q = new Quantity("Name","CXC Help Desk","meta.bib.author;meta.curation",null);
-        MPArrayList<Quantity> qarr = new MPArrayList<Quantity>();
+        MPQuantity q = new MPQuantity("Name","CXC Help Desk","meta.bib.author;meta.curation",null);
+        MPArrayList<MPQuantity> qarr = new MPArrayList<MPQuantity>();
         MPArrayList<Double> darr = new MPArrayList<Double>();
 
         String mp;
         String expected;
         
         // ++++++++++++++++++++++++++++++++++++++++++++++
-        // add Quantity to MPArrayList.
+        // add MPQuantity to MPArrayList.
         qarr.add(q);
         assertEquals( 1, qarr.size() );
 
         expected = "UNKNOWN[]";
-        mp = qarr.get(0).getModelpath();
+        mp = ((MPQuantity)qarr.get(0)).getModelpath();
         assertEquals( expected, mp );
 
         // ++++++++++++++++++++++++++++++++++++++++++++++
@@ -146,13 +246,13 @@ public class MPArrayListTest {
     {
         if (verbose){ System.out.println("Test Add(Indexed)");}
         
-        MPArrayList<Quantity> qarr = new MPArrayList<Quantity>();
+        MPArrayList<MPQuantity> qarr = new MPArrayList<MPQuantity>();
         qarr.setModelpath("QARR");
-        qarr.add( new Quantity("A","a",null,null));
-        qarr.add( new Quantity("B","b",null,null));
-        qarr.add( new Quantity("C","c",null,null));
+        qarr.add( new MPQuantity("A","a",null,null));
+        qarr.add( new MPQuantity("B","b",null,null));
+        qarr.add( new MPQuantity("C","c",null,null));
 
-        Quantity q = new Quantity("Z","z",null,null);
+        MPQuantity q = new MPQuantity("Z","z",null,null);
 
         // ++++++++++++++++++++++++++++++++++++++++++++++
         // add Quantity within MPArrayList.
@@ -164,7 +264,6 @@ public class MPArrayListTest {
 
         String expected = "QARR[]";
         assertEquals( expected, qarr.get(1).getModelpath());
-        
     }
     
     @Test
@@ -227,12 +326,12 @@ public class MPArrayListTest {
     public void testSet()
     {
         if (verbose){ System.out.println("Test set");}
-        MPArrayList<Quantity> qarr = new MPArrayList<Quantity>();
-        qarr.add( new Quantity("A","a",null,null));
-        qarr.add( new Quantity("B","b",null,null));
-        qarr.add( new Quantity("C","c",null,null));
+        MPArrayList<MPQuantity> qarr = new MPArrayList<MPQuantity>();
+        qarr.add( new MPQuantity("A","a",null,null));
+        qarr.add( new MPQuantity("B","b",null,null));
+        qarr.add( new MPQuantity("C","c",null,null));
 
-        Quantity q = new Quantity("Z","z",null,null);
+        MPQuantity q = new MPQuantity("Z","z",null,null);
 
         // ++++++++++++++++++++++++++++++++++++++++++++++
         // set Quantity to MPArrayList.
@@ -244,30 +343,35 @@ public class MPArrayListTest {
         assertEquals( expected, qarr.get(1).getModelpath());
 
     }
-
-    @Test
-    public void testRebaseContent()
-    {
-        if (verbose){ System.out.println("Test rebaseContent");}
-        MPArrayList<Quantity> qarr = new MPArrayList<Quantity>();
-        Quantity q = new Quantity("Z","z",null,null);
+    
+    private MPArrayList<MPQuantity> createMPQArray() {
         
-        String mp = "QARR";
-        String expected = "UNKNOWN[]";
-
-        // Add quantity to array
-        qarr.add(q);
-        assertEquals(expected, q.getModelpath());
+        MPArrayList<MPQuantity> qarr = new MPArrayList<MPQuantity>();
+        Double dval = 7.0e+3;
+        qarr.add( new MPQuantity("dist",dval,"km","a.b;c") );
+        qarr.add( new MPQuantity("dist",dval+1000,"km","a.b;c") );
+        qarr.add( new MPQuantity("dist",dval+1000,"km","a.b;c") );
         
-        // Set model path for array
-        qarr.setModelpath(mp);
-        assertEquals(expected, q.getModelpath()); //unchanged
-
-        // Rebase the array contents        
-        qarr.rebaseContent();
-        
-        expected = "QARR[]";
-        assertEquals(expected, q.getModelpath()); //unchanged
-        
+        return qarr;
     }
+    
+    private MPArrayList<MPNode> createMPNodeArray() {
+        
+        MPArrayList<MPNode> nodes = new MPArrayList<MPNode>();
+        for ( int ii=1; ii <= 3; ii++ ) {
+          MPNode node = new MPNode("Pos");
+          
+          Double dval = 1e+03;
+          for ( int jj=1; jj <=3; jj++) {
+              dval += 1000.0;
+              MPQuantity q = new MPQuantity("dist",dval,"km","a.b;c");
+              q.setModelpath("Axis"+jj);
+              node.appendChild(q);
+          }
+          
+          nodes.add(node);
+        }
+        return nodes;
+    }
+    
 }

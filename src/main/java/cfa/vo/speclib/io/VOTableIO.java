@@ -4,10 +4,10 @@
  */
 package cfa.vo.speclib.io;
 
-import cfa.vo.speclib.Quantity;
 import cfa.vo.speclib.SpectralDataset;
 import cfa.vo.speclib.doc.MPArrayList;
-import cfa.vo.speclib.doc.ModelDocument;
+import cfa.vo.speclib.doc.MPQuantity;
+import cfa.vo.speclib.doc.MPNode;
 import cfa.vo.speclib.doc.ModelObjectFactory;
 import cfa.vo.speclib.doc.ModelProxy;
 import cfa.vo.vomodel.DefaultModelBuilder;
@@ -93,8 +93,8 @@ public class VOTableIO implements IFileIO {
             throw new IOException("Problem reading URL - "+file);
         }
 
-        // Use VOTMapper to convert the VOElement hierarchy to ModelDocument
-        ModelDocument doc = new VOTMapper().convert( top );
+        // Use VOTMapper to convert the VOElement hierarchy to MPNode
+        MPNode doc = new VOTMapper().convert( top );
         
         // Use ModelObjectFactory to provide Proxy interface
         // NOTE: everything above is generic, though the mapper will use the
@@ -105,6 +105,7 @@ public class VOTableIO implements IFileIO {
         //       need to determine the model type from the document to 
         //       initialize the factory, or take a different approach.
         result = (SpectralDataset)new ModelObjectFactory().build( doc );
+//        result = (SpectralDataset)new ModelObjectFactory().newInstance( doc );
         
         return result;
     }
@@ -134,9 +135,9 @@ public class VOTableIO implements IFileIO {
             throw new IOException("Problem reading URL - "+file);
         }
 
-        // Use VOTMapper to convert the VOElement hierarchy to ModelDocument
+        // Use VOTMapper to convert the VOElement hierarchy to MPNode
         // according to the provided model specification.
-        ModelDocument doc = new VOTMapper().convert( top, model );
+        MPNode doc = new VOTMapper().convert( top, model );
         
         // Use ModelObjectFactory to provide Proxy interface
         // NOTE: everything above is generic, though the mapper will use the
@@ -147,6 +148,7 @@ public class VOTableIO implements IFileIO {
         //       need to determine the model type from the document to 
         //       initialize the factory, or take a different approach.
         result = (SpectralDataset)new ModelObjectFactory().build( doc );
+//        result = (SpectralDataset)new ModelObjectFactory().newInstance( doc );
         
         return result;
     }
@@ -242,7 +244,7 @@ public class VOTableIO implements IFileIO {
         VOElement  res;
 
         // Extract underlying SpectralDocument from input dataset
-        ModelDocument spdoc = null;
+        MPNode spdoc = null;
         if ( Proxy.isProxyClass( ds.getClass() )) {
            ModelProxy h = (ModelProxy)Proxy.getInvocationHandler( ds );
            spdoc = h.getDoc();
@@ -295,7 +297,7 @@ public class VOTableIO implements IFileIO {
      * @return 
      *    FieldElement based on Quantity.
      */
-    private FieldElement addFieldRefElement( VOElement parent, Quantity q )
+    private FieldElement addFieldRefElement( VOElement parent, MPQuantity q )
     {
         // get index of this element in the model.
         Integer ndx = model.getRecordIndexByPath( q.getModelpath() );
@@ -398,7 +400,7 @@ public class VOTableIO implements IFileIO {
      * 
      * @throws IOException 
      */
-    private void addGroupElement( VOElement parent, ModelDocument node ) throws IOException
+    private void addGroupElement( VOElement parent, MPNode node ) throws IOException
     {
         // get owner document for creating new elements.
         Document document = parent.getOwnerDocument();
@@ -429,7 +431,7 @@ public class VOTableIO implements IFileIO {
      *    Quantity from which to populate the Param.
      * @return 
      */
-    private void addParamElement( VOElement parent, Quantity q )
+    private void addParamElement( VOElement parent, MPQuantity q )
     {
         // get owner document for creating new elements.
         Document document = parent.getOwnerDocument();
@@ -543,18 +545,16 @@ public class VOTableIO implements IFileIO {
      * 
      * @throws IOException 
      */
-    private void addTableElement( VOElement parent, ModelDocument node ) throws IOException
+    private void addTableElement( VOElement parent, MPNode node ) throws IOException
     {
         // get owner document for creating new elements.
         Document document = parent.getOwnerDocument();
 
         // Create Table Element
         TableElement table = (TableElement) document.createElement(DOM_TAG_TABLE);
-        if ( node.contains("SpectralDataset_DataProductType"))
-        {
-          Quantity type = (Quantity)node.get("SpectralDataset_DataProductType");
+        MPQuantity type = (MPQuantity)node.getChildByMP("SpectralDataset_DataProductType");
+        if ( type != null )
           table.setAttribute( ATT_TAG_NAME, (String)type.getValue());
-        }
         
         // Add table to parent node (resource).
         parent.appendChild(table);
@@ -579,14 +579,14 @@ public class VOTableIO implements IFileIO {
      * 
      * @throws IOException 
      */
-    private void addNodeContent( VOElement parent, ModelDocument node, int row ) throws IOException
+    private void addNodeContent( VOElement parent, MPNode node, int row ) throws IOException
     {
         // Iterate through node objects, add each to parent document.
         //   Lists which are not FIELDs get iterated, so that addObjectContent
         //   can assume that any List it receives produces FIELDs.
-        for (String mp : node.getKeys()) 
+        for (String mp : node.getChildrenMP()) 
         {
-            Object obj = node.get( mp );
+            Object obj = node.getChildByMP( mp );
             // TODO - remove hack.. Hardcoded break for 'Data' section.
             if ( obj.getClass().equals( MPArrayList.class ) && !mp.endsWith("Dataset_Data"))
             {
@@ -605,26 +605,27 @@ public class VOTableIO implements IFileIO {
      *   Parent element to receive node content.
      * @param obj 
      *   Object to be converted.
-     *   - Quantity => ParamElement or ColumnValue
-     *   - Proxy    => GroupElement
-     *   - List     => FieldElement
+     *   - Quantity      => ParamElement or ColumnValue
+     *   - List          => FieldElement
+     *   - MPNode => GroupElement
+     *   - Proxy         => GroupElement
      * @param row 
      *   Row number.. if adding FIELD records, -1 otherwise.
      * 
      */
     private void addObjectContent( VOElement parent, Object obj, int row ) throws IOException
     {
-        if ( obj.getClass().equals( Quantity.class ))
+        if ( obj.getClass().equals( MPQuantity.class ))
         {
           // Quantity Object => ParamElement or Column Value
-          Quantity q = (Quantity)obj;
+          MPQuantity q = (MPQuantity)obj;
           if ( q.getModelpath() == null )
             System.out.println("MCD TEMP: Quantity with NULL modelpath."+q.toString());
           String mp = q.getModelpath();
           if ( row >= 0 )
               this.addColumnValue( q, row ); // Adding column data
           else
-            this.addParamElement( parent, (Quantity)obj );  // Adding Param
+            this.addParamElement( parent, (MPQuantity)obj );  // Adding Param
         }
         else if ( obj.getClass().equals( MPArrayList.class ) )
         {
@@ -633,13 +634,19 @@ public class VOTableIO implements IFileIO {
             //  fields (ie: SPPoint).
             this.addColumns( parent, (MPArrayList)obj );
         }
+        else if ( obj.getClass().equals( MPNode.class ) ) {
+          if ( row < 0 )
+              this.addGroupElement( parent, (MPNode)obj );
+          else
+              this.addNodeContent( parent, (MPNode)obj, row );
+        }
         else if ( Proxy.isProxyClass( obj.getClass() ))
         {
           // Proxy Object => GroupElement
           // If row >= 0, we are flushing FIELD objects, and should not create
           // the Group on each iteration.
           ModelProxy h = (ModelProxy)Proxy.getInvocationHandler( obj );
-          ModelDocument newnode = h.getDoc();
+          MPNode newnode = h.getDoc();
           if ( row < 0 )
               this.addGroupElement( parent, newnode );
           else
@@ -710,9 +717,9 @@ public class VOTableIO implements IFileIO {
      */
     private void addColumns( VOElement parent, Object obj, int nrows ) throws IOException
     {
-        if ( obj.getClass().equals( Quantity.class ))
+        if ( obj.getClass().equals( MPQuantity.class ))
         {
-            Quantity q = (Quantity)obj;
+            MPQuantity q = (MPQuantity)obj;
             String mp = q.getModelpath();
 
             // Add FieldRef to document, FIELD to tabledata
@@ -725,7 +732,7 @@ public class VOTableIO implements IFileIO {
         else if ( Proxy.isProxyClass( obj.getClass() ))
         {
             ModelProxy h = (ModelProxy)Proxy.getInvocationHandler( obj );
-            ModelDocument newnode = h.getDoc();
+            MPNode newnode = h.getDoc();
 
             // Add Group to parent (do not use addGroup()
             Document document = parent.getOwnerDocument();
@@ -733,14 +740,25 @@ public class VOTableIO implements IFileIO {
             parent.appendChild( group );
 
             // Add Column for object (recursive)
-            for (String mp : newnode.getKeys())
-                addColumns( group, newnode.get(mp), nrows );
+            for (String mp : newnode.getChildrenMP())
+                addColumns( group, newnode.getChildByMP(mp), nrows );
         }
         else if ( obj.getClass().equals( MPArrayList.class ) )
         {
             // List of objects, each of which is a Column.
             for (Object item : (MPArrayList)obj )
                 this.addColumns( parent, item, nrows );
+        }
+        else if ( obj.getClass().equals( MPNode.class ) ){
+            // Add Group to parent (do not use addGroup()
+            MPNode newnode = (MPNode)obj;
+            Document document = parent.getOwnerDocument();
+            GroupElement group = (GroupElement) document.createElement(DOM_TAG_GROUP);
+            parent.appendChild( group );
+
+            // Add Column for object (recursive)
+            for (String mp : newnode.getChildrenMP())
+                addColumns( group, newnode.getChildByMP(mp), nrows );            
         }
         else
         {
@@ -756,7 +774,7 @@ public class VOTableIO implements IFileIO {
      * @param row
      * @throws IOException 
      */
-    private void addColumnValue( Quantity q, int row ) throws IOException
+    private void addColumnValue( MPQuantity q, int row ) throws IOException
     {
         String mp = q.getModelpath();
         Column col = this.tabledata.get(mp);

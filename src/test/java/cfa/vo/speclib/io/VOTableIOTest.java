@@ -5,6 +5,7 @@
 package cfa.vo.speclib.io;
 
 import cfa.vo.speclib.*;
+import cfa.vo.speclib.doc.MPQuantity;
 import cfa.vo.speclib.doc.ModelObjectFactory;
 import cfa.vo.vomodel.DefaultModelBuilder;
 import cfa.vo.vomodel.Entry;
@@ -405,7 +406,7 @@ public class VOTableIOTest {
           ds.getDataID().setLogo(new URL("http://www.cfa.harvard.edu/common/images/left/cfa-logo.gif"));
 
           items = ds.getDataID().getContributors();
-          items.add( new Quantity("Contributor1", "This research has made use of software provided by the Chandra X-ray Center (CXC) in the application packages CIAO, ChIPS, and Sherpa.",null,null));
+          items.add( new MPQuantity("Contributor1", "This research has made use of software provided by the Chandra X-ray Center (CXC) in the application packages CIAO, ChIPS, and Sherpa.",null,null));
 
           // Curation metadata
           ds.getCuration().setPublisher("Chandra X-ray Center");

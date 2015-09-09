@@ -10,7 +10,6 @@ package cfa.vo.speclib;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import org.junit.Test;
@@ -36,7 +35,6 @@ public class TestQuantity
         Quantity b = new Quantity();
         Integer value = 1701;
 
-        a.setModelpath("SPEC_TARGET_NAME");
         a.setID("001");
         a.setName("target");
         a.setDescription("Target name.");
@@ -50,7 +48,6 @@ public class TestQuantity
         
         // Verify content is transferred.
         assertEquals("001", b.getID());
-        assertEquals("SPEC_TARGET_NAME", b.getModelpath());
         assertEquals("target", b.getName());
         assertEquals("Target name.", b.getDescription());
         assertEquals("", b.getUnit());
@@ -74,7 +71,6 @@ public class TestQuantity
         Quantity q = new Quantity();
 
         // nothing should be set 
-        assertEquals( false , q.hasModelpath());
         assertEquals( false , q.hasID());
         assertEquals( false , q.hasName());
         assertEquals( false , q.hasDescription());
@@ -83,7 +79,6 @@ public class TestQuantity
         assertEquals( false , q.hasUtype());
         assertEquals( false , q.hasValue());
         
-        q.setModelpath("SPEC_TARGET_NAME");
         q.setID("001");
         q.setName("target");
         q.setDescription("Target name.");
@@ -93,7 +88,6 @@ public class TestQuantity
         q.setValue("NGC-1701");
 
         // everything should be set
-        assertEquals( true , q.hasModelpath());
         assertEquals( true , q.hasID());
         assertEquals( true , q.hasName());
         assertEquals( true , q.hasDescription());
@@ -103,7 +97,6 @@ public class TestQuantity
         assertEquals( true , q.hasValue());
 
         // check values
-        assertEquals("SPEC_TARGET_NAME", q.getModelpath());
         assertEquals("001", q.getID());
         assertEquals("target", q.getName());
         assertEquals("Target name.", q.getDescription());
@@ -119,7 +112,6 @@ public class TestQuantity
         Quantity q = new Quantity("NGC-1701");
 
         // only value should be set 
-        assertEquals( false , q.hasModelpath());
         assertEquals( false , q.hasID());
         assertEquals( false , q.hasName());
         assertEquals( false , q.hasDescription());
@@ -128,7 +120,6 @@ public class TestQuantity
         assertEquals( false , q.hasUtype());
         assertEquals( true  , q.hasValue());
         
-        q.setModelpath("SPEC_TARGET_NAME");
         q.setID("001");
         q.setName("target");
         q.setDescription("Target name.");
@@ -137,7 +128,6 @@ public class TestQuantity
         q.setUtype("spec:Target.Name");
 
         // everything should be set
-        assertEquals( true , q.hasModelpath());
         assertEquals( true , q.hasID());
         assertEquals( true , q.hasName());
         assertEquals( true , q.hasDescription());
@@ -147,7 +137,6 @@ public class TestQuantity
         assertEquals( true , q.hasValue());
 
         // check values
-        assertEquals("SPEC_TARGET_NAME", q.getModelpath());
         assertEquals("001", q.getID());
         assertEquals("target", q.getName());
         assertEquals("Target name.", q.getDescription());
@@ -163,7 +152,6 @@ public class TestQuantity
         Quantity q = new Quantity("target", "NGC-1701", "", "meta.id;src"  );
 
         // check attributes set 
-        assertEquals( false , q.hasModelpath());
         assertEquals( false , q.hasID());
         assertEquals( true  , q.hasName());
         assertEquals( false , q.hasDescription());
@@ -172,13 +160,11 @@ public class TestQuantity
         assertEquals( false , q.hasUtype());
         assertEquals( true  , q.hasValue());
         
-        q.setModelpath("SPEC_TARGET_NAME");
         q.setID("001");
         q.setDescription("Target name.");
         q.setUtype("spec:Target.Name");
 
         // everything should be set
-        assertEquals( true , q.hasModelpath());
         assertEquals( true , q.hasID());
         assertEquals( true , q.hasName());
         assertEquals( true , q.hasDescription());
@@ -188,7 +174,6 @@ public class TestQuantity
         assertEquals( true , q.hasValue());
 
         // check values
-        assertEquals("SPEC_TARGET_NAME", q.getModelpath());
         assertEquals("001", q.getID());
         assertEquals("target", q.getName());
         assertEquals("Target name.", q.getDescription());

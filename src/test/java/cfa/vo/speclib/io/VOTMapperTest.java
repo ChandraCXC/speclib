@@ -6,7 +6,7 @@ package cfa.vo.speclib.io;
 
 import cfa.vo.speclib.Quantity;
 import cfa.vo.speclib.doc.MPArrayList;
-import cfa.vo.speclib.doc.ModelDocument;
+import cfa.vo.speclib.doc.MPNode;
 import cfa.vo.vomodel.DefaultModelBuilder;
 import cfa.vo.vomodel.Model;
 import org.junit.*;
@@ -68,7 +68,7 @@ public class VOTMapperTest {
     @Test
     public void testConvert_ModelDocument() {
         if (verbose){System.out.println("convert_ModelDoc");}
-        ModelDocument doc = null;
+        MPNode doc = null;
         VOTMapper instance = new VOTMapper();
         VOElement expResult = null;
         VOElement result = instance.convert(doc);
@@ -83,11 +83,11 @@ public class VOTMapperTest {
     public void testConvert_VOElement() {
         if (verbose){System.out.println("convert_VOT");}
         VOTMapper instance = new VOTMapper();
-        ModelDocument expResult = null;
-        ModelDocument result = instance.convert(top);
+        MPNode expResult = null;
+        MPNode result = instance.convert(top);
 
-        // Top level, only 1 element.. the TABLE;
-        assertEquals(1, result.getKeys().size());
+        // Top level.. the TABLE;
+        assertEquals("SpectralDataset", result.getModelpath());
 
         if ( verbose )
         {
@@ -107,7 +107,7 @@ public class VOTMapperTest {
     public void testConvert_VOElement_WithModel() {
         if (verbose){System.out.println("convert_VOT_WithModel");}
         VOTMapper instance = new VOTMapper();
-        ModelDocument expResult = null;
+        MPNode expResult = null;
         Model model = null;
         try{
           model = new DefaultModelBuilder("SPECTRUM-2.0").build();
@@ -116,10 +116,10 @@ public class VOTMapperTest {
         }
         
         // Convert document according to model.
-        ModelDocument result = instance.convert(top, model);
+        MPNode result = instance.convert(top, model);
 
-        // Top level, only 1 element.. the TABLE;
-        assertEquals(1, result.getKeys().size());
+        // Top level.. the TABLE;
+        assertEquals("SpectralDataset", result.getModelpath());
 
         if ( verbose )
         {
@@ -132,47 +132,44 @@ public class VOTMapperTest {
         
     }
 
-    private void validate_results( ModelDocument result )
+    private void validate_results( MPNode result )
     {
+        MPNode tmp;
 
         // URL element
-        ModelDocument tmp = (ModelDocument)result.get("SpectralDataset");
-        tmp = (ModelDocument)tmp.get("SpectralDataset_DataModel");
-        Quantity q = (Quantity)tmp.get("SpectralDataset_DataModel_URL");
+        tmp = (MPNode)result.getChildByMP("SpectralDataset_DataModel");
+        Quantity q = (Quantity)tmp.getChildByMP("SpectralDataset_DataModel_URL");
         assertEquals("http://www.ivoa.net/sample/spectral",((URL)q.getValue()).toString());
 
         String mp;
         // Double element
-        tmp = (ModelDocument)result.get("SpectralDataset");
-        tmp = (ModelDocument)tmp.get("SpectralDataset_Target");
-        q = (Quantity)tmp.get("SpectralDataset_Target_Redshift");
+        tmp = (MPNode)result.getChildByMP("SpectralDataset_Target");
+        q = (Quantity)tmp.getChildByMP("SpectralDataset_Target_Redshift");
         assertEquals((Double)0.15833, q.getValue());
         
         // String element
-        tmp = (ModelDocument)result.get("SpectralDataset");
-        tmp = (ModelDocument)tmp.get("SpectralDataset_Curation");
-        q = (Quantity)tmp.get("SpectralDataset_Curation_Publisher");
+        tmp = (MPNode)result.getChildByMP("SpectralDataset_Curation");
+        q = (Quantity)tmp.getChildByMP("SpectralDataset_Curation_Publisher");
         assertEquals("Chandra X-ray Center",q.getValue());
         
         // Element through array
-        tmp = (ModelDocument)result.get("SpectralDataset");
-        tmp = (ModelDocument)tmp.get("SpectralDataset_ObsConfig");
-        MPArrayList arr = (MPArrayList)tmp.get("SpectralDataset_ObsConfig_ObservingElements");
-        tmp = (ModelDocument)arr.get(0);
-        q = (Quantity)tmp.get("SpectralDataset_ObsConfig_ObservingElements[].Facility_Name");
+        tmp = (MPNode)result.getChildByMP("SpectralDataset_ObsConfig");
+        MPArrayList arr = (MPArrayList)tmp.getChildByMP("SpectralDataset_ObsConfig_ObservingElements");
+        tmp = (MPNode)arr.get(0);
+        q = (Quantity)tmp.getChildByMP("SpectralDataset_ObsConfig_ObservingElements[].Facility_Name");
         assertEquals("CHANDRA", q.getValue());
         
         // Array Element
-        tmp = (ModelDocument)result.get("SpectralDataset");
-        tmp = (ModelDocument)tmp.get("SpectralDataset_DataID");
-        arr = (MPArrayList)tmp.get("SpectralDataset_DataID_Collections");
+        tmp = (MPNode)result.getChildByMP("SpectralDataset_DataID");
+        arr = (MPArrayList)tmp.getChildByMP("SpectralDataset_DataID_Collections");
         q = (Quantity)arr.get(2);
         assertEquals("Third Cambridge Catalogue of Radio Sources", q.getValue());
         
         // Data Element
-        tmp = (ModelDocument)result.get("SpectralDataset");
-        tmp = (ModelDocument)((MPArrayList)tmp.get("SpectralDataset_Data")).get(1);
-        q = (Quantity)tmp.get("SpectralDataset_Data[].SPPoint_SpectralAxis_Accuracy_StatError");
+        tmp = (MPNode)((MPArrayList)result.getChildByMP("SpectralDataset_Data")).get(1);
+        tmp = (MPNode)tmp.getChildByMP("SpectralDataset_Data[].SPPoint_SpectralAxis");
+        tmp = (MPNode)tmp.getChildByMP("SpectralDataset_Data[].SPPoint_SpectralAxis_Accuracy");
+        q = (Quantity)tmp.getChildByMP("SpectralDataset_Data[].SPPoint_SpectralAxis_Accuracy_StatError");
         assertEquals( 3.0e10, q.getValue());
 
     }

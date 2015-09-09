@@ -260,7 +260,7 @@ public class TestFactory {
           
           // Check model path.
           expected = "Contact";
-          mp = h.modelpath;
+          mp = h.data.getModelpath();
           assertEquals( expected, mp );
           assertEquals( expected, h.type );
 
@@ -268,7 +268,7 @@ public class TestFactory {
           expected = "Curation_Contact";
           curation = (Curation)factory.newInstance( Curation.class );
           curation.setContact( contact );
-          mp = h.modelpath;
+          mp = h.data.getModelpath();
           assertEquals( expected, mp );
           assertEquals( "Contact", h.type );
 
@@ -276,7 +276,7 @@ public class TestFactory {
           expected = "SpectralDataset_Curation_Contact";
           ds = (SpectralDataset)factory.newInstance( SpectralDataset.class );
           ds.setCuration(curation);
-          mp = h.modelpath;
+          mp = h.data.getModelpath();
           assertEquals( expected, mp );
           assertEquals( "Contact", h.type );
           
@@ -307,21 +307,21 @@ public class TestFactory {
 
         assertEquals( 3, elarr.size() );
         expected = "UNKNOWN[].Facility_Name";
-        assertEquals( expected, elarr.get(0).getName().getModelpath() );
+        assertEquals( expected, ((MPQuantity)elarr.get(0).getName()).getModelpath() );
         expected = "UNKNOWN[].Instrument_Name";
-        assertEquals( expected, elarr.get(1).getName().getModelpath() );
+        assertEquals( expected, ((MPQuantity)elarr.get(1).getName()).getModelpath() );
         expected = "UNKNOWN[].Bandpass_Name";
-        assertEquals( expected, elarr.get(2).getName().getModelpath() );
+        assertEquals( expected, ((MPQuantity)elarr.get(2).getName()).getModelpath() );
 
         // add List to Proxy
         oc = (ObsConfig)factory.newInstance( ObsConfig.class );
         oc.setObservingElements(elarr);
         expected = "ObsConfig_ObservingElements[].Facility_Name";
-        assertEquals( expected, elarr.get(0).getName().getModelpath() );
+        assertEquals( expected, ((MPQuantity)elarr.get(0).getName()).getModelpath() );
         expected = "ObsConfig_ObservingElements[].Instrument_Name";
-        assertEquals( expected, elarr.get(1).getName().getModelpath() );
+        assertEquals( expected, ((MPQuantity)elarr.get(1).getName()).getModelpath() );
         expected = "ObsConfig_ObservingElements[].Bandpass_Name";
-        assertEquals( expected, elarr.get(2).getName().getModelpath() );
+        assertEquals( expected, ((MPQuantity)elarr.get(2).getName()).getModelpath() );
         
     }
     
@@ -368,7 +368,8 @@ public class TestFactory {
     @Test
     public void testNewInstanceByName()
     {
-       System.out.println("testNewInstanceByName");
+       if (verbose)
+         System.out.println("testNewInstanceByName");
 
        String className = null;
        Object result = null;
@@ -438,8 +439,8 @@ public class TestFactory {
         //   - From top level dataset -> leaf
         mp = "Curation_Rights";
         result = factory.newInstanceByModelPath( ds, mp );
-        assertTrue( result.getClass() == Quantity.class );
-        assertEquals("SpectralDataset_Curation_Rights", ((Quantity)result).getModelpath());
+        assertTrue( result.getClass() == MPQuantity.class );
+        assertEquals("SpectralDataset_Curation_Rights", ((MPQuantity)result).getModelpath());
         
 
         //   - From top level dataset -> Proxy
@@ -447,7 +448,7 @@ public class TestFactory {
         result = factory.newInstanceByModelPath( ds, mp );
         h = (ModelProxy)Proxy.getInvocationHandler( result );
         assertEquals( h.type, Contact.class.getSimpleName() );
-        assertEquals("SpectralDataset_Curation_Contact_Email", ((Contact)result).getEmail().getModelpath());
+        assertEquals("SpectralDataset_Curation_Contact_Email", ((MPQuantity)((Contact)result).getEmail()).getModelpath());
 
         //   - From top level dataset -> List
         mp = "Curation_References";
@@ -459,27 +460,27 @@ public class TestFactory {
         //   - From top level dataset -> Through List to leaf
         mp = "Curation_References[]";
         result = factory.newInstanceByModelPath( ds, mp );
-        assertTrue( result.getClass() == Quantity.class );
-        assertEquals("SpectralDataset_Curation_References[]", ((Quantity)result).getModelpath());
+        assertTrue( result.getClass() == MPQuantity.class );
+        assertEquals("SpectralDataset_Curation_References[]", ((MPQuantity)result).getModelpath());
         assertEquals(1, refs.size());
 
         // Again.. should make another element on list
         result = factory.newInstanceByModelPath( ds, mp );
-        assertTrue( result.getClass() == Quantity.class );
+        assertTrue( result.getClass() == MPQuantity.class );
         assertEquals(2, refs.size());
 
         //   - From top level dataset -> Through List of Proxies to leaf
         mp = "Data[].SPPoint_FluxAxis_Corrections[].ApFrac_Name";
         result = factory.newInstanceByModelPath( ds, mp );
-        assertTrue( result.getClass() == Quantity.class );
-        assertEquals("SpectralDataset_Data[].SPPoint_FluxAxis_Corrections[].ApFrac_Name", ((Quantity)result).getModelpath());
+        assertTrue( result.getClass() == MPQuantity.class );
+        assertEquals("SpectralDataset_Data[].SPPoint_FluxAxis_Corrections[].ApFrac_Name", ((MPQuantity)result).getModelpath());
         
         //   - From internal proxy    -> Leaf
         CharacterizationAxis axis = (CharacterizationAxis)factory.newInstance(CharacterizationAxis.class);
         mp = "Coverage_Bounds_Extent";
         result = factory.newInstanceByModelPath( axis, mp );
-        assertTrue( result.getClass() == Quantity.class );
-        assertEquals("CharacterizationAxis_Coverage_Bounds_Extent", ((Quantity)result).getModelpath());
+        assertTrue( result.getClass() == MPQuantity.class );
+        assertEquals("CharacterizationAxis_Coverage_Bounds_Extent", ((MPQuantity)result).getModelpath());
         
 
         //   - Invalid model path

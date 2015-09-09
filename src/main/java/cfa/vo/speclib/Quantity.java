@@ -23,7 +23,6 @@ import java.util.Arrays;
  */
 
 public class Quantity<T> {
-    private String modelpath;
     private Class dtype;
     
     private String id;
@@ -48,7 +47,6 @@ public class Quantity<T> {
 
     public Quantity( String name, T value, String unit, String ucd )
     {
-        this.modelpath = null;
         this.id = null;
         
         this.name = name;
@@ -61,21 +59,10 @@ public class Quantity<T> {
           this.dtype = value.getClass();
         else
           this.dtype = null;
-}
+    }
 
     // Accessor Methods (Get)
 
-    /**
-     * Get the value of the model path property.
-     * 
-     * @return
-     *     either null or
-     *     {@link String }
-     */
-    public String getModelpath()
-    {
-        return this.modelpath;
-    }
     /**
      * Get the value of the id property.
      * 
@@ -155,17 +142,6 @@ public class Quantity<T> {
 
     // Accessor Methods (Set)
     
-    /**
-     * Set the model path property.
-     * 
-     * @param mp
-     *     allowed object is
-     *     {@link String }
-     */
-    public void setModelpath( String mp )
-    {
-        this.modelpath = mp;
-    }
     /**
      * Set the ID property.
      * 
@@ -258,7 +234,7 @@ public class Quantity<T> {
           this.setValue((T)arr );
         }
         else
-            throw new IllegalArgumentException("Value must be of type "+this.dtype.getSimpleName()+" on "+this.modelpath);
+            throw new IllegalArgumentException("Value must be of type "+this.dtype.getSimpleName());
     }
    
     /**
@@ -274,8 +250,6 @@ public class Quantity<T> {
           this.id = src.getID();
         if (src.hasDescription())
           this.description = src.getDescription();
-        if (src.hasModelpath())
-          this.modelpath = src.getModelpath();
         if (src.hasName())
           this.name = src.getName();
         if (src.hasUCD())
@@ -288,10 +262,6 @@ public class Quantity<T> {
           this.setValue( (T)src.getValue() );
     }
     
-    public boolean hasModelpath()
-    {
-        return (this.modelpath != null);
-    }    
     public boolean hasID()
     {
         return (this.id != null);
@@ -336,7 +306,7 @@ public class Quantity<T> {
         return result.toString();
     }
 
-    private String getDTypeStr()
+    protected String getDTypeStr()
     {
         String result;
         if( this.dtype == null )
@@ -346,7 +316,7 @@ public class Quantity<T> {
 
         return result;
     }
-    private String getValStr()
+    protected String getValStr()
     {
         String valstr;
 
@@ -385,7 +355,6 @@ public class Quantity<T> {
         String newLine = System.getProperty("line.separator");
 
         result.append("Quantity<").append(this.getDTypeStr()).append(">").append(newLine);
-        result.append("  Model Path: ").append(this.modelpath).append(newLine);
         result.append("  ID: ").append(this.id).append(newLine);
         result.append("  Name: ").append(this.name).append(newLine);
         result.append("  Desc: ").append(this.description).append(newLine);

@@ -40,7 +40,7 @@ public class ModelObjectFactory {
     public Object newInstance( Class type )
     {
         Object result;
-        ModelDocument data;
+        MPNode data;
         
         if ( type == null )
             throw new IllegalArgumentException( "Argument may not be null.");
@@ -48,13 +48,46 @@ public class ModelObjectFactory {
         if ( ! allowed.contains( type ))
             throw new IllegalArgumentException( type.getSimpleName() + " is not a supported Class type");
 
-        data = new ModelDocument();
+        data = new MPNode(type.getSimpleName());
         result = Proxy.newProxyInstance( data.getClass().getClassLoader(),
                                          new Class[]{ type },
-                                         new ModelProxy( data, type.getSimpleName(), type.getSimpleName()) );
+                                         new ModelProxy( data, type.getSimpleName()) );
                 
         return result;
     }
+    
+//    /**
+//     * Generate Proxy instance for specified ModeledDocument.
+//     * Throws IllegalArumentException for:
+//     *   - null input
+//     *   - input does not match class supported by the factory
+//     * 
+//     * @param doc
+//     *   ModeledDocument representing a proxy class 
+//     * 
+//     * @return
+//     *   Object proxy instance implementing the specified interface.
+//     */
+//    public Object newInstance( ModeledDocument doc )
+//    {
+//        Object result;
+//        
+//        if ( doc == null )
+//            throw new IllegalArgumentException( "Argument may not be null.");
+//
+//        String[] keys = doc.getChildrenMP();
+//        String key = keys[0];
+//        if ( (keys.length == 1)&&( ! key.contains("_") ) )
+//            doc = (ModeledDocument)doc.getChildByMP(key);  // Top element.. send content to build.
+//        String head = key.split("_")[0];
+//        result = this.newInstanceByName( head );
+//        
+//        // Replace underlying storage for proxy with provided content.
+//        ModelProxy h = (ModelProxy)Proxy.getInvocationHandler( result );
+//        h.data = (MPNode) doc;
+//        
+//        return result;
+//    }
     
     /**
      * Generate Proxy instance for class represented by the provided class name.
@@ -77,10 +110,8 @@ public class ModelObjectFactory {
          throw new IllegalArgumentException( "Argument may not be null.");
 
        Class type = null;
-       for ( Class ii : this.allowed )
-       {
-         if (ii.getSimpleName().equalsIgnoreCase( className ))
-         {
+       for ( Class ii : this.allowed ) {
+         if (ii.getSimpleName().equalsIgnoreCase( className )) {
              type = ii;
              break;
          }
@@ -122,7 +153,7 @@ public class ModelObjectFactory {
             String[] parts = node.split("\\[\\]\\.*");
             property = parts[0];
             if ( parts.length == 1 ) // No type specified.. should be Quantity
-              elem = new Quantity();
+              elem = new MPQuantity();
             else  // Generate proxy instance of specified type.
               elem = this.newInstanceByName(parts[1]);
           }
@@ -164,27 +195,27 @@ public class ModelObjectFactory {
         return item;
     }
 
-    public Object build( ModelDocument doc )
+    public Object build( MPNode doc )
     {
         Object result;
 
         // Get keys from doc
-        Object[] keys = doc.getKeys().toArray();
-        String key = (String)keys[0];
+        String[] keys = doc.getChildrenMP();
+        String key = keys[0];
         if ( (keys.length == 1)&&( ! key.contains("_") ) )
-            doc = (ModelDocument)doc.get(key);  // Top element.. send content to build.
+            doc = (MPNode)doc.getChildByMP(key);  // Top element.. send content to build.
 
         result = this.build( null, doc );
         return result;
     }
 
-    private Object build( String base, ModelDocument doc )
+    private Object build( String base, MPNode doc )
     {
         Object result;
         
         // Get First key from doc
-        Object[] keys = doc.getKeys().toArray();
-        String key = (String)keys[0];
+        String[] keys = doc.getChildrenMP();
+        String key = keys[0];
 
         // Strip base from path.. we want it relative to current node.
         String path;
@@ -221,7 +252,7 @@ public class ModelObjectFactory {
         return(result);
     }
     
-    private void build( Object parent, String base, ModelDocument doc )
+    private void build( Object parent, String base, MPNode doc )
     {
        String mp;       // path to element in doc.. relative to this node.
        Object obj;      // element from parent being added.
@@ -229,7 +260,7 @@ public class ModelObjectFactory {
        MPArrayList srclist;
        MPArrayList destlist;
 
-       for ( String key: doc.getKeys() )
+       for ( String key: doc.getChildrenMP() )
        {
           if ( key.equals("SpectralDataset_Length"))
               continue;  // TODO: How to handle this calculated element.. cannot be 'set'
@@ -242,8 +273,8 @@ public class ModelObjectFactory {
           obj = this.newInstanceByModelPath(parent, mp);
           
           // Get value from doc mapping to this element.
-          value = doc.get(key);
-          if ( (obj.getClass() == Boolean.class ) && ( value.getClass() == Quantity.class )){
+          value = doc.getChildByMP(key);
+          if ( (obj.getClass() == Boolean.class ) && ( value.getClass() == MPQuantity.class )){
               // Boolean elements should have set<Property>( Quantity ) method..
               // Pull container object and invoke set method.. Note: parent may be the container.
               Object container;
@@ -275,15 +306,15 @@ public class ModelObjectFactory {
               }
 
           }
-          else if ( (obj.getClass() == Quantity.class ) && ( value.getClass() == Quantity.class ))
+          else if ( (obj.getClass() == MPQuantity.class ) && ( value.getClass() == MPQuantity.class ))
           {
             // Transfer quantity content
-            ((Quantity)obj).fill( (Quantity)value );
+            ((MPQuantity)obj).fill( (MPQuantity)value );
           }
-          else if ( Proxy.isProxyClass( obj.getClass() ) && value.getClass() == ModelDocument.class )
+          else if ( Proxy.isProxyClass( obj.getClass() ) && value.getClass() == MPNode.class )
           {
               // Build child node onto object.
-              this.build( obj, key, (ModelDocument)value);
+              this.build( obj, key, (MPNode)value);
           }
           else if ( (obj.getClass() == MPArrayList.class ) && (value.getClass() == MPArrayList.class ) )
           {
@@ -291,13 +322,13 @@ public class ModelObjectFactory {
               destlist = (MPArrayList)obj;
               for ( Object elem: srclist )
               {
-                  if ( elem.getClass() == Quantity.class )
+                  if ( elem.getClass() == MPQuantity.class )
                   {
-                     destlist.add( (Quantity)elem );
+                     destlist.add( (MPQuantity)elem );
                   }
-                  else if ( elem.getClass() == ModelDocument.class )
+                  else if ( elem.getClass() == MPNode.class )
                   {  // Array of complex objects..
-                     Object entry = this.build( key, (ModelDocument)elem );
+                     Object entry = this.build( key, (MPNode)elem );
                      destlist.add( entry );
                   }                      
               }

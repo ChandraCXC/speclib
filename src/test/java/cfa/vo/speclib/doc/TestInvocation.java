@@ -27,7 +27,7 @@ public class TestInvocation {
     }
 
     /**
-     * Start Spectral object factory once for all tests.
+     * Start Model object factory once for all tests.
      */
     @BeforeClass
     public static void setUpClass() 
@@ -82,17 +82,19 @@ public class TestInvocation {
         
         try {
 
-          if ( verbose ){ System.out.println("+ Extract Interface.");}
+          if ( verbose ){ System.out.println("+ Extract DataModel Interface.");}
           dm = ds.getDataModel();
           assertNotNull(dm);
 
           // show empty dm added to ds
           if ( verbose ){ System.out.println(ds.toString()); }
 
-          // Extract the same interface.. should pull from storage
+          // Extract the same interface.. should pull MPNode from storage
+          // and wrap with new interface.  So should be equivalent, but not 
+          // the same object.
           dm2 = ds.getDataModel();
           assertEquals(dm,dm2);
-          assertTrue( dm == dm2);
+          assertFalse( dm == dm2);
 
           if ( verbose ){ System.out.println("+ Extract Quantity.");}
           q = dm.getURL();
@@ -257,8 +259,8 @@ public class TestInvocation {
 
         // Add Quantities to list
         if ( verbose ){ System.out.println("+ Add records to extracted List"); }
-        qarr.add( new Quantity("WFC") );
-        qarr.add( new Quantity("Sloan") );
+        qarr.add( new MPQuantity("WFC") );
+        qarr.add( new MPQuantity("Sloan") );
         
         // Extract specific Collection getCollection(1)
         if ( verbose ){ System.out.println("+ Get Indexed Property Element"); }
@@ -270,7 +272,7 @@ public class TestInvocation {
         
         // replace that member with new Quantity setCollection(1, Q)
         if ( verbose ){ System.out.println("+ Replace Indexed Property Element"); }
-        a = new Quantity("SDSS");
+        a = new MPQuantity("SDSS");
         did.setCollections(1, a);
 
         // Extract that quantity
@@ -306,8 +308,13 @@ public class TestInvocation {
         did.setContributors(1, "Isaac Newton");
 
         if ( verbose ){ System.out.println("+ Verify Re-Assign value"); }
-        q = (Quantity)qarr.get(1);
+        q = did.getContributors(1);
         assertEquals( q.getValue(), "Isaac Newton" );
+        if ( verbose){ System.out.println( q.toString()); }
+
+        if ( verbose ){ System.out.println("+ Show original array element unchanged."); }
+        q = (Quantity)qarr.get(1);
+        assertEquals( q.getValue(), "Albert Einstein" );
         if ( verbose){ System.out.println( q.toString()); }
         
         // Get element with index out or range
