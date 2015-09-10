@@ -827,7 +827,7 @@ public class VOTMapper {
                 q = this.convertParam( (ParamElement)child );
               else
                 q = this.convertParamRef( (ParamRefElement)child );
-            }catch (IOException ex){
+            }catch (Throwable ex){
                 continue;
             }
             mp = q.getModelpath();
