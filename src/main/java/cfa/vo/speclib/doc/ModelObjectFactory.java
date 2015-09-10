@@ -45,49 +45,34 @@ public class ModelObjectFactory {
         if ( type == null )
             throw new IllegalArgumentException( "Argument may not be null.");
 
+        // Generate MPNode storage element for this proxy.
+        data = new MPNode(type.getSimpleName());
+
+        // Generate proxy with this storage
+        result = newInstance( type, data );
+                
+        return result;
+    }
+    
+    public Object newInstance( Class type, MPNode data )
+    {
+        Object result;
+        
+        if ( type == null )
+            throw new IllegalArgumentException( "Argument may not be null.");
+
+        if ( data == null )
+            throw new IllegalArgumentException( "Argument may not be null.");
+
         if ( ! allowed.contains( type ))
             throw new IllegalArgumentException( type.getSimpleName() + " is not a supported Class type");
 
-        data = new MPNode(type.getSimpleName());
         result = Proxy.newProxyInstance( data.getClass().getClassLoader(),
                                          new Class[]{ type },
                                          new ModelProxy( data, type.getSimpleName()) );
                 
         return result;
     }
-    
-//    /**
-//     * Generate Proxy instance for specified ModeledDocument.
-//     * Throws IllegalArumentException for:
-//     *   - null input
-//     *   - input does not match class supported by the factory
-//     * 
-//     * @param doc
-//     *   ModeledDocument representing a proxy class 
-//     * 
-//     * @return
-//     *   Object proxy instance implementing the specified interface.
-//     */
-//    public Object newInstance( ModeledDocument doc )
-//    {
-//        Object result;
-//        
-//        if ( doc == null )
-//            throw new IllegalArgumentException( "Argument may not be null.");
-//
-//        String[] keys = doc.getChildrenMP();
-//        String key = keys[0];
-//        if ( (keys.length == 1)&&( ! key.contains("_") ) )
-//            doc = (ModeledDocument)doc.getChildByMP(key);  // Top element.. send content to build.
-//        String head = key.split("_")[0];
-//        result = this.newInstanceByName( head );
-//        
-//        // Replace underlying storage for proxy with provided content.
-//        ModelProxy h = (ModelProxy)Proxy.getInvocationHandler( result );
-//        h.data = (MPNode) doc;
-//        
-//        return result;
-//    }
     
     /**
      * Generate Proxy instance for class represented by the provided class name.
@@ -203,12 +188,14 @@ public class ModelObjectFactory {
         String[] keys = doc.getChildrenMP();
         String key = keys[0];
         if ( (keys.length == 1)&&( ! key.contains("_") ) )
+            // Have a Node which contains the top element.
+            // Extract that element and build interface to it.
             doc = (MPNode)doc.getChildByMP(key);  // Top element.. send content to build.
 
         result = this.build( null, doc );
         return result;
     }
-
+            
     private Object build( String base, MPNode doc )
     {
         Object result;

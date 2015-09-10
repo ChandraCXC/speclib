@@ -22,7 +22,7 @@ import java.util.List;
 public class ModelProxy implements InvocationHandler
 {
     protected String type;         // Interface type that this proxy emulates.
-    protected MPNode data;  // Node content.
+    protected MPNode data;         // Node content.
 
     /**
      * Constructor, invokes new proxy instance and MPNode segment to hold content.
@@ -37,7 +37,7 @@ public class ModelProxy implements InvocationHandler
      * MPNode segment to hold content.
      * 
      * @param data 
-     *    {@link SpectralDocument} segment to hold content for the proxy. 
+     *    {@link MPNode} segment to hold content for the proxy. 
      */
     public ModelProxy( MPNode data )
     {
