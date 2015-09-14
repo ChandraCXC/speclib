@@ -104,8 +104,7 @@ public class VOTableIO implements IFileIO {
         //       this part of the thread is model specific.  We'll either 
         //       need to determine the model type from the document to 
         //       initialize the factory, or take a different approach.
-        result = (SpectralDataset)new ModelObjectFactory().build( doc );
-//        result = (SpectralDataset)new ModelObjectFactory().newInstance( SpectralDataset.class, doc );
+        result = (SpectralDataset)new ModelObjectFactory().newInstanceByModelPath( doc.getModelpath(), doc );
         
         return result;
     }
@@ -147,8 +146,7 @@ public class VOTableIO implements IFileIO {
         //       this part of the thread is model specific.  We'll either 
         //       need to determine the model type from the document to 
         //       initialize the factory, or take a different approach.
-        result = (SpectralDataset)new ModelObjectFactory().build( doc );
-//        result = (SpectralDataset)new ModelObjectFactory().newInstance( SpectralDataset.class, doc );
+        result = (SpectralDataset)new ModelObjectFactory().newInstanceByModelPath( doc.getModelpath(), doc );
         
         return result;
     }

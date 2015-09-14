@@ -9,13 +9,11 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Dynamic proxy class to implement the various interfaces of the Spectral
- * library.  Each instance is given a SpectralDocument object to hold the 
- * contents for that interface (eg. Target).
+ * Dynamic proxy class to implement the various model interfaces.  Each instance
+ * is given a MPNode object to hold the contents for that interface (eg. Target).
  * 
  * @author mdittmar
  */
@@ -23,42 +21,37 @@ public class ModelProxy implements InvocationHandler
 {
     protected String type;         // Interface type that this proxy emulates.
     protected MPNode data;         // Node content.
+    protected ModelObjectFactory mof;
 
     /**
-     * Constructor, invokes new proxy instance and MPNode segment to hold content.
-     */
-    public ModelProxy()
-    {
-        this( null, null );
-    }
-
-    /**
-     * Constructor, invokes new proxy instance and stores the provided 
-     * MPNode segment to hold content.
+     * Constructor, invokes new proxy instance using the provided MPNode 
+     * object to hold content.
+     * Throws IllegalArumentException for:
+     *   - null storage input
      * 
-     * @param data 
-     *    {@link MPNode} segment to hold content for the proxy. 
+     * @param storage 
+     *    {@link MPNode}  object to hold content for the proxy. 
+     * @param type 
+     *    {@link String}  the class type that this proxy emulates. 
+     * @param mof 
+     *    {@link ModelObjectFactory}  facilitates generation of new proxies 
+     *                                according to model classes. 
      */
-    public ModelProxy( MPNode data )
-    {
-        this( data, null );
-    }
-
-
-    public ModelProxy( MPNode data, String type )
+    public ModelProxy( MPNode data, String type, ModelObjectFactory mof )
     {
         this.type = type;
+        this.mof  = mof;
         
         if ( data == null )
-            this.data = new MPNode();
-        else
+            throw new IllegalArgumentException( "'data' argument may not be null.");
+        else {
             this.data = data;
-
+        }
     }
-
+    
     /**
-     * Method to invoke the various accessors associated with the 
-     * interfaces the proxy represents.
+     * Invokes methods of the various model interfaces.  These are primarily
+     * accessors/mutators to the properties, following the JavaBeans convention.
      * 
      * @param proxy
      * @param method
@@ -110,7 +103,7 @@ public class ModelProxy implements InvocationHandler
 
         return result;
     }
-
+    
      /**
      * Equality check for proxies.
      * 
@@ -169,10 +162,6 @@ public class ModelProxy implements InvocationHandler
         String newpath = defineModelPath( property );
         Integer index = null;
 
-        // Check if arguments contain a List index (ie: getCollections( index ))
-        if ((args != null)&&(args.length == 1 )&&(args[0].getClass().equals(Integer.class)))
-            index = (Integer)args[0];
-
         // Get Expected Type (Quantity) and Parameter type (T) of returned property (Quantity<T>)
         Class rtype = method.getReturnType();
         Class<?> etype;
@@ -183,40 +172,37 @@ public class ModelProxy implements InvocationHandler
         catch ( ClassCastException e ) {
             etype = null;
         }
+        
+        // Check if arguments contain a List index (ie: getCollections( index ))
+        if ((args != null)&&(args.length == 1 )&&(args[0].getClass().equals(Integer.class)))
+            index = (Integer)args[0];
 
+        // Get element from storage storage
         result = this.data.getChildByMP( newpath );
         if ( result == null ) {
-            // Need to create the Property.
-
-            ModeledElement elem;
-            if ( index != null ) {
-                // create enclosing List<rtype>, assign model path
-                elem = newProperty( newpath, List.class, rtype );
-            }
-            else {
-                // New Quantity, List, or Node
-                elem = newProperty( newpath, rtype, etype );
-            }
-            // add new property to document.
-            this.data.appendChild( elem );
-            
-            result = elem;
+            // Need to create the Property.  
+            // If index is provided, create the enclosing List<rtype> itself.
+            if ( index != null )
+              result = newProperty( newpath, List.class, rtype );
+            else
+              result = newProperty( newpath, rtype, etype );
         }
         
-        // check for indexed getter, get requested element.
+        // If index is set, get requested element from List.
+        // NOTE: may throw IndexOutOfBoundsException
         if ( index != null ) {
-            //NOTE: may throw IndexOutOfBoundsException
             Object tmp = ((List)result).get(index);
             result = tmp;
         }
-
-        // If the return type is an interface, we need to create it, and 
-        // supply it with the underlying MPNode content.
+        
+        // Create Proxy for complex elements, provide node storage.
         if ( result.getClass() == MPNode.class ) {
             MPNode node = (MPNode)result;
-            result = Proxy.newProxyInstance( data.getClass().getClassLoader(),
-                                             new Class[]{ rtype },
-                                             new ModelProxy( node, rtype.getSimpleName() ));
+            result = this.mof.newInstanceByModelPath(node.getModelpath(), node );
+        }
+        else if ( result.getClass() == MPArrayList.class ) {
+        // Serve 'proxy' array list to user.
+          result = new ProxyArrayList( (MPArrayList)result, this.mof );
         }
         
         return result;
@@ -230,7 +216,7 @@ public class ModelProxy implements InvocationHandler
         Integer index;
         Object item;
         
-        // handle setP( index, item ) vs setP(item)
+        // handle arguments; setP( index, item ) vs setP(item)
         if ( args.length == 2 ) {
             index = (Integer)args[0];
             item = args[1];
@@ -244,41 +230,10 @@ public class ModelProxy implements InvocationHandler
         String property  = method.getName().replaceFirst("set","");
         String mp = defineModelPath( property );
         
-        // Handle input.. if list, make sure it is an Proxy, MPQuantity, or MPArrayList
-        if ( ( item.getClass() == MPQuantity.class )   || 
-             ( item.getClass() == MPArrayList.class )   )
-        {
-           // nothing to do here.
-        }
-        else if ( Proxy.isProxyClass( item.getClass() ) )
-        {
-          // Pull out underlying MPNode.
-          ModelProxy h = (ModelProxy)Proxy.getInvocationHandler( item );
-          item = h.data;
-        }
-        else if ( item.getClass() == Quantity.class )
-        {
-            // Convert input to MPQuantity
-            MPQuantity mpq = new MPQuantity();
-            mpq.fill( (Quantity)item );
-            item = mpq;
-        }
-        else if ( ( item.getClass() == ArrayList.class ) || (item.getClass() == List.class))
-        {
-            // Convert input list to MPArrayList, for adding to property
-            MPArrayList mparr = new MPArrayList( (List)item );
-            for ( int ii = 0; ii < mparr.size(); ii++ ) {  // TODO - this should be MPArrayList task.
-                // Convert content Quantities to MPQuantities.
-                if ( mparr.get(ii).getClass() == Quantity.class )
-                {
-                    MPQuantity mpq = new MPQuantity();
-                    mpq.fill( (Quantity)mparr.get(ii) );
-                    mparr.set(ii, mpq);
-                }
-            }
-            item = mparr;
-        }
-        else
+        // Translate user input object (item) to ModeledElement for inclusion
+        // in data storage node.
+        ModeledElement elem = convertObjectToElement( item );
+        if ( elem == null )
         {
            // Assign value from Primitive
            // Values should be type safe via prototypes
@@ -301,17 +256,17 @@ public class ModelProxy implements InvocationHandler
                  throw new UnsupportedOperationException("Cannot find get"+property+"() method in proxy.");
               }
            }
-           item = q;
+           elem = q;
         }
-        // MCD NOTE: At this point, item should be a ModeledElement.
-        // Update model path of object/list
-        ((ModeledElement)item).setModelpath( mp );
-        ((ModeledElement)item).rebaseModelpath( this.data.getModelpath() );
+        
+        // Update model path of the element
+        elem.setModelpath( mp );
+        elem.rebaseModelpath( this.data.getModelpath() );
         
         // Add property to document
         if ( index == null )
         {
-          this.data.appendChild( (ModeledElement)item );
+          this.data.appendChild( elem );
         }
         else
         {
@@ -326,9 +281,9 @@ public class ModelProxy implements InvocationHandler
                 // TODO: This shouldn't happen.. maybe should be ERROR instead?
                 l = new MPArrayList<Object>();
               }
-           }                                   
+           }
            // NOTE: May throw IndexOutOfBoundsException
-           l.set( index, item );
+           l.set( index, elem );
         }
     }
 
@@ -370,6 +325,14 @@ public class ModelProxy implements InvocationHandler
         return result;
     }
     
+    /**
+     *  Create specified property and add to the storage storage for this object.
+     * 
+     * @param mp        Model path of new element
+     * @param type      Type of new element
+     * @param etype     Parameter Type of new element (or null) (eg Quantity<T> )
+     * @return 
+     */
     private ModeledElement newProperty( String mp, Class type, Class etype )
     {
         ModeledElement result;
@@ -386,7 +349,7 @@ public class ModelProxy implements InvocationHandler
                arr = new MPArrayList<MPQuantity>();
             }
             else {
-               // Can this be done so that it is defined as a specific type,
+               // TODO: Can this be done so that it is defined as a specific type,
                // in a generic fashion (ie ArrayList<SPPoint>) without specifically
                // using/importing the SPPoint class.. ie: get it from the etype arg.
                arr = new MPArrayList<Object>();
@@ -404,10 +367,73 @@ public class ModelProxy implements InvocationHandler
         
         // Set model path of new element.
         result.setModelpath(mp);
+
+        // add new property to document.
+        this.data.appendChild( result );
         
         return result;
     }
 
+    /**
+     * User input to methods will often be of non-ModeledElement types
+     *   (the Interface, base Quantity, primitives, or Lists thereof)
+     * This method handles converting the complex types to their 
+     * ModeledElement equivalents.  The Primitive types need to be handled
+     * by the caller, as the action is dependent on the situation.
+     * 
+     * @param item
+     * @return
+     */
+    protected ModeledElement convertObjectToElement( Object item )
+    {
+        ModeledElement result = null;
+        
+        if ( ( item.getClass() == MPQuantity.class )   || 
+             ( item.getClass() == MPArrayList.class )  ||
+             ( item.getClass() == MPNode.class )  )
+        {
+           // item is already a ModeledElement, nothing to do here.
+           result = (ModeledElement)item;
+        }
+        else if ( item.getClass() == Quantity.class )
+        {
+            // Convert input to MPQuantity
+            MPQuantity mpq = new MPQuantity();
+            mpq.fill( (Quantity)item );
+            result = mpq;
+        }
+        else if ( Proxy.isProxyClass( item.getClass() ) )
+        {
+            // Get Proxy handler - and verify is one of OURs
+            Object handler = Proxy.getInvocationHandler( item );
+            if ( handler instanceof ModelProxy ){
+                // Pull out underlying data storage.
+                result = ((ModelProxy)handler).data;
+            }
+            else {
+                throw new UnsupportedOperationException("Found unsupported Proxy type: "+ handler.getClass().getSimpleName() );
+            }
+        }
+        else if ( item instanceof List )
+        {
+            // Input is List object.. not MPArrayList, or ListModelProxy which are handled above
+            // Expecting List<Quantity>, List<ModelProxy>
+            // NOTE: List<primitive> should be rejected as does single primitive.
+            MPArrayList mparr = new MPArrayList();
+            ModeledElement mpentry;
+            for ( Object entry: (List)item ){
+               mpentry = this.convertObjectToElement(entry);
+               if ( mpentry == null ){ // List of Primitives
+                   mparr = null;
+                   break;
+               }
+               mparr.add(mpentry);
+            }
+            result = mparr;
+        }
+        return result;
+    }
+    
     /**
      * Generates the model path for the requested property.
      * The Model Path is a String containing "_" delimited set of 'nodes'

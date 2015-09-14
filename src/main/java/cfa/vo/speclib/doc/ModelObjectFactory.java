@@ -4,13 +4,10 @@
  */
 package cfa.vo.speclib.doc;
 
-import cfa.vo.speclib.*;        
-import java.lang.reflect.InvocationTargetException;
+import cfa.vo.speclib.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *  Generates instances of Spectral Model interfaces. 
@@ -39,19 +36,7 @@ public class ModelObjectFactory {
      */
     public Object newInstance( Class type )
     {
-        Object result;
-        MPNode data;
-        
-        if ( type == null )
-            throw new IllegalArgumentException( "Argument may not be null.");
-
-        // Generate MPNode storage element for this proxy.
-        data = new MPNode(type.getSimpleName());
-
-        // Generate proxy with this storage
-        result = newInstance( type, data );
-                
-        return result;
+        return newInstance( type, null );
     }
     
     public Object newInstance( Class type, MPNode data )
@@ -59,19 +44,79 @@ public class ModelObjectFactory {
         Object result;
         
         if ( type == null )
-            throw new IllegalArgumentException( "Argument may not be null.");
+            throw new IllegalArgumentException( "Class type may not be null.");
 
         if ( data == null )
-            throw new IllegalArgumentException( "Argument may not be null.");
+          // Generate MPNode storage element for this proxy.
+          data = new MPNode(type.getSimpleName());
 
         if ( ! allowed.contains( type ))
             throw new IllegalArgumentException( type.getSimpleName() + " is not a supported Class type");
 
         result = Proxy.newProxyInstance( data.getClass().getClassLoader(),
                                          new Class[]{ type },
-                                         new ModelProxy( data, type.getSimpleName()) );
+                                         new ModelProxy( data, type.getSimpleName(), this ) );
                 
         return result;
+    }
+    
+    public Object newInstanceByModelPath( String mp )
+    {
+        return newInstanceByModelPath( mp, null );
+    }
+    
+    public Object newInstanceByModelPath( String mp, MPNode data )
+    {
+      Object result;
+      Method m;
+
+      // Parse model path.. get last node
+      Class type = null;
+      String[] nodes = mp.split("_");
+      for ( String node: nodes ){
+        // Handle array element..
+        // For these, we want to reset class to the specific type indicated
+        // in the model path for this particular element.
+        if ( node.contains("[]") ){
+            String[] parts = node.split("\\[\\]\\.*");
+            String property = parts[0];  // container 
+            if ( parts.length == 1 ) {
+              // No type specified.. should be Quantity..
+              type = Quantity.class;
+              continue;
+            }
+            else {
+              // clear type.. for reset.
+              type = null;
+              node = parts[1];
+            }
+        }
+        if ( type == null ) {
+            type = matchClassName( node );
+            continue;
+        }
+
+        // Get class type for this node by checking the return type of the 
+        // 'get' method in the current class.
+        try {
+          m = type.getMethod("get"+node, (Class<?>[]) null);
+        }
+        catch (NoSuchMethodException ex) {
+          try { // Booleans do not have get method, try 'is' instead.
+            m = type.getMethod("is"+node, (Class<?>[]) null);
+          }
+          catch (NoSuchMethodException ex2) {
+            throw new IllegalArgumentException("Invalid model path.. issue at node "+node);
+          }
+        }
+        // Set type of next node as return type of the method.
+        type = m.getReturnType();
+      }
+
+      // Generate instance of specified type.
+      result = this.newInstance( type, data );
+      
+      return result;
     }
     
     /**
@@ -91,242 +136,20 @@ public class ModelObjectFactory {
      */
     public Object newInstanceByName( String className )
     {
+       return this.newInstanceByName( className, null );
+    }
+
+    public Object newInstanceByName( String className, MPNode data )
+    {
        if ( className == null )
          throw new IllegalArgumentException( "Argument may not be null.");
 
-       Class type = null;
-       for ( Class ii : this.allowed ) {
-         if (ii.getSimpleName().equalsIgnoreCase( className )) {
-             type = ii;
-             break;
-         }
-       }
-       return this.newInstance( type );
+       // Find class matching name.
+       Class type = this.matchClassName(className);
+       
+       return this.newInstance( type, data );
     }
-
-    /**
-     * Traverse the provided source Object along the specified model path 
-     * to retrieve the target Object.  Intermediate objects will be created
-     * as needed along the way.  If an intermediate object is a List, a new
-     * element will be created and added to the List.
-     * 
-     * If either argument is null, an IllegalArgumentException is thrown.
-     * 
-     * @param obj
-     *    Proxy Instance to traverse to desired object. 
-     *
-     * @param mp
-     *    Model Path to desired object.
-     * @return
-     *    Target Object of model path.
-     */
-    public Object newInstanceByModelPath( Object source, String mp )
-    {
-        Object item;
-        Object next = null;
-        Object elem;
-        Method m;         // 'get' method for property
-        String property;  // property to get
-
-        if ( (source == null)||(mp == null) )
-            throw new IllegalArgumentException( "Arguments may not be null.");
-
-        item = source;
-        for ( String node: mp.split("_")){
-          if ( node.contains("[]") ){
-            // Handle array element..
-            String[] parts = node.split("\\[\\]\\.*");
-            property = parts[0];
-            if ( parts.length == 1 ) // No type specified.. should be Quantity
-              elem = new MPQuantity();
-            else  // Generate proxy instance of specified type.
-              elem = this.newInstanceByName(parts[1]);
-          }
-          else{
-            // Not an array node.
-            elem = null;
-            property = node;
-          }
-          // Get method to retrieve element.
-          try {
-            m = item.getClass().getMethod("get"+property, (Class<?>[]) null);
-          }
-          catch (NoSuchMethodException ex) {
-            try { // Booleans do not have get method, try 'is' instead.
-              m = item.getClass().getMethod("is"+property, (Class<?>[]) null);
-            }
-            catch (NoSuchMethodException ex2) {
-              throw new IllegalArgumentException("Invalid model path.. issue at node "+property);
-            }
-          }
-          // Invoke method to retrieve element.
-          try {
-             next = m.invoke( item, (Object[]) null);
-           } catch (IllegalAccessException ex) {
-                Logger.getLogger(ModelObjectFactory.class.getName()).log(Level.SEVERE, null, ex);
-           } catch (InvocationTargetException ex) {
-                Logger.getLogger(ModelObjectFactory.class.getName()).log(Level.SEVERE, null, ex);
-           }
-           item = next;
-           
-           // Add Array element, as needed
-           if ( elem != null && item != null )
-           {
-               ((MPArrayList)item).add(elem);
-               item = elem;
-           }
-        }
-        
-        return item;
-    }
-
-    public Object build( MPNode doc )
-    {
-        Object result;
-
-        // Get keys from doc
-        String[] keys = doc.getChildrenMP();
-        String key = keys[0];
-        if ( (keys.length == 1)&&( ! key.contains("_") ) )
-            // Have a Node which contains the top element.
-            // Extract that element and build interface to it.
-            doc = (MPNode)doc.getChildByMP(key);  // Top element.. send content to build.
-
-        result = this.build( null, doc );
-        return result;
-    }
-            
-    private Object build( String base, MPNode doc )
-    {
-        Object result;
-        
-        // Get First key from doc
-        String[] keys = doc.getChildrenMP();
-        String key = keys[0];
-
-        // Strip base from path.. we want it relative to current node.
-        String path;
-        if ( base == null)
-          path = key;
-        else
-        {
-          String regex = "^".concat(base).concat("_*").replace("[]", "\\[\\]").replace("].","]\\.");
-          path = key.replaceFirst(regex, "");
-
-          // Handle array elements
-          if ( path.startsWith("[]."))  // Complex Array element
-          {
-            base = base.concat(path.substring(0,3));
-            path = path.substring(3);
-          }
-        }
-
-        // Instantiate first 'node' as container for doc content.
-        String head = path.split("_")[0];
-        result = this.newInstanceByName( head );
-
-        // Populate the container with doc content.
-        String newbase;
-        if ( base == null )
-            newbase = head;
-        else if ( base.endsWith("[]."))
-            newbase = base + head; // Array elment
-        else
-            newbase = base+"_"+head; // Regular node
- 
-        this.build( result, newbase, doc );
-        
-        return(result);
-    }
-    
-    private void build( Object parent, String base, MPNode doc )
-    {
-       String mp;       // path to element in doc.. relative to this node.
-       Object obj;      // element from parent being added.
-       Object value;    // value from document.
-       MPArrayList srclist;
-       MPArrayList destlist;
-
-       for ( String key: doc.getChildrenMP() )
-       {
-          if ( key.equals("SpectralDataset_Length"))
-              continue;  // TODO: How to handle this calculated element.. cannot be 'set'
-          
-          // Strip base from key, including associated array annotation.
-          String regex = "^".concat(base).concat("_*").replace("[]", "\\[\\]").replace("].","]\\.");
-          mp = key.replaceFirst( regex, "");
-
-          // Pull object from parent node
-          obj = this.newInstanceByModelPath(parent, mp);
-          
-          // Get value from doc mapping to this element.
-          value = doc.getChildByMP(key);
-          if ( (obj.getClass() == Boolean.class ) && ( value.getClass() == MPQuantity.class )){
-              // Boolean elements should have set<Property>( Quantity ) method..
-              // Pull container object and invoke set method.. Note: parent may be the container.
-              Object container;
-              String property;
-              if ( mp.contains("_")){
-                property = mp.substring(mp.lastIndexOf("_"));
-                mp = mp.substring(0, mp.lastIndexOf("_"));
-                container = this.newInstanceByModelPath(parent, mp);
-              }
-              else {
-                property = mp;
-                container = parent;
-              }
-              // Invoke set method using source Quantity to fill.
-              Method m;
-              try {
-                m = container.getClass().getMethod("set"+property, new Class[]{Quantity.class} );
-                m.invoke( container, new Object[]{value} );
-              }
-              catch (NoSuchMethodException ex2) {
-                throw new IllegalArgumentException("Boolean element with no set method - "+key);
-              }
-              catch (IllegalAccessException ex) {
-                  Logger.getLogger(ModelObjectFactory.class.getName()).log(Level.SEVERE, null, ex);
-              } catch (IllegalArgumentException ex) {
-                  Logger.getLogger(ModelObjectFactory.class.getName()).log(Level.SEVERE, null, ex);
-              } catch (InvocationTargetException ex) {
-                  Logger.getLogger(ModelObjectFactory.class.getName()).log(Level.SEVERE, null, ex);
-              }
-
-          }
-          else if ( (obj.getClass() == MPQuantity.class ) && ( value.getClass() == MPQuantity.class ))
-          {
-            // Transfer quantity content
-            ((MPQuantity)obj).fill( (MPQuantity)value );
-          }
-          else if ( Proxy.isProxyClass( obj.getClass() ) && value.getClass() == MPNode.class )
-          {
-              // Build child node onto object.
-              this.build( obj, key, (MPNode)value);
-          }
-          else if ( (obj.getClass() == MPArrayList.class ) && (value.getClass() == MPArrayList.class ) )
-          {
-              srclist = (MPArrayList)value;
-              destlist = (MPArrayList)obj;
-              for ( Object elem: srclist )
-              {
-                  if ( elem.getClass() == MPQuantity.class )
-                  {
-                     destlist.add( (MPQuantity)elem );
-                  }
-                  else if ( elem.getClass() == MPNode.class )
-                  {  // Array of complex objects..
-                     Object entry = this.build( key, (MPNode)elem );
-                     destlist.add( entry );
-                  }                      
-              }
-          }
-          else
-          {
-             throw new UnsupportedOperationException(" Value type ("+value.getClass().getSimpleName()+" is not compatible with Element type ("+obj.getClass().getSimpleName()+").  Element = "+key);
-          }
-       }
-    }
-            
+                
     // Private Methods
     
     /**
@@ -342,6 +165,19 @@ public class ModelObjectFactory {
             setSpectralClassList();
         else
           throw new IllegalArgumentException("Invalid or unrecognized Model name.");        
+    }
+    
+    private Class matchClassName( String className )
+    {
+       Class type = null;
+       
+       for ( Class ii : this.allowed ) {
+         if (ii.getSimpleName().equalsIgnoreCase( className )) {
+             type = ii;
+             break;
+         }
+       }
+       return type; 
     }
     
     /**

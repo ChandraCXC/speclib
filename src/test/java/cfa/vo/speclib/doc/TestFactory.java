@@ -405,96 +405,86 @@ public class TestFactory {
     }
     
     @Test
-    public void testNewInstanceByModelPath()
-    {
-        //System.out.println("testNewInstanceByModelPath");
+    public void testNewInstanceByModelPath2()
+    {   
+        Object result;
+        String mp;
+        boolean ok;
         
-        String mp = null;
-        SpectralDataset ds = (SpectralDataset)factory.newInstance( SpectralDataset.class );
-        Object result = null;
-        ModelProxy h;
+        result = (SpectralDataset)factory.newInstanceByModelPath( "SpectralDataset" );
+        assertNotNull( result );
+        assertTrue( result instanceof SpectralDataset );
+        
+        // Normal 
+        mp = "SpectralDataset_Curation";
+        result = factory.newInstanceByModelPath( mp );
+        assertNotNull( result );
+        assertTrue( result instanceof Curation );
+        
+        mp = "SpectralDataset_Curation_Contact";
+        result = factory.newInstanceByModelPath( mp );
+        assertNotNull( result );
+        assertTrue( result instanceof Contact );
 
-        // NULL Argument
-        boolean caught = false;
+        // Array element
+        mp = "SpectralDataset_Data[].SPPoint";
+        result = factory.newInstanceByModelPath( mp );
+        assertNotNull( result );
+        assertTrue( result instanceof SPPoint );
+        
+        // Subclass
+        mp = "SpectralDataset_Data[].SPPoint_FluxAxis";
+        result = factory.newInstanceByModelPath( mp );
+        assertNotNull( result );
+        assertTrue( result instanceof FluxDataAxis );
+
+        // Subclass
+        mp = "SpectralDataset_Characterization_CharacterizationAxes[].FluxCharAxis";
+        result = factory.newInstanceByModelPath( mp );
+        assertNotNull( result );
+        assertTrue( result instanceof FluxCharAxis );
+
+        // partial model path (picking up from middle
+        mp = "CharacterizationAxis_Coverage_Bounds";
+        result = factory.newInstanceByModelPath( mp );
+        assertNotNull( result );
+        assertTrue( result instanceof Bounds );
+        
+        // Array
+        mp = "SpectralDataset_Data";
+        ok = false;
         try{
-          result = factory.newInstanceByModelPath( null, mp );
+          result = factory.newInstanceByModelPath( mp );
         }
         catch (IllegalArgumentException ex ){
-            caught = true;
+          assertEquals("List is not a supported Class type", ex.getMessage());
+          ok = true;
         }
-        assertTrue( caught );
-        assertNull( result );
+        assertTrue( ok );
         
-        // NULL Argument
-        caught = false;
+        // Quantity Array element
+        mp = "SpectralDataset_Curation_References[]";
+        ok = false;
         try{
-          result = factory.newInstanceByModelPath( ds, null );
+          result = factory.newInstanceByModelPath( mp );
         }
         catch (IllegalArgumentException ex ){
-            caught = true;
+          assertEquals("Quantity is not a supported Class type", ex.getMessage());
+          ok = true;
         }
-        assertTrue( caught );
-        assertNull( result );
+        assertTrue( ok );
         
-        //   - From top level dataset -> leaf
-        mp = "Curation_Rights";
-        result = factory.newInstanceByModelPath( ds, mp );
-        assertTrue( result.getClass() == MPQuantity.class );
-        assertEquals("SpectralDataset_Curation_Rights", ((MPQuantity)result).getModelpath());
-        
-
-        //   - From top level dataset -> Proxy
-        mp = "Curation_Contact";
-        result = factory.newInstanceByModelPath( ds, mp );
-        h = (ModelProxy)Proxy.getInvocationHandler( result );
-        assertEquals( h.type, Contact.class.getSimpleName() );
-        assertEquals("SpectralDataset_Curation_Contact_Email", ((MPQuantity)((Contact)result).getEmail()).getModelpath());
-
-        //   - From top level dataset -> List
-        mp = "Curation_References";
-        result = factory.newInstanceByModelPath( ds, mp );
-        assertTrue( result.getClass() == MPArrayList.class );
-        MPArrayList refs = (MPArrayList)result;
-        assertEquals(0, refs.size());
-
-        //   - From top level dataset -> Through List to leaf
-        mp = "Curation_References[]";
-        result = factory.newInstanceByModelPath( ds, mp );
-        assertTrue( result.getClass() == MPQuantity.class );
-        assertEquals("SpectralDataset_Curation_References[]", ((MPQuantity)result).getModelpath());
-        assertEquals(1, refs.size());
-
-        // Again.. should make another element on list
-        result = factory.newInstanceByModelPath( ds, mp );
-        assertTrue( result.getClass() == MPQuantity.class );
-        assertEquals(2, refs.size());
-
-        //   - From top level dataset -> Through List of Proxies to leaf
-        mp = "Data[].SPPoint_FluxAxis_Corrections[].ApFrac_Name";
-        result = factory.newInstanceByModelPath( ds, mp );
-        assertTrue( result.getClass() == MPQuantity.class );
-        assertEquals("SpectralDataset_Data[].SPPoint_FluxAxis_Corrections[].ApFrac_Name", ((MPQuantity)result).getModelpath());
-        
-        //   - From internal proxy    -> Leaf
-        CharacterizationAxis axis = (CharacterizationAxis)factory.newInstance(CharacterizationAxis.class);
-        mp = "Coverage_Bounds_Extent";
-        result = factory.newInstanceByModelPath( axis, mp );
-        assertTrue( result.getClass() == MPQuantity.class );
-        assertEquals("CharacterizationAxis_Coverage_Bounds_Extent", ((MPQuantity)result).getModelpath());
-        
-
-        //   - Invalid model path
-        result = null;
-        caught = false;
-        mp = "Coverage_Blah_Extent";
+        // Leaf element
+        mp = "SpectralDataset_Curation_Version";
+        ok = false;
         try{
-          result = factory.newInstanceByModelPath( axis, mp );
+          result = factory.newInstanceByModelPath( mp );
         }
-        catch( IllegalArgumentException ex ){
-            caught = true;
+        catch (IllegalArgumentException ex ){
+          assertEquals("Quantity is not a supported Class type", ex.getMessage());
+          ok = true;
         }
-        assertTrue(caught);
-        assertNull(result);
-        
+        assertTrue( ok );
     }
+    
 }
