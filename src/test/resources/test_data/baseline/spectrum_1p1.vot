@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VOTABLE version="1.1"
+  xmlns="http://www.ivoa.net/xml/VOTable/v1.1"
+  xmlns:spec="http://www.ivoa.net/xml/Spectrum/Spectrum-1.01.xsd"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="http://www.ivoa.net/xml/VOTable/v1.1"
+  >
+  <RESOURCE utype="spec:Spectrum.Sed">
+    <TABLE utype="spec:Segment">
+      <PARAM arraysize="*" datatype="char" name="DataModel" utype="spec:Spectrum.DataModel" value="Spectrum-1.0"/>
+      <PARAM arraysize="*" datatype="char" name="Type" utype="spec:Spectrum.Type" value="Spectrum"/>
+      <PARAM arraysize="*" datatype="char" name="TimeSI" ucd="time;arith.zp" utype="spec:Spectrum.TimeSI" value="ms"/>
+      <PARAM arraysize="*" datatype="char" name="SpectralSI" utype="spec:Spectrum.SpectralSI" value="Angstrom"/>
+      <PARAM arraysize="*" datatype="char" name="FluxSI" utype="spec:Spectrum.FluxSI" value="ergs/m-2s-1Mev-1"/>
+      <GROUP utype="spec:Spectrum.Target">
+        <PARAM arraysize="*" datatype="char" name="Name" ucd="meta.id;src" utype="spec:Spectrum.Target.Name" value="Arp 220"/>
+        <PARAM arraysize="*" datatype="char" name="Description" ucd="meta.note;src" utype="spec:Spectrum.Target.Description" value="Ultraluminous Infrared Galaxy"/>
+        <PARAM arraysize="*" datatype="char" name="Class" ucd="src.class" utype="spec:Spectrum.Target.Class" value="TBD"/>
+        <PARAM arraysize="*" datatype="char" name="SpectralClass" ucd="src.spType" utype="spec:Spectrum.Target.SpectralClass" value="TBD"/>
+        <PARAM datatype="double" name="Redshift" ucd="src.redshift" utype="spec:Spectrum.Target.Redshift" value="0.15833"/>
+        <PARAM arraysize="2" datatype="double" name="TargetPos" ucd="pos.eq;src" unit="deg" utype="spec:Spectrum.Target.Pos" value="233.737917 23.50333"/>
+        <PARAM datatype="double" name="VarAmpl" ucd="src.var.amplitude" utype="spec:Spectrum.Target.VarAmpl" value="0.0"/>
+      </GROUP>
+      <GROUP utype="spec:Spectrum.Char">
+        <GROUP utype="spec:Spectrum.Char.SpatialAxis">
+          <PARAM arraysize="*" datatype="char" name="Sky" ucd="pos.eq" unit="deg" utype="spec:Spectrum.Char.SpatialAxis.Name" value="Sky"/>
+          <PARAM datatype="double" name="Resolution" ucd="pos.angResolution" utype="spec:Spectrum.Char.SpatialAxis.Resolution" value="0.0"/>
+          <PARAM arraysize="*" datatype="char" name="Calibration" ucd="meta.code.qual" utype="spec:Spectrum.Char.SpatialAxis.Calibration" value="TBD"/>
+          <GROUP utype="spec:Spectrum.Char.SpatialAxis.Coverage">
+            <GROUP utype="spec:Spectrum.Char.SpatialAxis.Coverage.Location">
+              <PARAM arraysize="2" datatype="double" name="Value" ucd="pos.eq" utype="spec:Spectrum.Char.SpatialAxis.Coverage.Location.Value" value="4.61 4.62"/>
+              <PARAM datatype="double" name="Resolution" utype="spec:Spectrum.Char.SpatialAxis.Coverage.Location.Resolution" value="4.88"/>
+            </GROUP>
+            <GROUP utype="spec:Spectrum.Char.SpatialAxis.Coverage.Support">
+              <PARAM arraysize="*" datatype="char" name="Area" utype="spec:Spectrum.Char.SpatialAxis.Coverage.Support.Area" value="This is the #4 sky region"/>
+              <PARAM datatype="double" name="Extent" ucd="instr.fov" utype="spec:Spectrum.Char.SpatialAxis.Coverage.Support.Extent" value="4.8"/>
+              <PARAM arraysize="2" datatype="double" name="Range" utype="spec:Spectrum.Char.SpatialAxis.Coverage.Support.Range" value="4.02 4.22"/>
+            </GROUP>
+          </GROUP>
+          <GROUP utype="spec:Spectrum.Char.SpatialAxis.Accuracy">
+            <PARAM datatype="double" name="BinLow" utype="spec:Spectrum.Char.SpatialAxis.Accuracy.BinLow" value="0.0"/>
+            <PARAM datatype="double" name="BinHigh" utype="spec:Spectrum.Char.SpatialAxis.Accuracy.BinHigh" value="0.0"/>
+            <PARAM datatype="double" name="BinSize" utype="spec:Spectrum.Char.SpatialAxis.Accuracy.BinSize" value="0.0"/>
+            <PARAM datatype="double" name="StatError" ucd="stat.error;pos.eq" utype="spec:Spectrum.Char.SpatialAxis.Accuracy.StatError" value="0.0"/>
+            <PARAM datatype="double" name="StatErrLow" utype="spec:Spectrum.Char.SpatialAxis.Accuracy.StatErrLow" value="0.0"/>
+            <PARAM datatype="double" name="StatErrHigh" utype="spec:Spectrum.Char.SpatialAxis.Accuracy.StatErrHigh" value="0.0"/>
+            <PARAM datatype="double" name="SysError" ucd="stat.error.sys;pos.eq" utype="spec:Spectrum.Char.SpatialAxis.Accuracy.SysError" value="0.0"/>
+            <PARAM datatype="double" name="Confidence" utype="spec:Spectrum.Char.SpatialAxis.Accuracy.Confidence" value="0.0"/>
+          </GROUP>
+          <GROUP utype="spec:Spectrum.Char.SpatialAxis.SamplingPrecision">
+            <PARAM datatype="double" name="SamplingExtent" ucd="instr.pixel" utype="spec:Spectrum.Char.SpatialAxis.SamplingPrecision.SamplingExtent" value="0.0"/>
+            <GROUP utype="spec:Spectrum.Char.SpatialAxis.SamplingPrecision.SamplingPrecisionRefVal">
+              <PARAM datatype="double" name="FillFactor" ucd="stat.fill;pos.eq" utype="spec:Spectrum.Char.SpatialAxis.SamplingPrecision.SamplingPrecisionRefVal.FillFactor" value="0.0"/>
+            </GROUP>
+          </GROUP>
+        </GROUP>
+        <GROUP utype="spec:Spectrum.Char.TimeAxis">
+          <PARAM arraysize="*" datatype="char" name="Time" ucd="time" unit="s" utype="spec:Spectrum.Char.TimeAxis.Name" value="Time"/>
+          <PARAM datatype="double" name="Resolution" ucd="time.resolution" utype="spec:Spectrum.Char.TimeAxis.Resolution" value="0.0"/>
+          <PARAM arraysize="*" datatype="char" name="Calibration" ucd="meta.code.qual" utype="spec:Spectrum.Char.TimeAxis.Calibration" value="TBD"/>
+          <GROUP utype="spec:Spectrum.Char.TimeAxis.Coverage">
+            <GROUP utype="spec:Spectrum.Char.TimeAxis.Coverage.Location">
+              <PARAM datatype="double" name="TimeObs" ucd="time.obs" utype="spec:Spectrum.Char.TimeAxis.Coverage.Location.Value" value="52148.3252"/>
+              <PARAM datatype="double" name="TimeRes" ucd="TBD" unit="s" utype="spec:Spectrum.Char.TimeAxis.Coverage.Location.Resolution" value="0.125"/>
+              <GROUP utype="spec:Spectrum.Char.TimeAxis.Coverage.Location.Accuracy">
+                <PARAM datatype="double" name="BinLow" utype="spec:Spectrum.Char.TimeAxis.Coverage.Location.Accuracy.BinLow" value="0.0"/>
+                <PARAM datatype="double" name="BinHigh" utype="spec:Spectrum.Char.TimeAxis.Coverage.Location.Accuracy.BinHigh" value="0.0"/>
+                <PARAM datatype="double" name="BinSize" utype="spec:Spectrum.Char.TimeAxis.Coverage.Location.Accuracy.BinSize" value="0.0"/>
+                <PARAM datatype="double" name="StatError" utype="spec:Spectrum.Char.TimeAxis.Coverage.Location.Accuracy.StatError" value="0.0"/>
+                <PARAM datatype="double" name="StatErrLow" utype="spec:Spectrum.Char.TimeAxis.Coverage.Location.Accuracy.StatErrLow" value="0.0"/>
+                <PARAM datatype="double" name="StatErrHigh" utype="spec:Spectrum.Char.TimeAxis.Coverage.Location.Accuracy.StatErrHigh" value="0.0"/>
+                <PARAM datatype="double" name="SysError" utype="spec:Spectrum.Char.TimeAxis.Coverage.Location.Accuracy.SysError" value="0.0"/>
+                <PARAM datatype="double" name="Confidence" utype="spec:Spectrum.Char.TimeAxis.Coverage.Location.Accuracy.Confidence" value="0.0"/>
+              </GROUP>
+            </GROUP>
+            <GROUP utype="spec:Spectrum.Char.TimeAxis.Coverage.Bounds">
+              <PARAM datatype="double" name="TimeExtent" ucd="time.duration" utype="spec:Spectrum.Char.TimeAxis.Coverage.Bounds.Extent" value="1500.0"/>
+              <PARAM datatype="double" name="TimeStart" ucd="time" utype="spec:Spectrum.Char.TimeAxis.Coverage.Bounds.Start" value="52100.0"/>
+              <PARAM datatype="double" name="TimeStop" ucd="time" utype="spec:Spectrum.Char.TimeAxis.Coverage.Bounds.Stop" value="52300.0"/>
+            </GROUP>
+            <GROUP utype="spec:Spectrum.Char.TimeAxis.Coverage.Support">
+              <PARAM arraysize="*" datatype="char" name="TBD" ucd="TBD" utype="spec:Spectrum.Char.TimeAxis.Coverage.Support.Area" value="TBD"/>
+              <PARAM datatype="double" name="TimeExtent" ucd="time.duration;obs.exposure" utype="spec:Spectrum.Char.TimeAxis.Coverage.Support.Extent" value="1500.0"/>
+              <PARAM arraysize="2" datatype="double" name="Range" ucd="time" unit="s" utype="spec:Spectrum.Char.TimeAxis.Coverage.Support.Range" value="52100.0 52300.0"/>
+            </GROUP>
+          </GROUP>
+          <GROUP utype="spec:Spectrum.Char.TimeAxis.Accuracy">
+            <PARAM datatype="double" name="BinLow" utype="spec:Spectrum.Char.TimeAxis.Accuracy.BinLow" value="0.0"/>
+            <PARAM datatype="double" name="BinHigh" utype="spec:Spectrum.Char.TimeAxis.Accuracy.BinHigh" value="0.0"/>
+            <PARAM datatype="double" name="BinSize" ucd="time.interval" utype="spec:Spectrum.Char.TimeAxis.Accuracy.BinSize" value="0.0"/>
+            <PARAM datatype="double" name="StatError" ucd="stat.error;time" utype="spec:Spectrum.Char.TimeAxis.Accuracy.StatError" value="0.0"/>
+            <PARAM datatype="double" name="StatErrLow" utype="spec:Spectrum.Char.TimeAxis.Accuracy.StatErrLow" value="0.0"/>
+            <PARAM datatype="double" name="StatErrHigh" utype="spec:Spectrum.Char.TimeAxis.Accuracy.StatErrHigh" value="0.0"/>
+            <PARAM datatype="double" name="SysError" ucd="stat.error.sys;time" utype="spec:Spectrum.Char.TimeAxis.Accuracy.SysError" value="0.0"/>
+            <PARAM datatype="double" name="Confidence" utype="spec:Spectrum.Char.TimeAxis.Accuracy.Confidence" value="0.0"/>
+          </GROUP>
+          <GROUP utype="spec:Spectrum.Char.TimeAxis.SamplingPrecision">
+            <PARAM datatype="double" name="SamplingExtent" ucd="time.interval" utype="spec:Spectrum.Char.TimeAxis.SamplingPrecision.SamplingExtent" value="0.0"/>
+            <GROUP utype="spec:Spectrum.Char.TimeAxis.SamplingPrecision.SamplingPrecisionRefVal">
+              <PARAM datatype="double" name="FillFactor" ucd="time;stat.fill;time" utype="spec:Spectrum.Char.TimeAxis.SamplingPrecision.SamplingPrecisionRefVal.FillFactor" value="0.0"/>
+            </GROUP>
+          </GROUP>
+        </GROUP>
+        <GROUP utype="spec:Spectrum.Char.SpectralAxis">
+          <PARAM datatype="double" name="ResPower" ucd="spect.resolution" utype="spec:Spectrum.Char.SpectralAxis.ResPower" value="0.0"/>
+          <PARAM arraysize="*" datatype="char" name="Wavelength" ucd="em.wl" unit="Angstrom" utype="spec:Spectrum.Char.SpectralAxis.Name" value="Wavelength"/>
+          <PARAM datatype="double" name="Resolution" ucd="spect.resolution;em.wl" utype="spec:Spectrum.Char.SpectralAxis.Resolution" value="0.0"/>
+          <PARAM arraysize="*" datatype="char" name="Calibration" ucd="meta.code.qual" utype="spec:Spectrum.Char.SpectralAxis.Calibration" value="TBD"/>
+          <GROUP utype="spec:Spectrum.Char.SpectralAxis.Coverage">
+            <GROUP utype="spec:Spectrum.Char.SpectralAxis.Coverage.Location">
+              <PARAM arraysize="2" datatype="double" name="Value" ucd="instr.bandpass" utype="spec:Spectrum.Char.SpectralAxis.Coverage.Location.Value" value="1.61 1.62"/>
+              <PARAM datatype="double" name="Resolution" utype="spec:Spectrum.Char.SpectralAxis.Coverage.Location.Resolution" value="1.88"/>
+            </GROUP>
+            <GROUP utype="spec:Spectrum.Char.SpectralAxis.Coverage.Support">
+              <PARAM arraysize="*" datatype="char" name="Area" utype="spec:Spectrum.Char.SpectralAxis.Coverage.Support.Area" value="This is the #1 sky region"/>
+              <PARAM datatype="double" name="Extent" ucd="instr.bandwidth" utype="spec:Spectrum.Char.SpectralAxis.Coverage.Support.Extent" value="1.8"/>
+              <PARAM arraysize="2" datatype="double" name="Range" utype="spec:Spectrum.Char.SpectralAxis.Coverage.Support.Range" value="1.02 1.22"/>
+            </GROUP>
+          </GROUP>
+          <GROUP utype="spec:Spectrum.Char.SpectralAxis.Accuracy">
+            <PARAM datatype="double" name="BinLow" utype="spec:Spectrum.Char.SpectralAxis.Accuracy.BinLow" value="0.0"/>
+            <PARAM datatype="double" name="BinHigh" utype="spec:Spectrum.Char.SpectralAxis.Accuracy.BinHigh" value="0.0"/>
+            <PARAM datatype="double" name="BinSize" ucd="em.wl;spect.binSize" utype="spec:Spectrum.Char.SpectralAxis.Accuracy.BinSize" value="0.0"/>
+            <PARAM datatype="double" name="StatError" ucd="stat.error;em.wl" utype="spec:Spectrum.Char.SpectralAxis.Accuracy.StatError" value="0.0"/>
+            <PARAM datatype="double" name="StatErrLow" utype="spec:Spectrum.Char.SpectralAxis.Accuracy.StatErrLow" value="0.0"/>
+            <PARAM datatype="double" name="StatErrHigh" utype="spec:Spectrum.Char.SpectralAxis.Accuracy.StatErrHigh" value="0.0"/>
+            <PARAM datatype="double" name="SysError" ucd="stat.error;em.wl" utype="spec:Spectrum.Char.SpectralAxis.Accuracy.SysError" value="0.0"/>
+            <PARAM datatype="double" name="Confidence" utype="spec:Spectrum.Char.SpectralAxis.Accuracy.Confidence" value="0.0"/>
+          </GROUP>
+          <GROUP utype="spec:Spectrum.Char.SpectralAxis.SamplingPrecision">
+            <PARAM datatype="double" name="SamplingExtent" ucd="em.wl;spect.binSize" utype="spec:Spectrum.Char.SpectralAxis.SamplingPrecision.SamplingExtent" value="0.0"/>
+            <GROUP utype="spec:Spectrum.Char.SpectralAxis.SamplingPrecision.SamplingPrecisionRefVal">
+              <PARAM datatype="double" name="FillFactor" ucd="stat.fill;em.wl" utype="spec:Spectrum.Char.SpectralAxis.SamplingPrecision.SamplingPrecisionRefVal.FillFactor" value="0.0"/>
+            </GROUP>
+          </GROUP>
+        </GROUP>
+        <GROUP utype="spec:Spectrum.Char.FluxAxis">
+          <PARAM arraysize="*" datatype="char" name="Flux" ucd="TBD" utype="spec:Spectrum.Char.FluxAxis.Name" value="Flux"/>
+          <PARAM datatype="double" name="Resolution" utype="spec:Spectrum.Char.FluxAxis.Resolution" value="0.0"/>
+          <PARAM arraysize="*" datatype="char" name="Calibration" utype="spec:Spectrum.Char.FluxAxis.Calibration" value="TBD"/>
+          <GROUP utype="spec:Spectrum.Char.FluxAxis.Coverage">
+            <GROUP utype="spec:Spectrum.Char.FluxAxis.Coverage.Location">
+              <PARAM arraysize="2" datatype="double" name="Value" utype="spec:Spectrum.Char.FluxAxis.Coverage.Location.Value" value="3.61 3.62"/>
+              <PARAM datatype="double" name="Resolution" utype="spec:Spectrum.Char.FluxAxis.Coverage.Location.Resolution" value="3.88"/>
+            </GROUP>
+            <GROUP utype="spec:Spectrum.Char.FluxAxis.Coverage.Support">
+              <PARAM arraysize="*" datatype="char" name="Area" utype="spec:Spectrum.Char.FluxAxis.Coverage.Support.Area" value="This is the #3 sky region"/>
+              <PARAM datatype="double" name="Extent" utype="spec:Spectrum.Char.FluxAxis.Coverage.Support.Extent" value="3.8"/>
+              <PARAM arraysize="2" datatype="double" name="Range" utype="spec:Spectrum.Char.FluxAxis.Coverage.Support.Range" value="3.02 3.22"/>
+            </GROUP>
+          </GROUP>
+          <GROUP utype="spec:Spectrum.Char.FluxAxis.Accuracy">
+            <PARAM datatype="double" name="BinLow" utype="spec:Spectrum.Char.FluxAxis.Accuracy.BinLow" value="0.0"/>
+            <PARAM datatype="double" name="BinHigh" utype="spec:Spectrum.Char.FluxAxis.Accuracy.BinHigh" value="0.0"/>
+            <PARAM datatype="double" name="BinSize" utype="spec:Spectrum.Char.FluxAxis.Accuracy.BinSize" value="0.0"/>
+            <PARAM datatype="double" name="StatError" ucd="stat.error;phot.flux.density;em.wl" utype="spec:Spectrum.Char.FluxAxis.Accuracy.StatError" value="0.0"/>
+            <PARAM datatype="double" name="StatErrLow" utype="spec:Spectrum.Char.FluxAxis.Accuracy.StatErrLow" value="0.0"/>
+            <PARAM datatype="double" name="StatErrHigh" utype="spec:Spectrum.Char.FluxAxis.Accuracy.StatErrHigh" value="0.0"/>
+            <PARAM datatype="double" name="SysError" ucd="stat.error.sys;phot.flux.density;em.wl" utype="spec:Spectrum.Char.FluxAxis.Accuracy.SysError" value="0.0"/>
+            <PARAM datatype="double" name="Confidence" utype="spec:Spectrum.Char.FluxAxis.Accuracy.Confidence" value="0.0"/>
+          </GROUP>
+          <GROUP utype="spec:Spectrum.Char.FluxAxis.SamplingPrecision">
+            <PARAM datatype="double" name="SamplingExtent" utype="spec:Spectrum.Char.FluxAxis.SamplingPrecision.SamplingExtent" value="0.0"/>
+            <GROUP utype="spec:Spectrum.Char.FluxAxis.SamplingPrecision.SamplingPrecisionRefVal">
+              <PARAM datatype="double" name="FillFactor" utype="spec:Spectrum.Char.FluxAxis.SamplingPrecision.SamplingPrecisionRefVal.FillFactor" value="0.0"/>
+            </GROUP>
+          </GROUP>
+        </GROUP>
+        <GROUP utype="spec:Spectrum.Char.CharAxis">
+          <PARAM arraysize="*" datatype="char" name="AXIS1" ucd="TBD" utype="spec:Spectrum.Char.CharAxis.Name" value="AXIS1"/>
+          <PARAM datatype="double" name="Resolution" utype="spec:Spectrum.Char.CharAxis.Resolution" value="0.0"/>
+          <PARAM arraysize="*" datatype="char" name="Calibration" utype="spec:Spectrum.Char.CharAxis.Calibration" value="TBD"/>
+          <GROUP utype="spec:Spectrum.Char.CharAxis.Accuracy">
+            <PARAM datatype="double" name="BinLow" utype="spec:Spectrum.Char.CharAxis.Accuracy.BinLow" value="0.0"/>
+            <PARAM datatype="double" name="BinHigh" utype="spec:Spectrum.Char.CharAxis.Accuracy.BinHigh" value="0.0"/>
+            <PARAM datatype="double" name="BinSize" utype="spec:Spectrum.Char.CharAxis.Accuracy.BinSize" value="0.0"/>
+            <PARAM datatype="double" name="StatError" utype="spec:Spectrum.Char.CharAxis.Accuracy.StatError" value="0.0"/>
+            <PARAM datatype="double" name="StatErrLow" utype="spec:Spectrum.Char.CharAxis.Accuracy.StatErrLow" value="0.0"/>
+            <PARAM datatype="double" name="StatErrHigh" utype="spec:Spectrum.Char.CharAxis.Accuracy.StatErrHigh" value="0.0"/>
+            <PARAM datatype="double" name="SysError" utype="spec:Spectrum.Char.CharAxis.Accuracy.SysError" value="0.0"/>
+            <PARAM datatype="double" name="Confidence" utype="spec:Spectrum.Char.CharAxis.Accuracy.Confidence" value="0.0"/>
+          </GROUP>
+          <GROUP utype="spec:Spectrum.Char.CharAxis.SamplingPrecision">
+            <PARAM datatype="double" name="SamplingExtent" utype="spec:Spectrum.Char.CharAxis.SamplingPrecision.SamplingExtent" value="0.0"/>
+            <GROUP utype="spec:Spectrum.Char.CharAxis.SamplingPrecision.SamplingPrecisionRefVal">
+              <PARAM datatype="double" name="FillFactor" utype="spec:Spectrum.Char.CharAxis.SamplingPrecision.SamplingPrecisionRefVal.FillFactor" value="0.0"/>
+            </GROUP>
+          </GROUP>
+        </GROUP>
+        <GROUP utype="spec:Spectrum.Char.CharAxis">
+          <PARAM arraysize="*" datatype="char" name="AXIS2" ucd="TBD" utype="spec:Spectrum.Char.CharAxis.Name" value="AXIS2"/>
+          <PARAM datatype="double" name="Resolution" utype="spec:Spectrum.Char.CharAxis.Resolution" value="0.0"/>
+          <PARAM arraysize="*" datatype="char" name="Calibration" utype="spec:Spectrum.Char.CharAxis.Calibration" value="TBD"/>
+          <GROUP utype="spec:Spectrum.Char.CharAxis.Accuracy">
+            <PARAM datatype="double" name="BinLow" utype="spec:Spectrum.Char.CharAxis.Accuracy.BinLow" value="0.0"/>
+            <PARAM datatype="double" name="BinHigh" utype="spec:Spectrum.Char.CharAxis.Accuracy.BinHigh" value="0.0"/>
+            <PARAM datatype="double" name="BinSize" utype="spec:Spectrum.Char.CharAxis.Accuracy.BinSize" value="0.0"/>
+            <PARAM datatype="double" name="StatError" utype="spec:Spectrum.Char.CharAxis.Accuracy.StatError" value="0.0"/>
+            <PARAM datatype="double" name="StatErrLow" utype="spec:Spectrum.Char.CharAxis.Accuracy.StatErrLow" value="0.0"/>
+            <PARAM datatype="double" name="StatErrHigh" utype="spec:Spectrum.Char.CharAxis.Accuracy.StatErrHigh" value="0.0"/>
+            <PARAM datatype="double" name="SysError" utype="spec:Spectrum.Char.CharAxis.Accuracy.SysError" value="0.0"/>
+            <PARAM datatype="double" name="Confidence" utype="spec:Spectrum.Char.CharAxis.Accuracy.Confidence" value="0.0"/>
+          </GROUP>
+          <GROUP utype="spec:Spectrum.Char.CharAxis.SamplingPrecision">
+            <PARAM datatype="double" name="SamplingExtent" utype="spec:Spectrum.Char.CharAxis.SamplingPrecision.SamplingExtent" value="0.0"/>
+            <GROUP utype="spec:Spectrum.Char.CharAxis.SamplingPrecision.SamplingPrecisionRefVal">
+              <PARAM datatype="double" name="FillFactor" utype="spec:Spectrum.Char.CharAxis.SamplingPrecision.SamplingPrecisionRefVal.FillFactor" value="0.0"/>
+            </GROUP>
+          </GROUP>
+        </GROUP>
+        <GROUP utype="spec:Spectrum.Char.CharAxis">
+          <PARAM arraysize="*" datatype="char" name="AXIS3" ucd="TBD" utype="spec:Spectrum.Char.CharAxis.Name" value="AXIS3"/>
+          <PARAM datatype="double" name="Resolution" utype="spec:Spectrum.Char.CharAxis.Resolution" value="0.0"/>
+          <PARAM arraysize="*" datatype="char" name="Calibration" utype="spec:Spectrum.Char.CharAxis.Calibration" value="TBD"/>
+          <GROUP utype="spec:Spectrum.Char.CharAxis.Accuracy">
+            <PARAM datatype="double" name="BinLow" utype="spec:Spectrum.Char.CharAxis.Accuracy.BinLow" value="0.0"/>
+            <PARAM datatype="double" name="BinHigh" utype="spec:Spectrum.Char.CharAxis.Accuracy.BinHigh" value="0.0"/>
+            <PARAM datatype="double" name="BinSize" utype="spec:Spectrum.Char.CharAxis.Accuracy.BinSize" value="0.0"/>
+            <PARAM datatype="double" name="StatError" utype="spec:Spectrum.Char.CharAxis.Accuracy.StatError" value="0.0"/>
+            <PARAM datatype="double" name="StatErrLow" utype="spec:Spectrum.Char.CharAxis.Accuracy.StatErrLow" value="0.0"/>
+            <PARAM datatype="double" name="StatErrHigh" utype="spec:Spectrum.Char.CharAxis.Accuracy.StatErrHigh" value="0.0"/>
+            <PARAM datatype="double" name="SysError" utype="spec:Spectrum.Char.CharAxis.Accuracy.SysError" value="0.0"/>
+            <PARAM datatype="double" name="Confidence" utype="spec:Spectrum.Char.CharAxis.Accuracy.Confidence" value="0.0"/>
+          </GROUP>
+          <GROUP utype="spec:Spectrum.Char.CharAxis.SamplingPrecision">
+            <PARAM datatype="double" name="SamplingExtent" utype="spec:Spectrum.Char.CharAxis.SamplingPrecision.SamplingExtent" value="0.0"/>
+            <GROUP utype="spec:Spectrum.Char.CharAxis.SamplingPrecision.SamplingPrecisionRefVal">
+              <PARAM datatype="double" name="FillFactor" utype="spec:Spectrum.Char.CharAxis.SamplingPrecision.SamplingPrecisionRefVal.FillFactor" value="0.0"/>
+            </GROUP>
+          </GROUP>
+        </GROUP>
+      </GROUP>
+      <GROUP utype="spec:Spectrum.CoordSys">
+        <PARAM arraysize="*" datatype="char" name="id" utype="spec:Spectrum.CoordSys.ID" value="TBD"/>
+        <GROUP utype="spec:Spectrum.CoordSys.TimeFrame">
+          <PARAM datatype="double" name="Zero" ucd="time;arith.zp" utype="spec:Spectrum.CoordSys.TimeFrame.Zero" value="0.0"/>
+          <PARAM arraysize="*" datatype="char" name="id" utype="spec:Spectrum.CoordSys.TimeFrame.ID" value="TBD"/>
+          <PARAM arraysize="*" datatype="char" name="name" utype="spec:Spectrum.CoordSys.TimeFrame.Name" value="UTC"/>
+          <PARAM arraysize="*" datatype="char" name="referencePosition" utype="spec:Spectrum.CoordSys.TimeFrame.RefPos" value="TBD"/>
+          <PARAM arraysize="*" datatype="char" name="ucd" utype="spec:Spectrum.CoordSys.TimeFrame.UCD" value="TBD"/>
+        </GROUP>
+        <GROUP utype="spec:Spectrum.CoordSys.SpaceFrame">
+          <PARAM datatype="double" name="Equinox" ucd="time.equinox;pos.eq" utype="spec:Spectrum.CoordSys.SpaceFrame.Equinox" value="2000.0"/>
+          <PARAM arraysize="*" datatype="char" name="id" utype="spec:Spectrum.CoordSys.SpaceFrame.ID" value="TBD"/>
+          <PARAM arraysize="*" datatype="char" name="name" utype="spec:Spectrum.CoordSys.SpaceFrame.Name" value="ICRS"/>
+          <PARAM arraysize="*" datatype="char" name="referencePosition" utype="spec:Spectrum.CoordSys.SpaceFrame.RefPos" value="TBD"/>
+          <PARAM arraysize="*" datatype="char" name="ucd" utype="spec:Spectrum.CoordSys.SpaceFrame.UCD" value="TBD"/>
+        </GROUP>
+        <GROUP utype="spec:Spectrum.CoordSys.SpectralFrame">
+          <PARAM datatype="double" name="Redshift" utype="spec:Spectrum.CoordSys.SpectralFrame.Redshift" value="0.0"/>
+          <PARAM arraysize="*" datatype="char" name="id" utype="spec:Spectrum.CoordSys.SpectralFrame.ID" value="TBD"/>
+          <PARAM arraysize="*" datatype="char" name="name" utype="spec:Spectrum.CoordSys.SpectralFrame.Name" value="TBD"/>
+          <PARAM arraysize="*" datatype="char" name="referencePosition" utype="spec:Spectrum.CoordSys.SpectralFrame.RefPos" value="BARYCENTER"/>
+          <PARAM arraysize="*" datatype="char" name="ucd" utype="spec:Spectrum.CoordSys.SpectralFrame.UCD" value="TBD"/>
+        </GROUP>
+        <GROUP utype="spec:Spectrum.CoordSys.RedshiftFrame">
+          <PARAM arraysize="*" datatype="char" name="dopplerDefinition" utype="spec:Spectrum.CoordSys.RedshiftFrame.DopplerDefinition" value="TBD"/>
+          <PARAM arraysize="*" datatype="char" name="id" utype="spec:Spectrum.CoordSys.RedshiftFrame.ID" value="TBD"/>
+          <PARAM arraysize="*" datatype="char" name="name" utype="spec:Spectrum.CoordSys.RedshiftFrame.Name" value="ICRS"/>
+          <PARAM arraysize="*" datatype="char" name="referencePosition" utype="spec:Spectrum.CoordSys.RedshiftFrame.RefPos" value="TBD"/>
+          <PARAM arraysize="*" datatype="char" name="ucd" utype="spec:Spectrum.CoordSys.RedshiftFrame.UCD" value="TBD"/>
+        </GROUP>
+        <GROUP utype="spec:Spectrum.CoordSys.GenericCoordFrame">
+          <PARAM arraysize="*" datatype="char" name="id" utype="spec:Spectrum.CoordSys.GenericCoordFrame.ID" value="TBD"/>
+          <PARAM arraysize="*" datatype="char" name="name" utype="spec:Spectrum.CoordSys.GenericCoordFrame.Name" value="TBD"/>
+          <PARAM arraysize="*" datatype="char" name="referencePosition" utype="spec:Spectrum.CoordSys.GenericCoordFrame.RefPos" value="TBD"/>
+          <PARAM arraysize="*" datatype="char" name="ucd" utype="spec:Spectrum.CoordSys.GenericCoordFrame.UCD" value="TBD"/>
+        </GROUP>
+      </GROUP>
+      <GROUP utype="spec:Spectrum.Curation">
+        <PARAM arraysize="*" datatype="char" name="Publisher" ucd="meta.organization;meta.curation" utype="spec:Spectrum.Curation.Publisher" value="Chandra X-ray Center"/>
+        <PARAM arraysize="*" datatype="char" name="PubID" ucd="meta.curation.pubid" utype="spec:Spectrum.Curation.PublisherID" value="ivo://cfa.harvard.edu"/>
+        <PARAM arraysize="*" datatype="char" name="PublisherDID" ucd="meta.ref.url;meta.curation" utype="spec:Spectrum.Curation.PublisherDID" value="TBD"/>
+        <PARAM arraysize="*" datatype="char" name="Reference" ucd="meta.bib.bibcode" utype="spec:Spectrum.Curation.Reference" value="TBD"/>
+        <PARAM arraysize="*" datatype="char" name="Version" ucd="meta.version;meta.curation" utype="spec:Spectrum.Curation.Version" value="TBD"/>
+        <PARAM arraysize="*" datatype="char" name="Rights" utype="spec:Spectrum.Curation.Rights" value="TBD"/>
+        <PARAM arraysize="*" datatype="char" name="Date" utype="spec:Spectrum.Curation.Date" value="2003-12-31T14:00:02"/>
+        <GROUP utype="spec:Spectrum.Curation.Contact">
+          <PARAM arraysize="*" datatype="char" name="Contact" ucd="meta.human;meta.curation" utype="spec:Spectrum.Curation.Contact.Name" value="Jonathan McDowell"/>
+          <PARAM arraysize="*" datatype="char" name="email" ucd="meta.email" utype="spec:Spectrum.Curation.Contact.Email" value="jcm@cfa.harvard.edu"/>
+        </GROUP>
+      </GROUP>
+      <GROUP utype="spec:Spectrum.DataID">
+        <PARAM arraysize="*" datatype="char" name="Title" ucd="meta.title;meta.dataset" utype="spec:Spectrum.DataID.Title" value="Arp 220 SED"/>
+        <PARAM arraysize="*" datatype="char" name="Creator" ucd="meta.curation.creator" utype="spec:Spectrum.DataID.Creator" value="ivo://sao/FLWO"/>
+        <PARAM arraysize="*" datatype="char" name="DatasetID" ucd="meta.id;meta.dataset" utype="spec:Spectrum.DataID.DatasetID" value="TBD"/>
+        <PARAM arraysize="*" datatype="char" name="DataDate" ucd="time;soft.dataset;meta.curation" utype="spec:Spectrum.DataID.Date" value="2003-12-31T14:00:02Z"/>
+        <PARAM arraysize="*" datatype="char" name="Version" ucd="soft.dataset.version;meta.curation" utype="spec:Spectrum.DataID.Version" value="1"/>
+        <PARAM arraysize="*" datatype="char" name="Instrument" ucd="inst.id" utype="spec:Spectrum.DataID.Instrument" value="BCS"/>
+        <PARAM arraysize="*" datatype="char" name="CreationType" utype="spec:Spectrum.DataID.CreationType" value="Archival"/>
+        <PARAM arraysize="*" datatype="char" name="Bandpass" ucd="intr.bandpass" utype="spec:Spectrum.DataID.Bandpass" value="TBD"/>
+        <PARAM arraysize="*" datatype="char" name="CreatorDID" ucd="meta.id" utype="spec:Spectrum.DataID.CreatorDID" value="TBD"/>
+        <PARAM arraysize="*" datatype="char" name="Logo" ucd="meta.curation.logo" utype="spec:Spectrum.DataID.Logo" value="http://cfa-www.harvard.edu/nvo/cfalogo.jpg"/>
+        <PARAM arraysize="*" datatype="char" name="DataSource" utype="spec:Spectrum.DataID.DataSource" value="TBD"/>
+        <PARAM arraysize="*" datatype="char" name="Filter" ucd="inst.filter.id" utype="spec:Spectrum.DataID.Collection" value="G300"/>
+        <PARAM arraysize="*" datatype="char" name="Collection2" utype="spec:Spectrum.DataID.Collection" value="X-Ray"/>
+        <PARAM arraysize="*" datatype="char" name="Collection3" utype="spec:Spectrum.DataID.Collection" value="Third Cambridge Catalogue of Radio Sources"/>
+        <PARAM arraysize="*" datatype="char" name="Contributor" utype="spec:Spectrum.DataID.Contributor" value="TBD"/>
+      </GROUP>
+      <GROUP utype="spec:Spectrum.Derived">
+        <PARAM datatype="double" name="SNR" ucd="stat.snr" utype="spec:Spectrum.Derived.SNR" value="3.0"/>
+        <PARAM datatype="double" name="VarAmpl" ucd="src.var.amplitude;arith.ratio" utype="spec:Spectrum.Derived.VarAmpl" value="0.0"/>
+        <GROUP utype="spec:Spectrum.Derived.Redshift">
+          <PARAM datatype="double" name="Value" utype="spec:Spectrum.Derived.Redshift.Value" value="0.0"/>
+          <PARAM datatype="double" name="Resolution" utype="spec:Spectrum.Derived.Redshift.Resolution" value="0.0"/>
+          <PARAM datatype="int" name="Quality" utype="spec:Spectrum.Derived.Redshift.Quality" value="0"/>
+          <GROUP utype="spec:Spectrum.Derived.Redshift.Accuracy">
+            <PARAM datatype="double" name="BinLow" utype="spec:Spectrum.Derived.Redshift.Accuracy.BinLow" value="0.0"/>
+            <PARAM datatype="double" name="BinHigh" utype="spec:Spectrum.Derived.Redshift.Accuracy.BinHigh" value="0.0"/>
+            <PARAM datatype="double" name="BinSize" utype="spec:Spectrum.Derived.Redshift.Accuracy.BinSize" value="0.0"/>
+            <PARAM datatype="double" name="StatError" utype="spec:Spectrum.Derived.Redshift.Accuracy.StatError" value="0.0"/>
+            <PARAM datatype="double" name="StatErrLow" utype="spec:Spectrum.Derived.Redshift.Accuracy.StatErrLow" value="0.0"/>
+            <PARAM datatype="double" name="StatErrHigh" utype="spec:Spectrum.Derived.Redshift.Accuracy.StatErrHigh" value="0.0"/>
+            <PARAM datatype="double" name="SysError" utype="spec:Spectrum.Derived.Redshift.Accuracy.SysError" value="0.0"/>
+            <PARAM datatype="double" name="Confidence" utype="spec:Spectrum.Derived.Redshift.Accuracy.Confidence" value="0.0"/>
+          </GROUP>
+        </GROUP>
+      </GROUP>
+      <PARAM datatype="double" name="pi" ucd="TBD" unit="TBD" value="3.14159"/>
+      <PARAM datatype="double" name="baddbl1" ucd="meta.id" unit=""/>
+      <PARAM datatype="double" name="baddbl2" ucd="meta.id" unit=""/>
+      <PARAM datatype="double" name="baddbl3" ucd="meta.id"/>
+      <PARAM datatype="double" name="baddbl4" ucd="meta.id" unit="" value=""/>
+      <PARAM datatype="int" name="daysofweek" ucd="TBD" unit="TBD" value="7"/>
+      <PARAM arraysize="*" datatype="char" name="TargetType" ucd="TBD" value="Galaxy"/>
+      <PARAM arraysize="*" datatype="char" name="camdate" ucd="TBD" value="2011-01-04T22:01:59"/>
+      <PARAM arraysize="*" datatype="char" name="age" ucd="TBD" unit="Gyr" value="1.8"/>
+      <PARAM datatype="double" name="TargetPos" unit="deg" value="233.737917"/>
+      <PARAM datatype="double" name="TargetPos" unit="deg" value="23.50333"/>
+      <GROUP utype="spec:Spectrum.Data">
+        <GROUP utype="spec:Spectrum.Data.TimeAxis">
+          <FIELDref ref="ID_0"/>
+          <FIELDref ref="ID_1"/>
+          <GROUP utype="spec:Spectrum.Data.TimeAxis.Accuracy">
+            <FIELDref ref="ID_2"/>
+            <FIELDref ref="ID_3"/>
+            <FIELDref ref="ID_4"/>
+            <FIELDref ref="ID_5"/>
+            <FIELDref ref="ID_6"/>
+            <FIELDref ref="ID_7"/>
+            <FIELDref ref="ID_8"/>
+            <FIELDref ref="ID_9"/>
+          </GROUP>
+        </GROUP>
+        <GROUP utype="spec:Spectrum.Data.SpectralAxis">
+          <FIELDref ref="ID_10"/>
+          <FIELDref ref="ID_11"/>
+          <GROUP utype="spec:Spectrum.Data.SpectralAxis.Accuracy">
+            <FIELDref ref="ID_12"/>
+            <FIELDref ref="ID_13"/>
+            <FIELDref ref="ID_14"/>
+            <FIELDref ref="ID_15"/>
+            <FIELDref ref="ID_16"/>
+            <FIELDref ref="ID_17"/>
+            <FIELDref ref="ID_18"/>
+            <FIELDref ref="ID_19"/>
+          </GROUP>
+        </GROUP>
+        <GROUP utype="spec:Spectrum.Data.FluxAxis">
+          <FIELDref ref="ID_20"/>
+          <FIELDref ref="ID_21"/>
+          <FIELDref ref="ID_22"/>
+          <GROUP utype="spec:Spectrum.Data.FluxAxis.Accuracy">
+            <FIELDref ref="ID_23"/>
+            <FIELDref ref="ID_24"/>
+            <FIELDref ref="ID_25"/>
+            <FIELDref ref="ID_26"/>
+            <FIELDref ref="ID_27"/>
+            <FIELDref ref="ID_28"/>
+            <FIELDref ref="ID_29"/>
+            <FIELDref ref="ID_30"/>
+          </GROUP>
+        </GROUP>
+        <GROUP utype="spec:Spectrum.Data.BackgroundModel">
+          <FIELDref ref="ID_31"/>
+          <FIELDref ref="ID_32"/>
+          <FIELDref ref="ID_33"/>
+          <GROUP utype="spec:Spectrum.Data.BackgroundModel.Accuracy">
+            <FIELDref ref="ID_34"/>
+            <FIELDref ref="ID_35"/>
+            <FIELDref ref="ID_36"/>
+            <FIELDref ref="ID_37"/>
+            <FIELDref ref="ID_38"/>
+            <FIELDref ref="ID_39"/>
+            <FIELDref ref="ID_40"/>
+            <FIELDref ref="ID_41"/>
+          </GROUP>
+        </GROUP>
+      </GROUP>
+      <FIELD ID="ID_0" datatype="double" name="timeValue" ucd="timeValueUcd" unit="timeValueUnit" utype="spec:Spectrum.Data.TimeAxis.Value"/>
+      <FIELD ID="ID_1" datatype="double" name="timeResol" ucd="timeResolUcd" unit="timeResolUnit" utype="spec:Spectrum.Data.TimeAxis.Resolution"/>
+      <FIELD ID="ID_2" datatype="double" name="timeBinLow" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.TimeAxis.Accuracy.BinLow"/>
+      <FIELD ID="ID_3" datatype="double" name="timeBinHigh" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.TimeAxis.Accuracy.BinHigh"/>
+      <FIELD ID="ID_4" datatype="double" name="timeBinSize" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.TimeAxis.Accuracy.BinSize"/>
+      <FIELD ID="ID_5" datatype="double" name="timeStatErr" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.TimeAxis.Accuracy.StatError"/>
+      <FIELD ID="ID_6" datatype="double" name="timeErrLow" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.TimeAxis.Accuracy.StatErrLow"/>
+      <FIELD ID="ID_7" datatype="double" name="timeErrHigh" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.TimeAxis.Accuracy.StatErrHigh"/>
+      <FIELD ID="ID_8" datatype="double" name="timeSysErr" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.TimeAxis.Accuracy.SysError"/>
+      <FIELD ID="ID_9" datatype="double" name="timeConf" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.TimeAxis.Accuracy.Confidence"/>
+      <FIELD ID="ID_10" datatype="double" name="spectralValue" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.SpectralAxis.Value"/>
+      <FIELD ID="ID_11" datatype="double" name="spectralResol" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.SpectralAxis.Resolution"/>
+      <FIELD ID="ID_12" datatype="double" name="spectralBinLow" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.SpectralAxis.Accuracy.BinLow"/>
+      <FIELD ID="ID_13" datatype="double" name="spectralBinHigh" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.SpectralAxis.Accuracy.BinHigh"/>
+      <FIELD ID="ID_14" datatype="double" name="spectralBinSize" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.SpectralAxis.Accuracy.BinSize"/>
+      <FIELD ID="ID_15" datatype="double" name="spectralStatErr" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.SpectralAxis.Accuracy.StatError"/>
+      <FIELD ID="ID_16" datatype="double" name="spectralErrLow" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.SpectralAxis.Accuracy.StatErrLow"/>
+      <FIELD ID="ID_17" datatype="double" name="spectralErrHigh" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.SpectralAxis.Accuracy.StatErrHigh"/>
+      <FIELD ID="ID_18" datatype="double" name="spectralSysErr" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.SpectralAxis.Accuracy.SysError"/>
+      <FIELD ID="ID_19" datatype="double" name="spectralConf" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.SpectralAxis.Accuracy.Confidence"/>
+      <FIELD ID="ID_20" datatype="double" name="fluxValue" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.FluxAxis.Value"/>
+      <FIELD ID="ID_21" datatype="double" name="fluxResol" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.FluxAxis.Resolution"/>
+      <FIELD ID="ID_22" datatype="int" name="fluxQual" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.FluxAxis.Quality"/>
+      <FIELD ID="ID_23" datatype="double" name="fluxBinLow" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.FluxAxis.Accuracy.BinLow"/>
+      <FIELD ID="ID_24" datatype="double" name="fluxBinHigh" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.FluxAxis.Accuracy.BinHigh"/>
+      <FIELD ID="ID_25" datatype="double" name="fluxBinSize" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.FluxAxis.Accuracy.BinSize"/>
+      <FIELD ID="ID_26" datatype="double" name="fluxStatErr" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.FluxAxis.Accuracy.StatError"/>
+      <FIELD ID="ID_27" datatype="double" name="fluxErrLow" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.FluxAxis.Accuracy.StatErrLow"/>
+      <FIELD ID="ID_28" datatype="double" name="fluxErrHigh" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.FluxAxis.Accuracy.StatErrHigh"/>
+      <FIELD ID="ID_29" datatype="double" name="fluxSysErr" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.FluxAxis.Accuracy.SysError"/>
+      <FIELD ID="ID_30" datatype="double" name="fluxConf" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.FluxAxis.Accuracy.Confidence"/>
+      <FIELD ID="ID_31" datatype="double" name="bkgValue" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.BackgroundModel.Value"/>
+      <FIELD ID="ID_32" datatype="double" name="bkgResol" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.BackgroundModel.Resolution"/>
+      <FIELD ID="ID_33" datatype="int" name="bkgQual" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.BackgroundModel.Quality"/>
+      <FIELD ID="ID_34" datatype="double" name="bkgBinLow" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.BackgroundModel.Accuracy.BinLow"/>
+      <FIELD ID="ID_35" datatype="double" name="bkgBinHigh" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.BackgroundModel.Accuracy.BinHigh"/>
+      <FIELD ID="ID_36" datatype="double" name="bkgBinSize" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.BackgroundModel.Accuracy.BinSize"/>
+      <FIELD ID="ID_37" datatype="double" name="bkgStatErr" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.BackgroundModel.Accuracy.StatError"/>
+      <FIELD ID="ID_38" datatype="double" name="bkgErrLow" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.BackgroundModel.Accuracy.StatErrLow"/>
+      <FIELD ID="ID_39" datatype="double" name="bkgErrHigh" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.BackgroundModel.Accuracy.StatErrHigh"/>
+      <FIELD ID="ID_40" datatype="double" name="bkgSysErr" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.BackgroundModel.Accuracy.SysError"/>
+      <FIELD ID="ID_41" datatype="double" name="bkgConf" ucd="TBD" unit="TBD" utype="spec:Spectrum.Data.BackgroundModel.Accuracy.Confidence"/>
+      <DATA>
+        <TABLEDATA>
+          <TR>
+            <TD>0.101</TD>
+            <TD>0.102</TD>
+            <TD>0.108</TD>
+            <TD>0.109</TD>
+            <TD>0.11</TD>
+            <TD>0.105</TD>
+            <TD>0.106</TD>
+            <TD>0.107</TD>
+            <TD>0.103</TD>
+            <TD>0.104</TD>
+            <TD>0.301</TD>
+            <TD>0.302</TD>
+            <TD>0.308</TD>
+            <TD>0.309</TD>
+            <TD>0.31</TD>
+            <TD>0.305</TD>
+            <TD>0.306</TD>
+            <TD>0.307</TD>
+            <TD>0.303</TD>
+            <TD>0.304</TD>
+            <TD>0.201</TD>
+            <TD>0.202</TD>
+            <TD>0</TD>
+            <TD>0.208</TD>
+            <TD>0.209</TD>
+            <TD>0.21</TD>
+            <TD>0.205</TD>
+            <TD>0.206</TD>
+            <TD>0.207</TD>
+            <TD>0.203</TD>
+            <TD>0.204</TD>
+            <TD>0.401</TD>
+            <TD>0.402</TD>
+            <TD>0</TD>
+            <TD>0.408</TD>
+            <TD>0.409</TD>
+            <TD>0.41</TD>
+            <TD>0.405</TD>
+            <TD>0.406</TD>
+            <TD>0.407</TD>
+            <TD>0.403</TD>
+            <TD>0.404</TD>
+          </TR>
+          <TR>
+            <TD>1.101</TD>
+            <TD>1.102</TD>
+            <TD>1.108</TD>
+            <TD>1.109</TD>
+            <TD>1.11</TD>
+            <TD>1.105</TD>
+            <TD>1.106</TD>
+            <TD>1.107</TD>
+            <TD>1.103</TD>
+            <TD>1.104</TD>
+            <TD>1.301</TD>
+            <TD>1.302</TD>
+            <TD>1.308</TD>
+            <TD>1.309</TD>
+            <TD>1.31</TD>
+            <TD>1.305</TD>
+            <TD>1.306</TD>
+            <TD>1.307</TD>
+            <TD>1.303</TD>
+            <TD>1.304</TD>
+            <TD>1.201</TD>
+            <TD>1.202</TD>
+            <TD>1</TD>
+            <TD>1.208</TD>
+            <TD>1.209</TD>
+            <TD>1.21</TD>
+            <TD>1.205</TD>
+            <TD>1.206</TD>
+            <TD>1.207</TD>
+            <TD>1.203</TD>
+            <TD>1.204</TD>
+            <TD>1.401</TD>
+            <TD>1.4020000000000001</TD>
+            <TD>1</TD>
+            <TD>1.408</TD>
+            <TD>1.409</TD>
+            <TD>1.41</TD>
+            <TD>1.405</TD>
+            <TD>1.4060000000000001</TD>
+            <TD>1.407</TD>
+            <TD>1.403</TD>
+            <TD>1.404</TD>
+          </TR>
+          <TR>
+            <TD>2.101</TD>
+            <TD>2.102</TD>
+            <TD>2.108</TD>
+            <TD>2.109</TD>
+            <TD>2.11</TD>
+            <TD>2.105</TD>
+            <TD>2.106</TD>
+            <TD>2.107</TD>
+            <TD>2.103</TD>
+            <TD>2.104</TD>
+            <TD>2.301</TD>
+            <TD>2.302</TD>
+            <TD>2.308</TD>
+            <TD>2.309</TD>
+            <TD>2.31</TD>
+            <TD>2.305</TD>
+            <TD>2.306</TD>
+            <TD>2.307</TD>
+            <TD>2.303</TD>
+            <TD>2.304</TD>
+            <TD>2.201</TD>
+            <TD>2.202</TD>
+            <TD>2</TD>
+            <TD>2.208</TD>
+            <TD>2.209</TD>
+            <TD>2.21</TD>
+            <TD>2.205</TD>
+            <TD>2.206</TD>
+            <TD>2.207</TD>
+            <TD>2.203</TD>
+            <TD>2.204</TD>
+            <TD>2.401</TD>
+            <TD>2.402</TD>
+            <TD>2</TD>
+            <TD>2.408</TD>
+            <TD>2.409</TD>
+            <TD>2.41</TD>
+            <TD>2.4050000000000002</TD>
+            <TD>2.406</TD>
+            <TD>2.407</TD>
+            <TD>2.403</TD>
+            <TD>2.404</TD>
+          </TR>
+        </TABLEDATA>
+      </DATA>
+    </TABLE>
+  </RESOURCE>
+</VOTABLE>

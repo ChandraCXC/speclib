@@ -4,13 +4,11 @@
  */
 package cfa.vo.speclib.io;
 
-import cfa.vo.speclib.SpectralDataset;
 import cfa.vo.speclib.doc.MPArrayList;
 import cfa.vo.speclib.doc.MPQuantity;
 import cfa.vo.speclib.doc.MPNode;
-import cfa.vo.speclib.doc.ModelObjectFactory;
 import cfa.vo.speclib.doc.ModelProxy;
-import cfa.vo.vomodel.DefaultModelBuilder;
+import cfa.vo.speclib.doc.ModeledDocument;
 import cfa.vo.vomodel.Model;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -31,11 +29,11 @@ import java.util.UUID;
 
 /**
  * This class implements the IFileIO interface, providing methods to 
- * serialize/deserialize SpectralDataset instances in VOTable format.
+ * serialize/deserialize IVOA Dataset instances in VOTable format.
  *  
  * @author mdittmar
  */
-public class VOTableIO implements IFileIO {
+public class VOTableIO extends ModelIO implements IFileIO {
 
     /* VOElement DOM node TagNames */
     private final static String DOM_TAG_DOCUMENT  = "VOTABLE";
@@ -54,7 +52,7 @@ public class VOTableIO implements IFileIO {
     private final static String ATT_TAG_ARRSIZE  = "arraysize";
     private final static String ATT_TAG_DESC     = "description";
     private final static String ATT_TAG_DTYPE    = "datatype";
-    private final static String ATT_TAG_ID       = "id";
+    private final static String ATT_TAG_ID       = "ID";
     private final static String ATT_TAG_NAME     = "name";
     private final static String ATT_TAG_REF      = "ref";
     private final static String ATT_TAG_TYPE     = "type";
@@ -72,16 +70,18 @@ public class VOTableIO implements IFileIO {
     private Model model = null;
     private LinkedHashMap< String, Column > tabledata = null;
     
-    /** Read Spectral Dataset from specified URL
+    /** Read IVOA Dataset from provided URL
      *  @param file 
      *     {@link java.net.URL}
-     * 
-     *  @return doc
-     *    {@link cfa.vo.speclib.SpectralDataset }
+     *  @return
+     *     Object - Instance of IVOA dataset presented according to it's model.
+     *              This implementation returns interfaces implemented using 
+     *              {@link cfa.vo.speclib.doc.ModelProxy}
      */
-    public SpectralDataset read(URL file) throws IOException {
+    @Override
+    public Object read(URL file) throws IOException {
 
-        SpectralDataset result;
+        Object result;
         VOElement top = null;
 
         // Use STIL package factory to interpret file to VOTable elements.
@@ -94,35 +94,29 @@ public class VOTableIO implements IFileIO {
         }
 
         // Use VOTMapper to convert the VOElement hierarchy to MPNode
-        MPNode doc = new VOTMapper().convert( top );
+        ModeledDocument doc = new VOTMapper().convert( top );
         
-        // Use ModelObjectFactory to provide Proxy interface
-        // NOTE: everything above is generic, though the mapper will use the
-        //       model defintion, it is auto-determined.  Here, we expect a 
-        //       specific type of Proxy to be returned.  The Factory is 
-        //       currently only setup for 1 model, so this will work, but 
-        //       this part of the thread is model specific.  We'll either 
-        //       need to determine the model type from the document to 
-        //       initialize the factory, or take a different approach.
-        result = (SpectralDataset)new ModelObjectFactory().newInstanceByModelPath( doc.getModelpath(), doc );
+        // Create IVOA Datatset Object
+        //  Uses ModelObjectFactory to provide Proxy interface for this dataset.
+        result = this.generateInterface( doc );
         
         return result;
     }
     
-    /** Read Spectral Dataset from specified URL and interpret according to 
-     *  the provided Model specification.
+    /** Read IVOA Dataset from provided URL and interpret according to the
+     *  provided Model specification.  This enables users to modify or 
+     *  override the model definitions to accommodate specific serializations.
      * 
      *  @param file 
      *     {@link java.net.URL}
-     *  @param model
-     *     {@link cfa.vo.vomodel.Model}
-     * 
-     *  @return doc
-     *    {@link cfa.vo.speclib.SpectralDataset }
+     *  @return
+     *     Object - Instance of IVOA dataset presented according to it's model.
+     *              This implementation returns interfaces implemented using 
+     *              {@link cfa.vo.speclib.doc.ModelProxy}
      */
-    public SpectralDataset read(URL file, Model model) throws IOException {
+    public Object read(URL file, Model model) throws IOException {
 
-        SpectralDataset result;
+        Object result;
         VOElement top = null;
 
         // Use STIL package factory to interpret file to VOTable elements.
@@ -136,40 +130,39 @@ public class VOTableIO implements IFileIO {
 
         // Use VOTMapper to convert the VOElement hierarchy to MPNode
         // according to the provided model specification.
-        MPNode doc = new VOTMapper().convert( top, model );
+        ModeledDocument doc = new VOTMapper().convert( top, model );
         
-        // Use ModelObjectFactory to provide Proxy interface
-        // NOTE: everything above is generic, though the mapper will use the
-        //       model defintion, it is auto-determined.  Here, we expect a 
-        //       specific type of Proxy to be returned.  The Factory is 
-        //       currently only setup for 1 model, so this will work, but 
-        //       this part of the thread is model specific.  We'll either 
-        //       need to determine the model type from the document to 
-        //       initialize the factory, or take a different approach.
-        result = (SpectralDataset)new ModelObjectFactory().newInstanceByModelPath( doc.getModelpath(), doc );
+        // Create IVOA Datatset Object
+        //  Uses ModelObjectFactory to provide Proxy interface for this dataset.
+        result = this.generateInterface( doc );
         
         return result;
     }
 
-    /** Read Spectral Dataset from provided input stream
+    /** Read IVOA Dataset from provided Stream
      *  @param is 
      *     {@link java.io.InputStream}
      * 
-     *  @return doc
-     *    {@link cfa.vo.speclib.SpectralDataset }
+     *     Object - Instance of IVOA dataset presented according to it's model.
+     *              This implementation returns interfaces implemented using 
+     *              {@link cfa.vo.speclib.doc.ModelProxy}
      */
     //TODO:  Implement
-    public SpectralDataset read(InputStream is) throws IOException {
+    @Override
+    public Object read(InputStream is) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    /** Write Spectral Dataset to specified URL
+    /** Write IVOA Dataset to specified URL
      *  @param file 
      *     {@link java.net.URL}
-     *  @param ds
-     *    {@link cfa.vo.speclib.SpectralDataset }
+     *  @param doc
+     *     Object - Instance of IVOA dataset presented according to it's model.
+     *              This implementation requires interfaces implemented using 
+     *              {@link cfa.vo.speclib.doc.ModelProxy}
      */
-    public void write(URL file, SpectralDataset ds) throws IOException 
+    @Override
+    public void write(URL file, Object ds) throws IOException 
     {
         OutputStream os;
         
@@ -193,16 +186,22 @@ public class VOTableIO implements IFileIO {
         os.close();
     }
 
-    /** Write Spectral Dataset to specified stream
-     *  @param os 
-     *     {@link java.io.OutputStream}
-     *  @param ds
-     *    {@link cfa.vo.speclib.SpectralDataset }
+    /** Write IVOA Dataset to specified Stream
+     *  @param file 
+     *     {@link java.net.URL}
+     *  @param doc
+     *     Object - Instance of IVOA dataset presented according to it's model.
+     *              This implementation requires interfaces implemented using 
+     *              {@link cfa.vo.speclib.doc.ModelProxy}
      */
-    public void write(OutputStream os, SpectralDataset ds) throws IOException
+    @Override
+    public void write(OutputStream os, Object ds) throws IOException
     {   
-        // Convert SpectralDataset to W3C DOM Document using STIL package.
-        Document vot = convertToVOT( ds );
+        // Extract ModeledDocument from Dataset
+        ModeledDocument doc = this.extractModeledDocument( ds );
+        
+        // Convert Dataset to W3C DOM Document using STIL package.
+        Document vot = convertToVOT( doc );
         DOMSource source = new DOMSource( vot );
 
         // Setup output stream
@@ -224,39 +223,31 @@ public class VOTableIO implements IFileIO {
     }
     
     /**
-     * Convert SpectralDocument to STIL VODocument object.
+     * Convert IVOA Dataset to STIL VODocument object.
      *
      * STIL defines convenient Element classes for the various VOTable
      * Elements (Group, Param, Table, etc..) so we use these to build the
      * DOM and return its Document interface.
      * 
-     * @param ds
-     *    {@link cfa.vo.speclib.SpectralDataset }
+     *  @param doc
+     *    {@link cfa.vo.speclib.doc.ModeledDocument}
+     *    IVOA Dataset represented as a ModeledDocument
+     * 
      * @return 
      *    {@link org.w3c.dom.Document }
      */
-      private Document convertToVOT( SpectralDataset ds ) throws IOException
+      private Document convertToVOT( ModeledDocument doc ) throws IOException
       {
         VODocument vodoc = new VODocument(); // VODocument implements w3c Document interface..
         VOElement  root;
         VOElement  res;
-
-        // Extract underlying SpectralDocument from input dataset
-        MPNode spdoc = null;
-        if ( Proxy.isProxyClass( ds.getClass() )) {
-           ModelProxy h = (ModelProxy)Proxy.getInvocationHandler( ds );
-           spdoc = h.getDoc();
-        }
-        else {
-            throw new IllegalArgumentException("ds is not a Proxy type, got ("+ds.getClass().getSimpleName()+") instead.");
-        }
         
         // Get model specification for this dataset.. to fill in any 
         // important missing information. (Utypes, UCDs, etc.)
         if ( this.model == null )
         {
           try {
-            this.model = this.identifyModel( ds ); 
+            this.model = this.getModelDefs( doc ); 
           } catch (IOException ex) {
             throw new IllegalArgumentException("ds represents unsupported model.");
           }
@@ -268,12 +259,13 @@ public class VOTableIO implements IFileIO {
         root.setAttribute(ATT_TAG_VERSION, CONST_VOTABLE_VERSION );
         vodoc.appendChild(root);
 
-        /* add RESOURCE element to doc.         */
+        /* add RESOURCE element to VOTable.         */
         res = (VOElement) vodoc.createElement(DOM_TAG_RESOURCE);
         root.appendChild(res);
         
-        /* add TABLE element to doc.         */
-        addTableElement( res, spdoc );
+        /* add TABLE element to VOTable RESOURCE.   */
+        MPNode top = (MPNode)doc;  //TODO: doc.getTopNode()??
+        addTableElement( res, top );
         
         return vodoc;
     }
@@ -527,7 +519,11 @@ public class VOTableIO implements IFileIO {
         else
         {
             // TODO - proper representation of NULL value (VOTable spec sections 5.5 and 6
-            throw new UnsupportedOperationException("Null value representation not yet supported.");
+            param.setAttribute( ATT_TAG_DTYPE, "char" );
+            param.setAttribute( ATT_TAG_ARRSIZE, "*" );
+            tmpstr = "";
+            param.setAttribute( ATT_TAG_VALUE, tmpstr );
+            //throw new UnsupportedOperationException("Null value representation not yet supported.");
         }
         
         // Add new parameter to parent.
@@ -778,7 +774,11 @@ public class VOTableIO implements IFileIO {
         Column col = this.tabledata.get(mp);
         if ( col != null )
         {
-            col.data[ row ] = q.getValue().toString();
+            try {
+              col.data[ row ] = q.getValue().toString();
+            } catch ( Exception ex) {
+                throw ex;
+            }
         }
         else
             throw new IOException("Attempt to assign values to undefined column: "+mp);
@@ -798,6 +798,9 @@ public class VOTableIO implements IFileIO {
         // get owner document for creating new elements.
         Document document = parent.getOwnerDocument();
         int nrows = -1;
+
+        if ( this.tabledata == null )
+            return; // nothing to do
         
         // Add FIELD element for each Column
         for ( Column col : this.tabledata.values() )
@@ -833,18 +836,4 @@ public class VOTableIO implements IFileIO {
           }
         }
     }
-    
-    private Model identifyModel( SpectralDataset ds ) throws IOException
-    {
-        String modelname = ds.getDataModel().getName().getValue(); // Always reachable because of NullObject pattern
-        Model result;
-
-        if ( modelname == null || modelname.isEmpty() )
-          modelname = DefaultModelBuilder.DEFAULT_MODEL_NAME;
-          // This check should probably be moved in the DefaultModelBuilder implementation
-        
-        result = new DefaultModelBuilder(modelname).build();
-        return result;
-    }
-    
 }

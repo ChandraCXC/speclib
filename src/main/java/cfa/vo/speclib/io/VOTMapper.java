@@ -19,11 +19,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,7 +49,7 @@ public class VOTMapper {
     private final static String ATT_TAG_ARRSIZE  = "arraysize";
     private final static String ATT_TAG_DESC     = "description";
     private final static String ATT_TAG_DTYPE    = "datatype";
-    private final static String ATT_TAG_ID       = "id";
+    private final static String ATT_TAG_ID       = "ID";
     private final static String ATT_TAG_NAME     = "name";
     private final static String ATT_TAG_REF      = "ref";
     private final static String ATT_TAG_TYPE     = "type";
@@ -656,6 +654,7 @@ public class VOTMapper {
              id = col.info.getAttribute(ATT_TAG_ID);
              if ( ref.equalsIgnoreCase(id) )
                 break; // Found corresponding column.
+             col = null;
           }
           
           if ( col == null )
@@ -686,7 +685,8 @@ public class VOTMapper {
           // else Fieldref with no utype.. assume match
           
           // Update utype and ucd attributes from FIELDref
-          col.info.setAttribute(ATT_TAG_UTYPE, field.getAttribute(ATT_TAG_UTYPE));
+          if ( field.hasAttribute(ATT_TAG_UTYPE))
+            col.info.setAttribute(ATT_TAG_UTYPE, field.getAttribute(ATT_TAG_UTYPE));
           if ( field.hasAttribute(ATT_TAG_UCD))
             col.info.setAttribute(ATT_TAG_UCD, field.getAttribute(ATT_TAG_UCD));
           if ( field.hasAttribute(ATT_TAG_NAME))
@@ -784,18 +784,23 @@ public class VOTMapper {
     
     private Model identifyModel( VOElement top ) throws IOException
     {
-        // First try: Param with expected UType.
+        // First try: Param with expected UType/Tag.
         NodeList params = top.getElementsByVOTagName(DOM_TAG_PARAM);
         ParamElement param;
         String modelname = "";
         Model result;
 
-        String expected = "Dataset.DataModel.Name";
+        String expected  = "Dataset.DataModel.Name"; // Spectral-2.0
+        String expected2 = "Spectrum.DataModel";     // Spectrum-1.*
         String actual; // Actual model path value
         for ( int ii=0; ii<params.getLength(); ii++) {
            param = (ParamElement)params.item(ii);
            actual = param.getAttribute(ATT_TAG_UTYPE);
            if ( actual != null && actual.contains(expected)) {
+             modelname = param.getAttribute(ATT_TAG_VALUE);
+             break;
+           }
+           else if ( actual != null && actual.contains(expected2)) {
              modelname = param.getAttribute(ATT_TAG_VALUE);
              break;
            }

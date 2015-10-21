@@ -140,6 +140,27 @@ public class MPNode implements ModeledElement, ModeledDocument {
         result = this.doc.keySet().toArray( new String[0] );
         return result;
     }
+
+    @Override
+    public String identifyModel()
+    {
+        String result = null;
+        MPNode top = this;  //TODO: doc.getTopNode()??
+        
+        // Scan for DataModel definition child
+        // <base>_DataModel
+        String path = top.getModelpath() + "_DataModel";
+        ModeledElement elem = top.getChildByMP(path);
+        if ( elem instanceof MPNode ) {
+          // <base>_DataModel_Name
+          path = path + "_Name";
+          elem = ((MPNode)elem).getChildByMP(path);
+        }
+        if ( elem instanceof Quantity ) {
+          result = (String)((Quantity)elem).getValue();
+        }
+        return result;
+    }
     
     @Override
     public boolean isEmpty()

@@ -13,7 +13,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * Warehouse Class which stores the information to access and build 
+ * a variety of 'supported' IVOA Data Model defintions.
+ * 
+ * IVOA Data Model to be loaded is determined by the Model name.
+ * 
  * @author mdittmar
  */
 public class DefaultModelBuilder extends AbstractModelBuilder {
@@ -24,11 +28,27 @@ public class DefaultModelBuilder extends AbstractModelBuilder {
     private Map<Entry, Entry> overrides = new HashMap();
     public static final String DEFAULT_MODEL_NAME = "SPECTRUM-2.0";
     
+    /**
+     * Constructor initializes the warehouse of supported VO Data Models.
+     * 
+     * Note: The DefaultModelBuilder has information to support the generation
+     * of multiple IVOA Models, however each instance is configured to a 
+     * specific model to facilitate the user overrides mechanism.
+     * 
+     * @param modelName
+     *    {@link String}  Name of IVOA Model of interest.  The value/format
+     *                    should match that provided by the model document.
+     */
     public DefaultModelBuilder(String modelName)
     {
-        this.modelName = modelName;
         supported = new HashMap();
-        supported.put("SPECTRUM-2.0","Table");
+        supported.put("SPECTRUM-1.0","Table:/spectrum_1p1.txt");
+        supported.put("SPECTRUM-2.0","Table:/spectrum_2p0.txt");
+      //supported.put("PHOTOMETRYPOINT-1.0","Table:/photometrypoint_1p0.txt");
+
+        // Should this validate that modelName is in 'supported'..
+        // rather than waiting for the build() command to throw the exception.
+        this.modelName = modelName;
     }
 
     public DefaultModelBuilder overrideEntries(Map<Entry, Entry> overrides) {
@@ -37,64 +57,58 @@ public class DefaultModelBuilder extends AbstractModelBuilder {
     }
     
     /**
-     * Constructor to generate an Object pre-loaded with the specified 
-     * VO Data Model definition.
+     * Builds a Model Object pre-loaded with the specified IVOA Data Model definition.
      *
      * @throws IllegalArgumentException if model name is not recognized.
      * @throws IOException on problem loading model definition.
+     * 
      * @return Model interface to Object.
      */
+    @Override
     public Model build() throws IOException
     {
-        Model model;
+        Model model = null;
         String key = modelName.toUpperCase();
-        URL file;
+        
+        if ( key == null || key.isEmpty() )
+            throw new IllegalArgumentException("No Model identified.");
         
         if (! this.supported.containsKey( key ) )
-            throw new IllegalArgumentException("Invalid or unrecognized Model name.");
+            throw new IllegalArgumentException("Invalid or unrecognized Model name '"+this.modelName+"'.");
 
-        if ( this.supported.get(key).equals("Table"))
-        {
+        if ( this.supported.get(key).startsWith("Table")){
             model = load_table( key );
         }
-        else
-            model = null;
 
         return model;
     }
 
+     /**
+     * Load model definition from ASCII Table.
+     * 
+     * @param modelName
+     * @return
+     * @throws IOException 
+     */
     private Model load_table( String modelName ) throws IOException
     {
         ModelTable model;
         String resourceFile;
         URL resourceURL;
 
-//        boolean fail=false;
+        // Get Table file location from 'supported' info.
+        String record = this.supported.get( modelName );
+        resourceFile = record.replace("Table:", "");
         
-        if ( modelName.equals("SPECTRUM-1.03") )
-        {
-            resourceFile = "/spectrum_1p03.txt";
-        }
-        else if ( modelName.equals( "SPECTRUM-2.0" ) )
-        {
-            resourceFile = "/spectrum_2p0.txt";
-        }
-        else if ( modelName.equals("PHOTOMETRYPOINT-1.0") )
-        {
-            resourceFile = "/photometrypoint_1p0.txt";
-        }
-        else
-            throw new IllegalArgumentException("Invalid or unrecognized Model name.");
-
         try {
+            // Generate URL from resource file name, and load the model defs.
             resourceURL = DefaultModelBuilder.class.getResource(resourceFile);
             model = (ModelTable) new ModelTableBuilder(resourceURL)
                     .overrideEntries(overrides)
                     .withModelData(getModelData())
                     .build();
         }
-        catch( IOException e )
-        {
+        catch( IOException e ){
             throw e;
         }
 

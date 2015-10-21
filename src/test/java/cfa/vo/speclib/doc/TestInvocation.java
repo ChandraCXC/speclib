@@ -4,6 +4,12 @@
  */
 package cfa.vo.speclib.doc;
 
+import cfa.vo.speclib.spectral.v2.DataModel;
+import cfa.vo.speclib.spectral.v2.Dataset;
+import cfa.vo.speclib.spectral.v2.Correction;
+import cfa.vo.speclib.spectral.v2.SpectralDataset;
+import cfa.vo.speclib.spectral.v2.GenericCorr;
+import cfa.vo.speclib.spectral.v2.DataID;
 import cfa.vo.speclib.*;
 import org.junit.*;
 

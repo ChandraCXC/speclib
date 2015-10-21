@@ -4,7 +4,7 @@
  */
 package cfa.vo.speclib.doc;
 
-import cfa.vo.speclib.*;
+import cfa.vo.speclib.Quantity;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -22,6 +22,11 @@ public class ModelObjectFactory {
         this.setClassList("SPECTRUM-2.0");
     }
         
+    public ModelObjectFactory( String modelname )
+    {
+        this.setClassList( modelname );
+    }
+    
     /**
      * Generate Proxy instance for specified interface class.
      * Throws IllegalArumentException for:
@@ -161,8 +166,11 @@ public class ModelObjectFactory {
      */
     private void setClassList( String modelName )
     {
-        if ( modelName.equals( "SPECTRUM-2.0" ) )
+        String key = modelName.toUpperCase();
+        if ( key.equals( "SPECTRUM-2.0" ) )
             setSpectralClassList();
+        else if ( key.equals( "SPECTRUM-1.0" ))
+            setSpectrum1ClassList();
         else
           throw new IllegalArgumentException("Invalid or unrecognized Model name.");        
     }
@@ -187,56 +195,116 @@ public class ModelObjectFactory {
     private void setSpectralClassList()
     {
         allowed = new ArrayList<Class>();
-        allowed.add( Accuracy.class);
-        allowed.add( ApFrac.class);
-        allowed.add( Bandpass.class);
-        allowed.add( Bounds.class);
-        allowed.add( Characterization.class);
-        allowed.add( CharacterizationAxis.class);
-        allowed.add( Contact.class);
-        allowed.add( CoordFrame.class);
-        allowed.add( CoordSys.class);
-        allowed.add( Correction.class);
-        allowed.add( Coverage.class);
-        allowed.add( Curation.class);
-        allowed.add( DataAxis.class);
-        allowed.add( DataID.class);
-        allowed.add( DataModel.class);
-        allowed.add( DataSource.class);
-        allowed.add( Dataset.class);
-        allowed.add( Derived.class);
-        allowed.add( Facility.class);
-        allowed.add( FluxCharAxis.class);
-        allowed.add( FluxDataAxis.class);
-        allowed.add( FluxFrame.class);
-        allowed.add( GenericCorr.class);
-        allowed.add( Instrument.class);
-        allowed.add( Interval.class);
-        allowed.add( Location.class);
-        allowed.add( ObsConfig.class);
-        allowed.add( ObservingElement.class);
-        allowed.add( Proposal.class);
-        allowed.add( QualityCode.class);
-        allowed.add( Redshift.class);
-        allowed.add( RedshiftFrame.class);
-        allowed.add( ResolPower.class);
-        allowed.add( Resolution.class);
-        allowed.add( SPPoint.class);
-        allowed.add( SamplingPrecision.class);
-        allowed.add( SamplingPrecisionRefVal.class);
-        allowed.add( SpaceFrame.class);
-        allowed.add( SpatialCharAxis.class);
-        allowed.add( SpectralCharAxis.class);
-        allowed.add( SpectralDataAxis.class);
-        allowed.add( SpectralDataset.class);
-        allowed.add( SpectralFrame.class);
-        allowed.add( SpectralResolution.class);
-        allowed.add( Support.class);
-        allowed.add( Target.class);
-        allowed.add( TimeCharAxis.class);
-        allowed.add( TimeFrame.class);
-        allowed.add( PhotCal.class);          //TODO: Photometry Model
-        allowed.add( ZeroPoint.class);        //TODO: Photometry Model
-        allowed.add( MagnitudeSystem.class);  //TODO: Photometry Model
+        allowed.add( cfa.vo.speclib.spectral.v2.Accuracy.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.ApFrac.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Bandpass.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Bounds.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Characterization.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.CharacterizationAxis.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Contact.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.CoordFrame.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.CoordSys.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Correction.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Coverage.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Curation.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.DataAxis.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.DataID.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.DataModel.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.DataSource.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Dataset.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Derived.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Facility.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.FluxCharAxis.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.FluxDataAxis.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.FluxFrame.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.GenericCorr.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Instrument.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Interval.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Location.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.ObsConfig.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.ObservingElement.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Proposal.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.QualityCode.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Redshift.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.RedshiftFrame.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.ResolPower.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Resolution.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.SPPoint.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.SamplingPrecision.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.SamplingPrecisionRefVal.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.SpaceFrame.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.SpatialCharAxis.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.SpectralCharAxis.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.SpectralDataAxis.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.SpectralDataset.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.SpectralFrame.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.SpectralResolution.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Support.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.Target.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.TimeCharAxis.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.TimeFrame.class);
+        allowed.add( cfa.vo.speclib.spectral.v2.PhotCal.class);          //TODO: Photometry Model
+        allowed.add( cfa.vo.speclib.spectral.v2.ZeroPoint.class);        //TODO: Photometry Model
+        allowed.add( cfa.vo.speclib.spectral.v2.MagnitudeSystem.class);  //TODO: Photometry Model
     }
+    
+    /**
+     * Load the supported Class list with Spectrum-1.1 model interfaces.
+     */
+    private void setSpectrum1ClassList()
+    {
+        allowed = new ArrayList<Class>();
+//        allowed.add( cfa.vo.speclib.spectral.v1.Accuracy.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.ApFrac.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Bandpass.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Bounds.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Characterization.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.CharacterizationAxis.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Contact.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.CoordFrame.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.CoordSys.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Correction.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Coverage.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Curation.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.DataAxis.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.DataID.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.DataModel.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.DataSource.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Dataset.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Derived.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Facility.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.FluxCharAxis.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.FluxDataAxis.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.FluxFrame.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.GenericCorr.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Instrument.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Interval.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Location.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.ObsConfig.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.ObservingElement.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Proposal.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.QualityCode.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Redshift.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.RedshiftFrame.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.ResolPower.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Resolution.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.SPPoint.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.SamplingPrecision.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.SamplingPrecisionRefVal.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.SpaceFrame.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.SpatialCharAxis.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.SpectralCharAxis.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.SpectralDataAxis.class);
+        allowed.add( cfa.vo.speclib.spectral.v1.SpectralDataset.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.SpectralFrame.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.SpectralResolution.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Support.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.Target.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.TimeCharAxis.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.TimeFrame.class);
+//        allowed.add( cfa.vo.speclib.spectral.v1.PhotCal.class);          //TODO: Photometry Model
+//        allowed.add( cfa.vo.speclib.spectral.v1.ZeroPoint.class);        //TODO: Photometry Model
+//        allowed.add( cfa.vo.speclib.spectral.v1.MagnitudeSystem.class);  //TODO: Photometry Model
+    }
+
 }

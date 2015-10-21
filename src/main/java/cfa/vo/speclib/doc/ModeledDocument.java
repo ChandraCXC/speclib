@@ -51,6 +51,14 @@ public interface ModeledDocument {
     String[] getChildrenMP();
 
     /**
+     * Returns string identifying the IVOA Model which the document represents.
+     *
+     * @return
+     *   String   model name
+     */
+    String identifyModel();
+    
+    /**
      * Returns true if document node has no child elements.
      *
      * @return

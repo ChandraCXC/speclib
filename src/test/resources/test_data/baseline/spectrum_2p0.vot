@@ -556,22 +556,22 @@
           </GROUP>
         </GROUP>
       </GROUP>
-      <FIELD datatype="double" id="184dd6f9-b9cf-4ae0-b2e2-aef684e00d1e" unit="Hz"/>
-      <FIELD datatype="double" id="6b7bec5e-e363-40f7-823c-07943c087836" unit="Hz"/>
-      <FIELD datatype="double" id="c75a4176-fe50-44cd-b1df-707bc9930983" unit="Hz"/>
-      <FIELD datatype="double" id="72e05e89-a2da-40a8-8533-fc8d822627c1" unit="Hz"/>
-      <FIELD datatype="double" id="53f0aa9d-c619-4b07-acbb-f6d6d8c186d8" unit="Hz"/>
-      <FIELD datatype="double" id="3e55add4-60b2-41c2-81bb-7e1eec76de19" unit="W.m**(-2).Hz**(-1)"/>
-      <FIELD datatype="double" id="24278de9-8536-4812-9f1f-85c27e113134" unit="W.m**(-2).Hz**(-1)"/>
-      <FIELD datatype="double" id="d5dce35b-4b1a-43bc-b073-6a52f8baa1b5" unit="W.m**(-2).Hz**(-1)"/>
-      <FIELD datatype="int" id="e6b6631c-0a3e-458b-b012-02a0a1b073f6"/>
-      <FIELD arraysize="*" datatype="char" id="4bae693f-adbc-4044-843d-7b48af60463c"/>
-      <FIELD datatype="double" id="8b4e64bb-046d-4722-be85-c8ba64e85743"/>
-      <FIELD datatype="boolean" id="2b8bbdda-ee20-4eab-b5f1-853684465b3a"/>
-      <FIELD datatype="double" id="c1a12916-1349-483f-9ece-b0d4e4382c2c" unit="W.m**(-2).Hz**(-1)"/>
-      <FIELD datatype="double" id="dbc9c139-9446-4387-bacf-9907828075a6" unit="W.m**(-2).Hz**(-1)"/>
-      <FIELD datatype="double" id="2654bf33-1462-421f-9622-3c39793de76a" unit="W.m**(-2).Hz**(-1)"/>
-      <FIELD datatype="int" id="ed13f378-2dac-4978-bf3c-72e9ca5638c5"/>
+      <FIELD ID="184dd6f9-b9cf-4ae0-b2e2-aef684e00d1e" datatype="double" unit="Hz"/>
+      <FIELD ID="6b7bec5e-e363-40f7-823c-07943c087836" datatype="double" unit="Hz"/>
+      <FIELD ID="c75a4176-fe50-44cd-b1df-707bc9930983" datatype="double" unit="Hz"/>
+      <FIELD ID="72e05e89-a2da-40a8-8533-fc8d822627c1" datatype="double" unit="Hz"/>
+      <FIELD ID="53f0aa9d-c619-4b07-acbb-f6d6d8c186d8" datatype="double" unit="Hz"/>
+      <FIELD ID="3e55add4-60b2-41c2-81bb-7e1eec76de19" datatype="double" unit="W.m**(-2).Hz**(-1)"/>
+      <FIELD ID="24278de9-8536-4812-9f1f-85c27e113134" datatype="double" unit="W.m**(-2).Hz**(-1)"/>
+      <FIELD ID="d5dce35b-4b1a-43bc-b073-6a52f8baa1b5" datatype="double" unit="W.m**(-2).Hz**(-1)"/>
+      <FIELD ID="e6b6631c-0a3e-458b-b012-02a0a1b073f6" datatype="int"/>
+      <FIELD ID="4bae693f-adbc-4044-843d-7b48af60463c" arraysize="*" datatype="char"/>
+      <FIELD ID="8b4e64bb-046d-4722-be85-c8ba64e85743" datatype="double"/>
+      <FIELD ID="2b8bbdda-ee20-4eab-b5f1-853684465b3a" datatype="boolean"/>
+      <FIELD ID="c1a12916-1349-483f-9ece-b0d4e4382c2c" datatype="double" unit="W.m**(-2).Hz**(-1)"/>
+      <FIELD ID="dbc9c139-9446-4387-bacf-9907828075a6" datatype="double" unit="W.m**(-2).Hz**(-1)"/>
+      <FIELD ID="2654bf33-1462-421f-9622-3c39793de76a" datatype="double" unit="W.m**(-2).Hz**(-1)"/>
+      <FIELD ID="ed13f378-2dac-4978-bf3c-72e9ca5638c5" datatype="int"/>
       <DATA>
         <TABLEDATA>
           <TR>

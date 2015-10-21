@@ -5,6 +5,14 @@ import java.net.URL;
 import java.util.List;
 
 /**
+ * Abstract Class for IVOA Model Definitions Builders.
+ * 
+ * This suite of Classes build and populate the Model object
+ * from a variety of storage mechanisms.
+ * 
+ * We define a set of methods which allow the user to override
+ * the primary Model information.
+ * 
  * Created by olaurino on 6/4/15.
  */
 public abstract class AbstractModelBuilder implements ModelBuilder {
